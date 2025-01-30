@@ -1,0 +1,22 @@
+{
+  "name": "sp25-group6",
+  "version": "1.0.0",
+  "description": "Name your repository using the following format:   **SP2025_Group_&lt;Group Number&gt;**   (Example: SP2025_Group_9)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
