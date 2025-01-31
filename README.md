@@ -2,7 +2,6 @@
 
 Name your repository using the following format:  
 **SP2025_Group_6**  
-(Example: SP2025_Group_9)
 
 ## Team Members
 - Elaine Choy: c.elaine@wustl.edu; @elainechoy;
