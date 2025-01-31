@@ -1,7 +1,7 @@
 # SP2025: Group 6 TimeSnap
 
 Name your repository using the following format:  
-**SP2025_Group_&lt;Group Number&gt;**  
+**SP2025_Group_6**  
 (Example: SP2025_Group_9)
 
 ## Team Members
