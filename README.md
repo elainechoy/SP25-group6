@@ -1,26 +1,16 @@
-# SP2025: Group &lt;Group Number&gt; &lt;Project Name&gt;
+# SP2025: Group &lt;Group Number&gt; TimeSnap;
 
 Name your repository using the following format:  
 **SP2025_Group_&lt;Group Number&gt;**  
 (Example: SP2025_Group_9)
 
 ## Team Members
-- **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
-- **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
-- Selina Wang: pengyun.w@wustl.edu ; @nidxnSelina;
-
-- Elaine Choy
-c.elaine@wustl.edu
-@elainechoy 
-Harris Kim
-h.s.kim@wustl.edu
-@hairkim
-Selina Wang
-
-
+- Elaine Choy: c.elaine@wustl.edu; @elainechoy;
+- Harris Kim: h.s.kim@wustl.edu; @hairkim;
+- Selina Wang: pengyun.w@wustl.edu; @nidxnSelina;
 
 ## TA
-&lt;Name of your group's TA&gt;
+Mutaz;
 
 ## Objectives
 &lt;Description of what your project is about, your key functionalities, tech stacks used, etc. &gt;
