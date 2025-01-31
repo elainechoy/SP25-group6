@@ -1,8 +1,5 @@
 # SP2025: Group 6 TimeSnap
 
-Name your repository using the following format:  
-**SP2025_Group_6**  
-
 ## Team Members
 - Elaine Choy: c.elaine@wustl.edu; @elainechoy;
 - Harris Kim: h.s.kim@wustl.edu; @hairkim;
