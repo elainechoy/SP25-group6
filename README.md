@@ -7,7 +7,17 @@ Name your repository using the following format:
 ## Team Members
 - **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
 - **&lt;Member Name&gt;**: &lt;Email Address&gt; ; &lt;Github ID&gt;
-- Selina Wang: &lt;Email Address&gt; ; &lt;Github ID&gt;
+- Selina Wang: pengyun.w@wustl.edu ; @nidxnSelina;
+
+- Elaine Choy
+c.elaine@wustl.edu
+@elainechoy 
+Harris Kim
+h.s.kim@wustl.edu
+@hairkim
+Selina Wang
+
+
 
 ## TA
 &lt;Name of your group's TA&gt;
