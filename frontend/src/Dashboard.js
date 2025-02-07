@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Container, Box } from "@mui/material";
+import { Typography, Container, Box, Button } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Dashboard = () => {
@@ -32,6 +32,11 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken"); 
+    navigate("/"); 
+  };
+
   return (
     <Container maxWidth="sm">
       <Box textAlign="center" mt={5}>
@@ -39,6 +44,14 @@ const Dashboard = () => {
           <>
             <Typography variant="h4">Welcome, {user.name}!</Typography>
             <Typography variant="body1">Email: {user.email}</Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleLogout}
+              sx={{ mt: 3 }}
+            >
+              Logout
+            </Button>
           </>
         ) : (
           <Typography variant="h5">Loading...</Typography>
