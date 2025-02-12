@@ -4,7 +4,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 
 const Login = () => {
   const handleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google";  // ✅ Correct - calls backend
+    window.location.href = "http://localhost:3001/auth/google"; 
   };
 
   return (
@@ -15,9 +15,15 @@ const Login = () => {
         </Typography>
         <Button
           variant="contained"
-          color="primary"
           startIcon={<GoogleIcon />}
           onClick={handleLogin}
+          sx={{
+            backgroundColor: "#af25f5", // Custom color
+            color: "#fff", // Ensure text is visible
+            "&:hover": {
+              backgroundColor: "#9c1fe0", // Slightly darker on hover
+            },
+          }}
         >
           Sign in with Google
         </Button>

@@ -15,14 +15,14 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3001/auth/google/callback" // ✅ Make sure this is correct
+  callbackURL: "http://localhost:3001/auth/google/callback" 
 },
 (accessToken, refreshToken, profile, done) => {
   return done(null, profile);
 }
 ));
 
-console.log("Google OAuth Redirect URI:", "http://localhost:3001/auth/google/callback"); // ✅ Debugging
+console.log("Google OAuth Redirect URI:", "http://localhost:3001/auth/google/callback");
 
 
 passport.serializeUser((user, done) => done(null, user));
@@ -55,7 +55,7 @@ app.get('/auth/google/callback',
     const user = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
 
     const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
-    console.log("Generated Token:", token); // ✅ Debugging line
+    console.log("Generated Token:", token);
 
     res.redirect(`http://localhost:3000/dashboard?token=${token}`);
   }
@@ -65,6 +65,16 @@ app.get('/auth/google/callback',
 
 app.get('/profile', authenticateJWT, (req, res) => {
     res.json(req.user);
+});
+
+app.get('/logout', (req, res) => {
+  req.logout(() => {
+      res.clearCookie('connect.sid');
+      req.session.destroy((err) => {
+          if (err) return res.status(500).send("Failed to log out.");
+          res.redirect("https://accounts.google.com/Logout"); 
+      });
+  });
 });
 
 const PORT = 3001;

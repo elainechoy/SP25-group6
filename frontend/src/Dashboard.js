@@ -34,7 +34,8 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken"); 
-    navigate("/"); 
+    //window.location.href = "http://localhost:3001/logout"; #completely logs out
+    navigate("/");
   };
 
   return (
@@ -43,10 +44,10 @@ const Dashboard = () => {
         {user ? (
           <>
             <Typography variant="h4">Welcome, {user.name}!</Typography>
-            <Typography variant="body1">Email: {user.email}</Typography>
+            <Typography variant="body1">{user.email}</Typography>
             <Button
               variant="contained"
-              color="secondary"
+              color="#af25f5"
               onClick={handleLogout}
               sx={{ mt: 3 }}
             >
