@@ -130,9 +130,11 @@ async function createCapsule(userId, title, fileContent, timeLimit) {
 async function retrieveUserCapsules(userId) {
   try {
     if (!capsules) throw new Error("Database not connected yet");
-    return await capsules.find({ userId: new ObjectId(userId) });
+    const capsuleArray = await capsules.find({ userId: new ObjectId(userId) }).toArray();
+    return capsuleArray;
 
   } catch (error) {
     console.error("Error adding user:", error);
+    return [];
   }
 }
