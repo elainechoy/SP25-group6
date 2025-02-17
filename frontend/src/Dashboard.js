@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Typography, Container, Box, Button } from "@mui/material";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Extract token from URL
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("authToken", token); // Store token
+      localStorage.setItem("authToken", token);
       fetchUserProfile(token);
     } else {
       navigate("/");
@@ -22,44 +19,20 @@ const Dashboard = () => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await fetch("http://localhost:3001/profile", { 
+      const response = await fetch("http://localhost:3001/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
-      setUser(data);
+
+      if (data) {
+        navigate("/home"); // Redirect to Home.js after login
+      }
     } catch (error) {
       console.error("Failed to fetch user profile", error);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken"); 
-    //window.location.href = "http://localhost:3001/logout"; #completely logs out
-    navigate("/");
-  };
-
-  return (
-    <Container maxWidth="sm">
-      <Box textAlign="center" mt={5}>
-        {user ? (
-          <>
-            <Typography variant="h4">Welcome, {user.name}!</Typography>
-            <Typography variant="body1">{user.email}</Typography>
-            <Button
-              variant="contained"
-              color="#af25f5"
-              onClick={handleLogout}
-              sx={{ mt: 3 }}
-            >
-              Logout
-            </Button>
-          </>
-        ) : (
-          <Typography variant="h5">Loading...</Typography>
-        )}
-      </Box>
-    </Container>
-  );
+  return null; // Empty return since user is redirected
 };
 
 export default Dashboard;
