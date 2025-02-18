@@ -10,6 +10,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import { useNavigate } from 'react-router-dom';
 
 const pages = ['Home', 'Capsules', 'Friends'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -17,6 +18,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 function AppHeader() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -31,6 +33,11 @@ function AppHeader() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken"); 
+    navigate("/"); 
   };
 
   return (
@@ -139,8 +146,11 @@ function AppHeader() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+             {settings.map((setting) => (
+                <MenuItem 
+                  key={setting} 
+                  onClick={setting === "Logout" ? handleLogout : handleCloseUserMenu}
+                >
                   <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                 </MenuItem>
               ))}
