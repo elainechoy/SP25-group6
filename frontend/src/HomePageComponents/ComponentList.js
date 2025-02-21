@@ -1,14 +1,27 @@
 import React from 'react';
 import CapsuleCard from './CapsuleCard.js'
 import { Container, Box, Button } from "@mui/material";
+import { Link } from 'react-router-dom';
 
 function ComponentList() {
     return(
         <Container maxWidth="lg" sx={{ border: "2px solid gray", padding: 4, minHeight: "80vh", position: "relative", backgroundColor: "#eabfff", mt: 4 }}>
             {/* Top-right button */}
-            <Button sx={{ position: "absolute", top: 16, right: 16, color: 'white', width: 'auto', backgroundColor: '#c95eff', padding: 2 }}>
-            Create Capsule
-            </Button>
+            <Link to="/create-capsule" style={{ textDecoration: 'none' }}>
+                <Button 
+                    sx={{ 
+                        position: "absolute", 
+                        top: 16, 
+                        right: 16, 
+                        color: 'white', 
+                        width: 'auto', 
+                        backgroundColor: '#c95eff', 
+                        padding: 2 
+                    }}
+                >
+                    Create Capsule
+                </Button>
+            </Link>
     
             {/* Grid Layout for Capsules */}
             <Box
