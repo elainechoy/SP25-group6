@@ -6,7 +6,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb")
 const uri = process.env.MONGO_URI
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.INDEX_PORT || 5001;
 
 // Middleware
 app.use(cors());
@@ -105,15 +105,41 @@ async function retrieveUserByEmail(userEmail) {
   }
 }
 
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+
+async function generatePDF(content) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument();
+    const buffers = [];
+    
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {
+      const pdfBuffer = Buffer.concat(buffers);
+      resolve(pdfBuffer);
+    });
+
+    doc.on('error', reject);
+
+    doc.text(content, {
+      align: 'left'
+    });
+
+    doc.end();
+  });
+}
+
 //need to make it so you use gridfs
 async function createCapsule(userId, title, fileContent, timeLimit) {
   try {
-    if(!capsules) throw new Error("the database not connected")
+    if(!capsules) throw new Error("the database not connected");
+
+    const pdfBuffer = await generatePDF(fileContent);
 
     const newCapsule = {
       userId,
       title,
-      fileContent,
+      fileContent: pdfBuffer,
       timeLimit,
       sharedWith: [],
       createdAt: new Date()
