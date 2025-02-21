@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express();
+const PORT = process.env.SERVER_PORT || 3001;
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(session({ secret: 'your_secret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
@@ -77,6 +78,5 @@ app.get('/logout', (req, res) => {
   });
 });
 
-const PORT = 3001;
 
 app.listen(PORT, () => console.log('Server running on http://localhost:3001'));
