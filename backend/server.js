@@ -5,6 +5,7 @@ const session = require('express-session');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { addUser, retrieveUserByEmail } = require("./index");
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3001;
@@ -52,13 +53,25 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
-  (req, res) => {
-    const user = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
+  async (req, res) => {
+    try {
+      const email = req.user.emails[0].value;
+      const name = req.user.displayName;
 
-    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
-    console.log("Generated Token:", token);
+      let  user = await retrieveUserByEmail(email);
+      if (!user) {
+        user = await addUser(name, email);
+      }
+      const userToken = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
 
-    res.redirect(`http://localhost:3000/dashboard?token=${token}`);
+      const token = jwt.sign(userToken, process.env.JWT_SECRET, { expiresIn: '1h' });
+      console.log("Generated Token:", token);
+
+      res.redirect(`http://localhost:3000/dashboard?token=${token}`);
+    } catch (error) {
+      console.error("Error in Google OAuth callback:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
 );
 
