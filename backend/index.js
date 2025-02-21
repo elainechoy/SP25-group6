@@ -62,9 +62,9 @@ app.get("/", (req, res) => {
 });
 
 // Start Server
-// app.listen(PORT, () => {
-//     console.log(`Server is running on http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
 
 module.exports = { addUser, retrieveUserByEmail };
 
