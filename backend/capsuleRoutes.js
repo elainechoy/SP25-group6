@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // create the capsule route
-router.post('/capsules', async (req, res) => {
+router.post('/create_capsules', async (req, res) => {
   const { title, description, unlockDate, members } = req.body;
   if (!title || !description || !unlockDate) {
     return res.status(400).json({ message: 'All fields are required.' });
@@ -19,7 +19,6 @@ router.post('/capsules', async (req, res) => {
     members,
     createdAt: new Date(),
   });
-
 
   return res.status(201).json({ message: 'Capsule created successfully!' });
 });

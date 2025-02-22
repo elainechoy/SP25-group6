@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const capsuleRoutes = require('./capsuleRoutes.js');
 
 const { MongoClient, ServerApiVersion } = require("mongodb")
 const uri = process.env.MONGO_URI
@@ -9,10 +10,8 @@ const app = express();
 const PORT = process.env.INDEX_PORT || 5001;
 
 // Middleware
-app.use(cors());
+app.use(cors({}));
 app.use(express.json());
-
-let db, users, capsules;
 
 async function connectDB() {
     try {
@@ -30,31 +29,22 @@ async function connectDB() {
       // Optionally, send a ping to confirm successful connection
       await client.db("admin").command({ ping: 1 })
       console.log("Pinged your deployment. You successfully connected to MongoDB!")
-  
-      // You can store the client or DB on the app, in globals, or in a separate module
-      // Example: app.locals.db = client.db("your-database-name")
 
-      db = client.db('TimesnapDB')
-      users = db.collection('users')
-      capsules = db.collection('capsules')
-
-
+      app.locals.db = client.db('TimesnapDB')
+      app.use('/api', capsuleRoutes);
 
       // const userId = addUser('Harris', 'h.s.kim@wustl.edu')
       // console.log("Added user with ID:", userId);
       // const user = retriveUserById()
-  
+      
     } catch (error) {
       console.error("Error connecting to MongoDB:", error)
       process.exit(1) // Stop the server if we cannot connect
     }
   }
   
-  // 5) Call the function to connect to MongoDB when the server starts
-  (async () => {
-    await connectDB();
-  })();
-  
+// 5) Call the function to connect to MongoDB when the server starts
+connectDB()
 
 // Test API Route
 app.get("/", (req, res) => {
