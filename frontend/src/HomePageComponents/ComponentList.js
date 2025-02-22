@@ -36,9 +36,6 @@ function ComponentList() {
             >
             {/* Individual Capsule Boxes */}
             <CapsuleCard />
-            <CapsuleCard />
-            <CapsuleCard />
-            <CapsuleCard />
 
             </Box>
         </Container>

@@ -48,7 +48,7 @@ export default function CreateCapsule() {
     };
 
     try {
-      const response = await fetch("http://localhost:5001/api/create_capsules", {
+      const response = await fetch("http://localhost:5001/api/create_capsule", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,13 +59,13 @@ export default function CreateCapsule() {
       const errorMessage = await response.text();
       console.log("Error Message:", errorMessage);
 
-
       if (response.ok) {
         alert("Capsule created successfully!");
         navigate("/home");
       } else {
         alert("Failed to create capsule.");
       }
+
     } catch (error) {
       console.error("Error creating capsule:", error);
       alert("An error occurred. Please try again.");
