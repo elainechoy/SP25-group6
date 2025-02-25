@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const capsuleRoutes = require('./capsuleRoutes.js');
+const letterRoutes = require('./letterRoutes.js');
 
 const { MongoClient, ServerApiVersion } = require("mongodb")
 const uri = process.env.MONGO_URI
@@ -32,6 +33,8 @@ async function connectDB() {
 
       app.locals.db = client.db('TimesnapDB')
       app.use('/api', capsuleRoutes);
+      app.use('/api', letterRoutes);
+
 
       // const userId = addUser('Harris', 'h.s.kim@wustl.edu')
       // console.log("Added user with ID:", userId);

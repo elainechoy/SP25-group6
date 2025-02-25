@@ -7,22 +7,52 @@ function ComponentList() {
     return(
         <Container maxWidth="lg" sx={{ border: "2px solid gray", padding: 4, minHeight: "80vh", position: "relative", backgroundColor: "#eabfff", mt: 4 }}>
             {/* Top-right button */}
-            <Link to="/create-capsule" style={{ textDecoration: 'none' }}>
-                <Button 
-                    sx={{ 
-                        position: "absolute", 
-                        top: 16, 
-                        right: 16, 
-                        color: 'white', 
-                        width: 'auto', 
-                        backgroundColor: '#c95eff', 
-                        padding: 2 
-                    }}
-                >
-                    Create Capsule
-                </Button>
-            </Link>
-    
+            <Box 
+                sx={{ 
+                    position: "absolute", 
+                    top: 16, 
+                    right: 16, 
+                    display: "flex", 
+                    gap: 2 
+                }}
+            >
+                <Link to="/create-capsule" style={{ textDecoration: 'none' }}>
+                    <Button 
+                        sx={{ 
+                            color: 'white', 
+                            width: 'auto', 
+                            backgroundColor: '#c95eff', 
+                            padding: 2 
+                        }}
+                    >
+                        Create Capsule
+                    </Button>
+                </Link>
+                <Link to="/letter" style={{ textDecoration: 'none' }}>
+                    <Button 
+                        sx={{ 
+                            color: 'white', 
+                            width: 'auto', 
+                            backgroundColor: '#c95eff', 
+                            padding: 2 
+                        }}
+                    >
+                        Write a Letter
+                    </Button>
+                </Link>
+                <Link to="/letter-list" style={{ textDecoration: 'none' }}>
+                    <Button 
+                        sx={{ 
+                            color: 'white', 
+                            width: 'auto', 
+                            backgroundColor: '#c95eff', 
+                            padding: 2 
+                        }}
+                    >
+                        See all Letters
+                    </Button>
+                </Link>
+            </Box>
             {/* Grid Layout for Capsules */}
             <Box
             sx={{
