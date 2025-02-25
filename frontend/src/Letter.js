@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Select, MenuItem, Box, Typography, IconButton, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import jsPDF from 'jspdf';
@@ -16,20 +16,26 @@ export default function LetterEditor() {
 
     const generatePDFAndSubmit = async () => {
         try {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                alert("User not authenticated");
+                return;
+            }
             const doc = new jsPDF();
             const formattedText = text;
             doc.setFontSize(12);
             if (formats.includes('bold')) doc.setFont(undefined, 'bold');
             if (formats.includes('italic')) doc.setFont(undefined, 'italic');
-
+    
             const lines = doc.splitTextToSize(formattedText, 180);
             doc.text(lines, 10, 20);
-
+    
             const pdfBlob = doc.output('blob');
             const formData = new FormData();
             formData.append('file', pdfBlob, `${title || 'letter'}.pdf`);
-
-            await fetch(`/api/capsules/${capsuleId}/upload-pdf`, {
+            formData.append('title', title);
+    
+            const response = await fetch('http://localhost:5001/api/upload-pdf', {
                 method: 'POST',
                 body: formData
             });
@@ -45,6 +51,7 @@ export default function LetterEditor() {
             alert('Error uploading PDF');
         }
     };
+    
 
     const getStyle = () => {
         return {
