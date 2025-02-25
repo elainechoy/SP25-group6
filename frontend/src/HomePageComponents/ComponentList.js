@@ -16,6 +16,18 @@ function ComponentList() {
                     gap: 2 
                 }}
             >
+                <Link to="/create-capsule" style={{ textDecoration: 'none' }}>
+                    <Button 
+                        sx={{ 
+                            color: 'white', 
+                            width: 'auto', 
+                            backgroundColor: '#c95eff', 
+                            padding: 2 
+                        }}
+                    >
+                        Create Capsule
+                    </Button>
+                </Link>
                 <Link to="/letter" style={{ textDecoration: 'none' }}>
                     <Button 
                         sx={{ 
@@ -38,18 +50,6 @@ function ComponentList() {
                         }}
                     >
                         See all Letters
-                    </Button>
-                </Link>
-                <Link to="/create-capsule" style={{ textDecoration: 'none' }}>
-                    <Button 
-                        sx={{ 
-                            color: 'white', 
-                            width: 'auto', 
-                            backgroundColor: '#c95eff', 
-                            padding: 2 
-                        }}
-                    >
-                        Create Capsule
                     </Button>
                 </Link>
             </Box>
