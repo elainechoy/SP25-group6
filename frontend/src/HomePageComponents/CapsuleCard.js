@@ -3,10 +3,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import ButtonBase from '@mui/material/ButtonBase';
-
+import { useNavigate } from "react-router-dom";
 
 export default function CapsuleCard() {
     const [capsules, setCapsules] = React.useState([]);
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         const fetchCapsules = async () => {
@@ -27,7 +28,7 @@ export default function CapsuleCard() {
     }, []);
 
     const handleClick = () => {
-        console.log("Card clicked! Navigate to capsule details.");
+        navigate("/edit-capsule");
     };
 
     return (
