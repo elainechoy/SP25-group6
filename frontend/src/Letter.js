@@ -3,6 +3,8 @@ import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import jsPDF from 'jspdf';
+import './LetterEditor.css';
+import AppHeader from './HomePageComponents/AppHeader';
 import { useParams } from 'react-router-dom';
 
 export default function LetterEditor() {
@@ -26,6 +28,8 @@ export default function LetterEditor() {
             }
             const doc = new jsPDF();
             const formattedText = text;
+            doc.setFillColor(background);
+            doc.rect(0, 0, 210, 297, 'F');
             doc.setFontSize(12);
             if (formats.includes('bold')) doc.setFont(undefined, 'bold');
             if (formats.includes('italic')) doc.setFont(undefined, 'italic');
@@ -78,7 +82,12 @@ export default function LetterEditor() {
     };
 
     return (
-        <Box sx={{ p: 3, maxWidth: '600px', mx: 'auto' }}>
+        <>
+         <AppHeader />
+      
+        <Box className="letter-editor-container">
+           
+        <Box  className="letter-editor-box" sx={{ p: 3, maxWidth: '800px', mx: 'auto' }}>
             <Typography variant="h4" gutterBottom>Write Your Letter</Typography>
 
             <TextField
@@ -113,10 +122,11 @@ export default function LetterEditor() {
                 >
                     <MenuItem value="#ffffff">White</MenuItem>
                     <MenuItem value="#f0f0f0">Light Grey</MenuItem>
-                    <MenuItem value="#ffeb3b">Yellow</MenuItem>
+                    <MenuItem value="#fff99c">Yellow</MenuItem>
                     <MenuItem value="#c8e6c9">Green</MenuItem>
                     <MenuItem value="#bbdefb">Blue</MenuItem>
                     <MenuItem value="#eabfff">Purple</MenuItem>
+                    <MenuItem value="#ffc3ec">Pink</MenuItem>
                 </Select>
             </Box>
 
@@ -129,13 +139,15 @@ export default function LetterEditor() {
 
             <Button
                 variant="contained"
-                color="primary"
+                //color="primary"
                 fullWidth
                 onClick={generatePDFAndSubmit}
-                sx={{ mt: 2 }}
+                sx={{ mt: 2,  backgroundColor: '#c95eff', '&:hover': { backgroundColor: '#d98eff'}}}
             >
                 Submit Letter to Database
             </Button>
         </Box>
+        </Box>
+        </>
     );
 }

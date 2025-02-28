@@ -181,6 +181,7 @@ export default function EditCapsule() {
 
                 <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                     <Button 
+
                         sx={{ 
                             color: 'white', 
                             width: 'auto', 

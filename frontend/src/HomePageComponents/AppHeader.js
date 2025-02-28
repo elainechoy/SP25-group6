@@ -12,8 +12,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Home', 'Capsules', 'Friends'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Home', 'Friends'];
+const settings = ['Profile', 'Logout'];
 
 function AppHeader() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -33,6 +33,10 @@ function AppHeader() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
   };
 
   const handleLogout = () => {
@@ -61,7 +65,17 @@ function AppHeader() {
           >
             TIMESNAP
           </Typography>
-
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'space-around' }}>
+            {pages.map((label) => (
+              <Button
+                key={label}
+                onClick={() => handleNavigate(`/${label.toLowerCase()}`)}
+                sx={{ my: 2, color: '#af25f5', display: 'block' }}
+              >
+                {label}
+              </Button>
+            ))}
+          </Box>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -88,11 +102,6 @@ function AppHeader() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                </MenuItem>
-              ))}
             </Menu>
           </Box>
           <Typography
@@ -113,17 +122,7 @@ function AppHeader() {
           >
             TIMESNAP
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: "space-around", color: '#af25f5' }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: '#af25f5', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
+
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -149,7 +148,14 @@ function AppHeader() {
              {settings.map((setting) => (
                 <MenuItem 
                   key={setting} 
-                  onClick={setting === "Logout" ? handleLogout : handleCloseUserMenu}
+                  onClick={() => {
+                    if (setting === "Logout") {
+                      handleLogout();
+                    } else {
+                      handleNavigate(`/${setting.toLowerCase()}`);
+                    }
+                    handleCloseUserMenu();
+                  }}
                 >
                   <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                 </MenuItem>

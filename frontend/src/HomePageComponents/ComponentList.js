@@ -28,30 +28,7 @@ function ComponentList() {
                         Create Capsule
                     </Button>
                 </Link>
-                <Link to="/letter" style={{ textDecoration: 'none' }}>
-                    <Button 
-                        sx={{ 
-                            color: 'white', 
-                            width: 'auto', 
-                            backgroundColor: '#c95eff', 
-                            padding: 2 
-                        }}
-                    >
-                        Write a Letter
-                    </Button>
-                </Link>
-                <Link to="/letter-list" style={{ textDecoration: 'none' }}>
-                    <Button 
-                        sx={{ 
-                            color: 'white', 
-                            width: 'auto', 
-                            backgroundColor: '#c95eff', 
-                            padding: 2 
-                        }}
-                    >
-                        See all Letters
-                    </Button>
-                </Link>
+                
             </Box>
             {/* Grid Layout for Capsules */}
             <Box
