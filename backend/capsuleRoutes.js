@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { ObjectId } = require('mongodb');
 
 // create the capsule route
 router.post('/create_capsule', async (req, res) => {
@@ -14,7 +15,7 @@ router.post('/create_capsule', async (req, res) => {
   const result = await capsulesCollection.insertOne({
     title,
     description,
-    unlockDate: new Date(unlockDate), // Convert to Date object
+    unlockDate: new Date(unlockDate),
     members,
     createdAt: new Date(),
     isSealed: false
@@ -39,6 +40,33 @@ router.get('/get_all_capsules', async (req, res) => {
   }
 });
 
+// get a capsule by ID
+router.get('/get_capsule/:capsuleId', async (req, res) => {
+  const db = req.app.locals.db;
+  const capsulesCollection = db.collection("capsules");
+
+  const {capsuleId} = req.params;
+  if (!ObjectId.isValid(capsuleId)) {
+    return res.status(400).json({ message: 'Invalid capsule ID' });
+  }
+
+  try {
+    const objectId = new ObjectId(capsuleId.toString());
+    const capsule = await capsulesCollection.findOne({ _id: objectId });
+
+    if (!capsule) {
+        return res.status(404).json({ message: 'Capsule not found.' });
+    }
+    // Return the capsule
+    return res.status(200).json(capsule);
+
+  } catch (error) {
+      console.error("Error retrieving capsule:", error);
+      return res.status(500).json({ message: 'Failed to retrieve capsule.' });
+  }
+});
+
+
 router.get("/capsule/:capsuleId", async (req, res) => {
   try {
       const capsuleId = req.params.capsuleId;
@@ -55,14 +83,13 @@ router.get("/capsule/:capsuleId", async (req, res) => {
   }
 });
 
-module.exports = router;
 
 // seal capsule
 router.post('/seal_capsule', async (req, res) => {
   const db = req.app.locals.db;
   const capsulesCollection = db.collection("capsules");
   
-  const { capsuleId} = req.body;
+  const {capsuleId} = req.body;
   if (!capsuleId) {
     return res.status(400).json({ message: 'capsuleId is required.' });
   }
@@ -85,5 +112,7 @@ router.post('/seal_capsule', async (req, res) => {
     return res.status(500).json({ message: 'Failed to seal capsule.' });
   }
 });
+
+
 
 module.exports = router;
