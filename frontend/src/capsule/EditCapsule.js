@@ -3,12 +3,40 @@ import AppHeader from '../HomePageComponents/AppHeader';
 import { Box, Button } from '@mui/material';
 import LetterCard from './LetterCard.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-
+import Typography from '@mui/material/Typography';
 
 export default function EditCapsule() {
     const navigate = useNavigate()
     const location = useLocation();
     const capsuleId = location.state?.capsuleId;
+    const [capsule, setCapsule] = useState("");
+
+    // get capsule info
+    React.useEffect(() => {
+        if (capsuleId) {
+            const getCapsule = async () => {
+                try {
+                    const response = await fetch(`http://localhost:5001/api/get_capsule/${capsuleId}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
+            
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    setCapsule(data);
+            
+                } catch (error) {
+                    console.error("Error fetching capsules:", error);
+                }
+            };  
+            getCapsule();
+        }
+    }, [capsuleId]);
+
     
     const [pdfs, setPdfs] = useState([]);
 
@@ -37,6 +65,7 @@ export default function EditCapsule() {
         fetchUserPDFs();
     }, []); // Runs only on first render
 
+  
     const sealCapsule = async () => {
         const capsuleData = {capsuleId};
 
@@ -66,30 +95,86 @@ export default function EditCapsule() {
     <>
         <AppHeader />
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, m: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, m: 4 }}>
+
             {/* Capsule Name and Seal Capsule Button */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                {/* <TextField 
-                    label="Capsule Name" 
-                    variant="outlined" 
-                    sx={{ width: '30%' }}
-                /> */}
-                capsule name
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                    {capsule.title || "Capsule Name"}
+                </Typography>
                 <Button 
                     variant="contained" 
-                    color="primary"
-                    onClick = {sealCapsule}
+                    sx={{
+                        backgroundColor: '#c95eff',
+                        color: 'white',
+                        borderRadius: '20px',
+                        boxShadow: 2,
+                        '&:hover': {
+                            backgroundColor: '#b14ce3'
+                        }
+                    }}
+                    onClick={sealCapsule}
                 >
                     Seal Capsule
                 </Button>
             </Box>
-            
-            <Box sx={{ display: 'flex', flexDirection: 'row'}}>
-                <Box component="section" sx={{ p: 2, border: '1px solid black', width: '30%' }}>
-                    This box is for friends
+
+            {/* Main Content Area */}
+            <Box sx={{ display: 'flex', gap: 3 }}>
+                {/* Capsule Details */}
+                <Box 
+                    component="section" 
+                    sx={{ 
+                        p: 3, 
+                        borderRadius: 3, 
+                        boxShadow: 3, 
+                        backgroundColor: '#ffffff', 
+                        width: '30%' 
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        Description
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 2 }}>
+                        {capsule.description || "No description available."}
+                    </Typography>
+
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        Shared With:
+                    </Typography>
+                    {capsule.members && capsule.members.length > 0 ? (
+                        <Box component="ul" sx={{ pl: 2 }}>
+                            {capsule.members.map((member, index) => (
+                                <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
+                                    {member}
+                                </Typography>
+                            ))}
+                        </Box>
+                    ) : (
+                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                            No members listed.
+                        </Typography>
+                    )}
                 </Box>
 
-                <Box component="section" sx={{ display: 'flex', flexDirection: 'column', p: 2, width: '30%', border: "1px solid black", alignItems: "center", justifyContent: 'center' }}>
+                {/* Letters Section */}
+                <Box 
+                    component="section" 
+                    sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        p: 3, 
+                        borderRadius: 3, 
+                        boxShadow: 3, 
+                        backgroundColor: '#ffffff', 
+                        width: '30%' 
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                        Letters
+                    </Typography>
                     {pdfs.map((pdf) => (
                         <LetterCard key={pdf._id} pdfUser={ pdf.metadata.userName } pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
                     ))}
@@ -108,12 +193,32 @@ export default function EditCapsule() {
                 </Link>
                 </Box>
 
-                <Box component="section" sx={{ p: 2, border: '1px solid black', width: '30%' }}>
-                    This box is for displaying images
+                {/* Images Section */}
+                <Box 
+                    component="section" 
+                    sx={{ 
+                        p: 3, 
+                        borderRadius: 3, 
+                        boxShadow: 3, 
+                        backgroundColor: '#ffffff', 
+                        width: '30%' 
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                        Images
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'gray' }}>
+                        This box is for displaying images
+                    </Typography>
                 </Box>
             </Box>
-
         </Box>
+
+
+
+
+
+
     </>
   );
 }

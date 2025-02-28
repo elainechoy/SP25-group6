@@ -3,6 +3,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import ButtonBase from '@mui/material/ButtonBase';
+import LockIcon from '@mui/icons-material/Lock';
+import { Box } from '@mui/material';
 
 import { useNavigate } from "react-router-dom";
 
@@ -39,7 +41,6 @@ export default function CapsuleCard() {
     const passToday = (unlockDate) => {
         const today = new Date();
         const targetDate = new Date(unlockDate);
-    
         return targetDate < today;
     };
 
@@ -82,9 +83,13 @@ export default function CapsuleCard() {
                                     }}
                                 >
                                     <CardContent sx={{ textAlign: "center" }}>
+                                        <Box sx={{ position: "absolute", top: 30, left: "50%", transform: "translateX(-50%)" }}>
+                                            <LockIcon sx={{ fontSize: 25, color: "#c95eff" }} />
+                                        </Box>
+
                                         <Typography sx={{ color: "gray", fontSize: 14, fontWeight: "bold"}}>
                                         </Typography>
-                                        <Typography variant="h5" sx={{ paddingTop: 2, fontWeight: "bold", marginTop: 1 }}>
+                                        <Typography variant="h5" sx={{ paddingTop: 4, fontWeight: "bold", marginTop: 1 }}>
                                             {capsule.title || "Users Capsule"}
                                         </Typography>
                                         <Typography variant="body2" sx={{ marginTop: 3, color: "black" }}>
@@ -121,12 +126,8 @@ export default function CapsuleCard() {
                                         <Typography variant="h5" sx={{ paddingTop: 2, fontWeight: "bold", marginTop: 1 }}>
                                             {capsule.title || "Users Capsule"}
                                         </Typography>
-                                        <Typography variant="body2" sx={{ marginTop: 3, color: "black" }}>
-                                            Open in
-                                            {/* Ready to seal? */}
-                                        </Typography>
-                                        <Typography variant="h6" sx={{ paddingTop: 1, color: "red"}}>
-                                            {daysLeft} days
+                                        <Typography variant="h6" sx={{ marginTop: 3, color: "red" }}>
+                                            Ready to seal?
                                         </Typography>
                                     </CardContent>
                                 </Card>
