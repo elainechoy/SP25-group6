@@ -145,7 +145,7 @@ router.get('/download-pdf/:id', async (req, res) => {
   router.get('/get-pdfs-by-capsule/:capsuleId', async (req, res) => {
     try {
         const db = req.app.locals.db; // Get the database instance
-        const bucket = new db.GridFSBucket(db, { bucketName: 'pdfs' });
+        const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
 
         const capsuleId = req.params.capsuleId;
 
