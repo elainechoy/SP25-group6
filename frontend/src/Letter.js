@@ -3,8 +3,11 @@ import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import jsPDF from 'jspdf';
+import { useParams } from 'react-router-dom';
 
 export default function LetterEditor() {
+    const { capsuleId } = useParams();
+
     const [text, setText] = useState('');
     const [title, setTitle] = useState('');
     const [background, setBackground] = useState('#ffffff');
@@ -34,10 +37,15 @@ export default function LetterEditor() {
             const formData = new FormData();
             formData.append('file', pdfBlob, `${title || 'letter'}.pdf`);
             formData.append('title', title);
+            formData.append('capsuleId', capsuleId);
+            console.log("capsule id " + capsuleId)
     
             const response = await fetch('http://localhost:5001/api/upload-pdf', {
-                method: 'POST',
-                body: formData
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`, // Send token for authentication
+                },
+                body: formData,
             });
 
             if (response.ok) {
