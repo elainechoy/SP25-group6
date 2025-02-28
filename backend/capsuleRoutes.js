@@ -67,6 +67,22 @@ router.get('/get_capsule/:capsuleId', async (req, res) => {
 });
 
 
+router.get("/capsule/:capsuleId", async (req, res) => {
+  try {
+      const capsuleId = req.params.capsuleId;
+      const capsule = await db.collection("capsules").findOne({ _id: new ObjectId(capsuleId) });
+
+      if (!capsule) {
+          return res.status(404).json({ message: "Capsule not found" });
+      }
+
+      res.json(capsule);
+  } catch (error) {
+      console.error("Error fetching capsule details:", error);
+      res.status(500).json({ message: "Error fetching capsule details" });
+  }
+});
+
 
 // seal capsule
 router.post('/seal_capsule', async (req, res) => {

@@ -1,9 +1,8 @@
-import * as React from 'react';
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import AppHeader from '../HomePageComponents/AppHeader';
 import { Box, Button } from '@mui/material';
 import LetterCard from './LetterCard.js';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 
 export default function EditCapsule() {
@@ -38,7 +37,35 @@ export default function EditCapsule() {
         }
     }, [capsuleId]);
 
+    
+    const [pdfs, setPdfs] = useState([]);
 
+    useEffect(() => {
+        const fetchUserPDFs = async () => {
+            const token = localStorage.getItem("authToken"); // Retrieve JWT token
+
+            try {
+                const response = await fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setPdfs(data); // Store PDFs in state
+                } else {
+                    console.error("Error fetching PDFs:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Error fetching PDFs:", error);
+            }
+        };
+
+        fetchUserPDFs();
+    }, []); // Runs only on first render
+
+  
     const sealCapsule = async () => {
         const capsuleData = {capsuleId};
 
@@ -148,22 +175,22 @@ export default function EditCapsule() {
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                         Letters
                     </Typography>
-                    <LetterCard />
+                    {pdfs.map((pdf) => (
+                        <LetterCard key={pdf._id} pdfUser={ pdf.metadata.userName } pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
+                    ))}
+
+                <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                     <Button 
-                        variant="contained"
                         sx={{ 
-                            backgroundColor: '#c95eff', 
                             color: 'white', 
-                            mt: 2,
-                            borderRadius: '20px',
-                            boxShadow: 2,
-                            '&:hover': {
-                                backgroundColor: '#b14ce3'
-                            }
+                            width: 'auto', 
+                            backgroundColor: '#c95eff', 
+                            padding: 2 
                         }}
                     >
                         Write a Letter
                     </Button>
+                </Link>
                 </Box>
 
                 {/* Images Section */}

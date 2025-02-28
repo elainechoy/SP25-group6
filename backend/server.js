@@ -5,7 +5,7 @@ const session = require('express-session');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const { addUser, retrieveUserByEmail } = require("./index");
+const { addUser, retrieveUserById } = require("./index");
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3001;
@@ -57,10 +57,12 @@ app.get('/auth/google/callback',
     try {
       const email = req.user.emails[0].value;
       const name = req.user.displayName;
+      const id = req.user.id;
 
-      let  user = await retrieveUserByEmail(email);
+      let  user = await retrieveUserById(id);
       if (!user) {
-        user = await addUser(name, email);
+        console.log("user no exist")
+        user = await addUser(name, email, id);
       }
       const userToken = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
 
@@ -77,8 +79,19 @@ app.get('/auth/google/callback',
 
 
 
-app.get('/profile', authenticateJWT, (req, res) => {
-    res.json(req.user);
+app.get("/profile", authenticateJWT, async (req, res) => {
+  try {
+    let user = await retrieveUserById(req.user.id)
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ name: user.username, email: user.email }); // Send back user details
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ message: "Error fetching user profile", error });
+  }
 });
 
 app.get('/logout', (req, res) => {
