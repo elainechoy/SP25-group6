@@ -10,7 +10,6 @@ import Capsule from './capsule/Capsule.js'
 import EditCapsule from './capsule/EditCapsule.js'
 import Letter from "./Letter.js";
 import LetterList from './LetterList.js';
-import EditCapsule from './capsule/EditCapsule';
 
 const App = () => {
   return (
@@ -26,7 +25,6 @@ const App = () => {
 
         <Route path="/letter" element={<Letter />} />
         <Route path="/letter-list" element={<LetterList />} />
-        <Route path="/edit-capsule" element={<EditCapsule />} />
       </Routes>
     </Router>
   );
