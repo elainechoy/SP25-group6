@@ -9,10 +9,11 @@ export default function EditCapsule() {
     const navigate = useNavigate()
     const location = useLocation();
     const capsuleId = location.state?.capsuleId;
-    const [capsule, setCapsule] = useState("");
 
     // get capsule info
-    React.useEffect(() => {
+    const [capsule, setCapsule] = useState("");
+
+    useEffect(() => {
         if (capsuleId) {
             const getCapsule = async () => {
                 try {
@@ -37,34 +38,37 @@ export default function EditCapsule() {
         }
     }, [capsuleId]);
 
-    
+
+    // get PDFs in the capsule
     const [pdfs, setPdfs] = useState([]);
 
     useEffect(() => {
-        const fetchUserPDFs = async () => {
-            const token = localStorage.getItem("authToken"); // Retrieve JWT token
-
-            try {
-                const response = await fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+        if (capsuleId) {
+            const fetchUserPDFs = async () => {
+                const token = localStorage.getItem("authToken");
+    
+                try {
+                    const response = await fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+    
+                    if (response.ok) {
+                        const data = await response.json();
+                        setPdfs(data); // Store PDFs in state
+                    } else {
+                        console.error("Error fetching PDFs:", response.statusText);
                     }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setPdfs(data); // Store PDFs in state
-                } else {
-                    console.error("Error fetching PDFs:", response.statusText);
+                } catch (error) {
+                    console.error("Error fetching PDFs:", error);
                 }
-            } catch (error) {
-                console.error("Error fetching PDFs:", error);
-            }
-        };
-
-        fetchUserPDFs();
-    }, []); // Runs only on first render
-
+            };
+    
+            fetchUserPDFs();
+        }
+    }, [capsuleId]);
+    
   
     const sealCapsule = async () => {
         const capsuleData = {capsuleId};
@@ -179,19 +183,23 @@ export default function EditCapsule() {
                         <LetterCard key={pdf._id} pdfUser={ pdf.metadata.userName } pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
                     ))}
 
-                <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
-                    <Button 
-
-                        sx={{ 
-                            color: 'white', 
-                            width: 'auto', 
-                            backgroundColor: '#c95eff', 
-                            padding: 2 
-                        }}
-                    >
-                        Write a Letter
-                    </Button>
-                </Link>
+                    <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
+                        <Button 
+                            variant="contained"
+                            sx={{ 
+                                backgroundColor: '#c95eff', 
+                                color: 'white', 
+                                mt: 2,
+                                borderRadius: '20px',
+                                boxShadow: 2,
+                                '&:hover': {
+                                    backgroundColor: '#b14ce3'
+                                }
+                            }}
+                        >
+                            Write a Letter
+                        </Button>
+                    </Link>
                 </Box>
 
                 {/* Images Section */}
