@@ -97,6 +97,7 @@ export default function EditCapsule() {
                     <LetterCard />
                     <Button 
                     sx={{ backgroundColor: "pink" }}
+                    onClick={() => navigate('/letter')}
                     >
                     Write a Letter
                     </Button>
