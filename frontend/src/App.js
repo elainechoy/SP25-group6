@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/capsule" element={<Capsule />} />
         <Route path="/edit-capsule" element={<EditCapsule />} />
 
-        <Route path="/letter" element={<Letter />} />
+        <Route path="/letter/:capsuleId" element={<Letter />} />
         <Route path="/letter-list" element={<LetterList />} />
       </Routes>
     </Router>
