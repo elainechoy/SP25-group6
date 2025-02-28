@@ -36,25 +36,21 @@ export default function CapsuleCard() {
         return daysLeft > 0 ? daysLeft : 0;
     };
 
-    const isToday = (unlockDate) => {
+    const passToday = (unlockDate) => {
         const today = new Date();
         const targetDate = new Date(unlockDate);
     
-        return (
-            today.getFullYear() === targetDate.getFullYear() &&
-            today.getMonth() === targetDate.getMonth() &&
-            today.getDate() === targetDate.getDate()
-        );
+        return targetDate < today;
     };
 
-    const handleClick = (isSealed, unlockDate) => {
-        console.log("Card clicked! Navigate to capsule details.");
-
-        if (isToday(unlockDate)) {
-            navigate("/capsule")
+    const handleClick = (isSealed, unlockDate, capsuleId) => {
+        if (passToday(unlockDate)) {
+            navigate("/capsule", { state: { capsuleId } })
         } else {
             if (!isSealed) {
-                navigate("/edit-capsule")
+                navigate("/edit-capsule", { state: { capsuleId } })
+            } else {
+                alert("Capsule is sealed")
             }
         }
     };
@@ -71,7 +67,7 @@ export default function CapsuleCard() {
                         cardContent = (
                             <ButtonBase
                                 key={index}
-                                onClick={() => handleClick(capsule.isSealed, capsule.unlockDate)}
+                                onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
                                 sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}
                             >
                                 <Card
@@ -105,7 +101,7 @@ export default function CapsuleCard() {
                         cardContent = (
                             <ButtonBase
                                 key={index}
-                                onClick={() => handleClick(capsule.isSealed, capsule.unlockDate)}
+                                onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
                                 sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}
                             >
                                 <Card
@@ -141,7 +137,7 @@ export default function CapsuleCard() {
                     cardContent = (
                         <ButtonBase
                             key={index}
-                            onClick={() => handleClick(capsule.isSealed, capsule.unlockDate)}
+                            onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
                             sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}
                         >
                             <Card
