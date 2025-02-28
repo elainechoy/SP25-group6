@@ -59,15 +59,18 @@ app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-module.exports = { addUser, retrieveUserByEmail };
+module.exports = { addUser, retrieveUserById };
 
 
 //mongo functions
-async function addUser(username, email) {
+async function addUser(username, email, id) {
   try {
+      const users = app.locals.db.collection("users");
       if (!users) throw new Error("Database not connected yet");
+      if (!id) throw new Error("connect to google")
 
       const newUser = {
+        _id: id,
         username, 
         email, 
         friends: [] 
@@ -82,8 +85,9 @@ async function addUser(username, email) {
 
 async function retrieveUserById(userId) {
   try {
+    const users = app.locals.db.collection("users");
     if (!users) throw new Error("Database not connected yet");
-    return await users.findOne({ _id: new ObjectId(userId) });
+    return await users.findOne({ _id: userId });
 
   } catch (error) {
     console.error("Error retrieving user:", error);
@@ -92,6 +96,7 @@ async function retrieveUserById(userId) {
 
 async function retrieveUserByEmail(userEmail) {
   try {
+    const users = app.locals.db.collection("users");
     if (!users) throw new Error("Database not connected yet");
     return await users.findOne({ email: userEmail });
 
@@ -127,6 +132,7 @@ async function generatePDF(content) {
 //need to make it so you use gridfs
 async function createCapsule(userId, title, fileContent, timeLimit) {
   try {
+    const capsules = app.locals.db.collection("capsules");
     if(!capsules) throw new Error("the database not connected");
 
     const pdfBuffer = await generatePDF(fileContent);
@@ -150,6 +156,7 @@ async function createCapsule(userId, title, fileContent, timeLimit) {
 
 async function retrieveUserCapsules(userId) {
   try {
+    const users = app.locals.db.collection("users");
     if (!capsules) throw new Error("Database not connected yet");
     const capsuleArray = await capsules.find({ userId: new ObjectId(userId) }).toArray();
     return capsuleArray;

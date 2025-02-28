@@ -2,23 +2,23 @@ const express = require('express');
 const multer = require('multer');
 const { GridFSBucket, ObjectId } = require('mongodb');
 // If you still want to protect these routes, uncomment and use your JWT middleware
-// const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken'); 
 
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Example of JWT middleware if you want to protect the route
-// const authenticateJWT = (req, res, next) => {
-//   const token = req.headers.authorization?.split(' ')[1];
-//   if (!token) return res.status(401).json({ message: "Unauthorized" });
+const authenticateJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-//   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-//     if (err) return res.status(403).json({ message: "Forbidden" });
-//     req.user = user;
-//     next();
-//   });
-// };
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Forbidden" });
+    req.user = user;
+    next();
+  });
+};
 
 /**
  * Upload PDF Route
@@ -27,21 +27,32 @@ const upload = multer({ storage: storage });
  */
 router.post(
   '/upload-pdf',
-  // authenticateJWT, // <- Uncomment if you want to require auth
+  authenticateJWT, // <- Uncomment if you want to require auth
   upload.single('file'),
   async (req, res) => {
     const db = req.app.locals.db;
     const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
 
     try {
-      const { title } = req.body;
+      const { title, capsuleId } = req.body;
+      const userName = req.user.name;
+      const userId = req.user.id;
+
+      const capsuleObjectId = new ObjectId(capsuleId);
+
+      console.log("username " + userName);
       if (!req.file || !title) {
         return res.status(400).json({ message: 'File and title are required.' });
       }
 
       // Create a new upload stream in GridFS
       const uploadStream = bucket.openUploadStream(req.file.originalname, {
-        metadata: { title }
+        metadata: { 
+          title,
+          userId,
+          userName,
+          capsuleId: capsuleObjectId
+        }
       });
 
       // Write the file buffer to GridFS
@@ -108,5 +119,55 @@ router.get('/download-pdf/:id', async (req, res) => {
       return res.status(500).json({ message: 'Error retrieving PDF.', error });
     }
   });
+
+
+  router.get("/get-user-pdfs", authenticateJWT, async (req, res) => {
+    try {
+      const db = req.app.locals.db;
+      const bucket = new GridFSBucket(db, { bucketName: "pdfs" });
+  
+      const userId = req.user.id; // Extract user ID from token
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+  
+      // Find all PDFs uploaded by this user
+      const cursor = bucket.find({ "metadata.userId": userId });
+      const pdfs = await cursor.toArray();
+  
+      res.json(pdfs); // Return all PDFs metadata for this user
+    } catch (error) {
+      console.error("Error fetching PDFs:", error);
+      res.status(500).json({ message: "Error fetching PDFs", error });
+    }
+  });
+
+  router.get('/get-pdfs-by-capsule/:capsuleId', async (req, res) => {
+    try {
+        const db = req.app.locals.db; // Get the database instance
+        const bucket = new db.GridFSBucket(db, { bucketName: 'pdfs' });
+
+        const capsuleId = req.params.capsuleId;
+
+        // Validate if capsuleId is a valid ObjectId
+        if (!ObjectId.isValid(capsuleId)) {
+            return res.status(400).json({ message: "Invalid capsule ID" });
+        }
+
+        // Query PDFs where metadata.capsuleId matches the given capsuleId
+        const files = await db.collection('pdfs.files')
+            .find({ "metadata.capsuleId": new ObjectId(capsuleId) })
+            .toArray();
+
+        if (!files.length) {
+            return res.status(404).json({ message: "No PDFs found for this capsule" });
+        }
+
+        res.status(200).json(files);
+    } catch (error) {
+        console.error("Error fetching PDFs by capsule ID:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 module.exports = router;
