@@ -11,11 +11,12 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const pages = ['Home', 'Friends'];
 const settings = ['Profile', 'Logout'];
 
-function AppHeader() {
+function AppHeader( {user} ) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
@@ -126,7 +127,7 @@ function AppHeader() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user.name} src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -167,4 +168,10 @@ function AppHeader() {
     </AppBar>
   );
 }
+
+AppHeader.propTypes = {
+  user: PropTypes.shape({
+      name: PropTypes.string.isRequired, // Ensures `user.name` is a required string
+  }).isRequired, // Ensures `user` object is required
+};
 export default AppHeader;
