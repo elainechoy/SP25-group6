@@ -21,6 +21,8 @@ export default function CreateCapsule() {
   const [members, setMembers] = useState([]);
   const [newMember, setNewMember] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
   const navigate = useNavigate();
 
   const handleAddMember = () => {
@@ -37,6 +39,11 @@ export default function CreateCapsule() {
   const handleSubmit = async () => {
     if (!title || !description || !unlockDate) {
       alert("Please fill in all required fields.");
+      return;
+    }
+
+    if(unlockDate < today) {
+      alert("Unlock date cannot be in the past.");
       return;
     }
 
@@ -108,6 +115,7 @@ export default function CreateCapsule() {
                 onChange={(e) => setUnlockDate(e.target.value)}
                 fullWidth
                 variant="outlined"
+                inputProps={{ min: today }}
                 sx={{
                     '& .MuiInputLabel-root': {
                     transform: 'translate(14px, 20px) scale(1)', // Ensures label is correctly positioned for date inputs
