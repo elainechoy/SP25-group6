@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import AppHeader from '../HomePageComponents/AppHeader';
 import { Box, Button } from '@mui/material';
 import LetterCard from './LetterCard.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import UserContext from '../UserContext.js';
 
 export default function EditCapsule() {
     const navigate = useNavigate()
     const location = useLocation();
     const capsuleId = location.state?.capsuleId;
+    const { user } = useContext(UserContext);
 
     // get capsule info
     const [capsule, setCapsule] = useState("");
@@ -97,7 +99,7 @@ export default function EditCapsule() {
 
     return (
     <>
-        <AppHeader />
+        <AppHeader user={user}/>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, m: 4 }}>
 
