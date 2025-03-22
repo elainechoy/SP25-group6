@@ -1,0 +1,54 @@
+# services:
+#   db:
+#     image: docker.io/postgres:latest
+#     container_name: project-draft-db
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=password
+#     ports:
+#       - "6543:5432"
+#   app:
+#     build:
+#       context: .
+#       # dockerfile: ./docker/Dockerfile
+#       dockerfile: ./dockerfile
+#     container_name: project-draft-app
+#     command: cargo watch -x run
+#     volumes:
+#       - .:/app:Z
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - db
+#     environment:
+#       - APP_APPLICATION__HOST=0.0.0.0
+#       - APP_DATABASE__HOST=db
+#       - APP_DATABASE__PORT=5432
+
+services:
+  backend_3001:
+    build:
+      context: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URL=mongodb+srv://selinaw:pykhaQ4TmMageS1s@cluster0.zqiao.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+  
+  backend_5001:
+    build:
+      context: ./backend
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGO_URL=mongodb+srv://selinaw:pykhaQ4TmMageS1s@cluster0.zqiao.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend_5001
+      - backend_3001 
+  
+  
