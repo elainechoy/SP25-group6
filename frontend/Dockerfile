@@ -1,8 +1,3 @@
-# FROM docker.io/rust:latest
-# WORKDIR /app
-# RUN apt-get update
-
-
 # Use the official Node.js image
 FROM node:18
 
