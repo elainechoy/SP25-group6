@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy the package.json and package-lock.json first to install dependencies
 COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
 # Install the dependencies
 RUN npm install
@@ -15,6 +16,7 @@ COPY . .
 
 # Expose the port your backend is running on (e.g., 5000)
 EXPOSE 3001
+
 
 # Command to run the backend
 CMD ["node", "server.js"]

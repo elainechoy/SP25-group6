@@ -11,6 +11,7 @@ import EditCapsule from './capsule/EditCapsule.js'
 import Letter from "./Letter.js";
 import LetterList from './LetterList.js';
 import Profile from './Profile.js';
+import PhotoUploadForm from './media_upload/PhotoUpload.js';
 
 const App = () => {
   return (
@@ -28,6 +29,8 @@ const App = () => {
         <Route path="/letter-list" element={<LetterList />} />
 
         <Route path="/profile" element={<Profile />} />
+
+        <Route path="/upload-photo" element={<PhotoUploadForm />} />
       </Routes>
     </Router>
   );

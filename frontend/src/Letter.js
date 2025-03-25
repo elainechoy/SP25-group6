@@ -16,7 +16,7 @@ export default function LetterEditor() {
     const [title, setTitle] = useState('');
     const [background, setBackground] = useState('#ffffff');
     const [formats, setFormats] = useState([]);
-
+ 
     const handleFormat = (event, newFormats) => {
         setFormats(newFormats);
     };
@@ -66,7 +66,6 @@ export default function LetterEditor() {
         }
     };
     
-
     const getStyle = () => {
         return {
             fontWeight: formats.includes('bold') ? 'bold' : 'normal',
