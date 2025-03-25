@@ -3,6 +3,8 @@ const cors = require("cors");
 require("dotenv").config();
 const capsuleRoutes = require('./capsuleRoutes.js');
 const letterRoutes = require('./letterRoutes.js');
+const photoRoutes = require('./photoRoutes.js');
+
 
 const { MongoClient, ServerApiVersion } = require("mongodb")
 const uri = process.env.MONGO_URI
@@ -34,6 +36,7 @@ async function connectDB() {
       app.locals.db = client.db('TimesnapDB')
       app.use('/api', capsuleRoutes);
       app.use('/api', letterRoutes);
+      app.use('/api', photoRoutes);
 
 
       // const userId = addUser('Harris', 'h.s.kim@wustl.edu')
