@@ -5,6 +5,8 @@ import LetterCard from './LetterCard.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import UserContext from '../UserContext.js';
+// import PDFOverlay from '../PDFOverlay.js'; // import this at the top
+
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -117,8 +119,11 @@ export default function EditCapsule() {
         } catch (error) {
             console.error("Error sealing capsule:", error);
             alert("An error occurred. Please try again.");
-        }
+          }
     };
+    const handleDeletePdf = (pdfIdToDelete) => {
+        setPdfs(prev => prev.filter(pdf => pdf._id !== pdfIdToDelete));
+      };
 
     return (
         <>
@@ -186,27 +191,33 @@ export default function EditCapsule() {
                         )}
                     </Box>
 
-                    {/* Letters Section */}
-                    <Box
-                        component="section"
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            p: 3,
-                            borderRadius: 3,
-                            boxShadow: 3,
-                            backgroundColor: '#ffffff',
-                            width: '30%'
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                            Letters
-                        </Typography>
-                        {pdfs.map((pdf) => (
-                            <LetterCard key={pdf._id} pdfUser={pdf.metadata.userName} pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
-                        ))}
+                {/* Letters Section */}
+                <Box 
+                    component="section" 
+                    sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        p: 3, 
+                        borderRadius: 3, 
+                        boxShadow: 3, 
+                        backgroundColor: '#ffffff', 
+                        width: '30%' 
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                        Letters
+                    </Typography>
+                    {pdfs.map((pdf) => (
+                        <LetterCard
+                        key={pdf._id}
+                        pdfUser={pdf.metadata.userName}
+                        pdfId={pdf._id}
+                        pdfTitle={pdf.metadata.title}
+                        onDelete={() => handleDeletePdf(pdf._id)}
+                    />
+                    ))}
 
                         <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                             <Button
@@ -259,7 +270,6 @@ export default function EditCapsule() {
                     </Box>
                 </Box>
             </Box>
-
 
 
 
