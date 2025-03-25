@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const { GridFSBucket, ObjectId } = require('mongodb');
+const pdfParse = require('pdf-parse');
 // If you still want to protect these routes, uncomment and use your JWT middleware
 const jwt = require('jsonwebtoken'); 
 
@@ -169,5 +170,96 @@ router.get('/download-pdf/:id', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+router.get('/pdf/:id', async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
+    const objectId = new ObjectId(req.params.id);
+
+    const downloadStream = bucket.openDownloadStream(objectId);
+
+    res.set('Content-Type', 'application/pdf');
+    res.set('Content-Disposition', 'inline'); // 'attachment' for download
+    downloadStream.pipe(res);
+
+    downloadStream.on('error', (err) => {
+      console.error('Stream error:', err);
+      res.status(404).send('PDF not found.');
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error retrieving PDF.');
+  }
+});
+
+// Express route to stream PDF by its ObjectId
+router.get('/pdf/:id/preview', async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
+    const objectId = new ObjectId(req.params.id);
+
+    // Open a download stream
+    const downloadStream = bucket.openDownloadStream(objectId);
+
+    // Accumulate the PDF chunks
+    const chunks = [];
+    downloadStream.on('data', chunk => {
+      chunks.push(chunk);
+    });
+
+    downloadStream.on('end', async () => {
+      try {
+        const pdfBuffer = Buffer.concat(chunks);
+        const parsedData = await pdfParse(pdfBuffer);
+
+        // Extract first 3 lines of text
+        const previewText = parsedData.text
+          .split('\n')
+          .filter(line => line.trim() !== '')
+          .slice(0, 3)
+          .join('\n');
+
+        res.json({ previewText });
+      } catch (err) {
+        console.error('PDF parse error:', err);
+        res.status(500).send('Failed to parse PDF');
+      }
+    });
+
+    downloadStream.on('error', (err) => {
+      console.error('Stream error:', err);
+      res.status(404).send('PDF not found.');
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error retrieving PDF.');
+  }
+});
+
+router.delete('/delete-pdf/:id', async (req, res) => {
+  const db = req.app.locals.db;
+  const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
+
+  try {
+    const fileId = new ObjectId(req.params.id);
+
+    // Check if the file exists
+    const file = await db.collection('pdfs.files').findOne({ _id: fileId });
+    if (!file) {
+      return res.status(404).json({ message: "File not found." });
+    }
+
+    // Delete file and associated chunks
+    await bucket.delete(fileId);
+
+    res.status(200).json({ message: "PDF deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting PDF:", err);
+    res.status(500).json({ message: "Failed to delete PDF.", error: err.message });
+  }
+});
+
 
 module.exports = router;

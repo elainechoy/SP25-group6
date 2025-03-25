@@ -5,6 +5,8 @@ import LetterCard from './LetterCard.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import UserContext from '../UserContext.js';
+// import PDFOverlay from '../PDFOverlay.js'; // import this at the top
+
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -97,6 +99,10 @@ export default function EditCapsule() {
           }
     };
 
+    const handleDeletePdf = (pdfIdToDelete) => {
+        setPdfs(prev => prev.filter(pdf => pdf._id !== pdfIdToDelete));
+      };
+
     return (
     <>
         <AppHeader user={user}/>
@@ -182,7 +188,13 @@ export default function EditCapsule() {
                         Letters
                     </Typography>
                     {pdfs.map((pdf) => (
-                        <LetterCard key={pdf._id} pdfUser={ pdf.metadata.userName } pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
+                        <LetterCard
+                        key={pdf._id}
+                        pdfUser={pdf.metadata.userName}
+                        pdfId={pdf._id}
+                        pdfTitle={pdf.metadata.title}
+                        onDelete={() => handleDeletePdf(pdf._id)}
+                    />
                     ))}
 
                     <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
@@ -224,7 +236,6 @@ export default function EditCapsule() {
                 </Box>
             </Box>
         </Box>
-
 
 
 
