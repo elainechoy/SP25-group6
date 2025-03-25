@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+// import UserContext from './UserContext.js'
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  // const { setUser } = useContext(UserContext); useContext
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -25,6 +27,7 @@ const Dashboard = () => {
       const data = await response.json();
 
       if (data) {
+        // setUser(data);
         navigate("/home"); // Redirect to Home.js after login
       }
     } catch (error) {
