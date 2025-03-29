@@ -5,6 +5,7 @@ import LetterCard from './LetterCard.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import UserContext from '../UserContext.js';
+import PhotoCard from './PhotoCard.js';
 // import PDFOverlay from '../PDFOverlay.js'; // import this at the top
 
 
@@ -14,7 +15,6 @@ export default function EditCapsule() {
     const capsuleId = location.state?.capsuleId;
     const { user } = useContext(UserContext);
     const [images, setImages] = useState([]);
-
 
     // get capsule info
     const [capsule, setCapsule] = useState("");
@@ -119,15 +119,22 @@ export default function EditCapsule() {
         } catch (error) {
             console.error("Error sealing capsule:", error);
             alert("An error occurred. Please try again.");
-          }
+        }
     };
     const handleDeletePdf = (pdfIdToDelete) => {
         setPdfs(prev => prev.filter(pdf => pdf._id !== pdfIdToDelete));
-      };
+    };
+
+    const handleDeleteImage = (imageIdToDelete) => {
+        // Simply remove the deleted image from the local state
+        setImages(prevImages => prevImages.filter((img) => img._id !== imageIdToDelete));
+    };
+
+
 
     return (
         <>
-            <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#702b9d', color: 'white' , minHeight: '100vh' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#702b9d', color: 'white', minHeight: '100vh' }}>
 
                 <AppHeader user={user} />
 
@@ -193,47 +200,47 @@ export default function EditCapsule() {
                             )}
                         </Box>
 
-                    {/* Letters Section */}
-                    <Box 
-                        component="section" 
-                        sx={{ 
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            alignItems: 'center', 
-                            justifyContent: 'flex-start', 
-                            p: 3, 
-                            borderRadius: 3, 
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-                            backdropFilter: 'blur(20px)', // Strong blur for a glassy effect
-                            boxShadow: '0 0 50px 40px rgba(255, 255, 255, 0.05)', // Large spread shadow to fade edges
-                            width: '40%',
-                            // border: 'none',
-                            // '&::before': {
-                            //     content: '""',
-                            //     position: 'absolute',
-                            //     top: 0,
-                            //     left: 0,
-                            //     right: 0,
-                            //     bottom: 0,
-                            //     borderRadius: 3,
-                            //     background: 'inherit',
-                            //     filter: 'blur(10px)', // Blurs only the edges
-                            //     zIndex: -1, // Puts it behind the main box
-                            // }
-                        }}
-                    >
-                        {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                        {/* Letters Section */}
+                        <Box
+                            component="section"
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'flex-start',
+                                p: 3,
+                                borderRadius: 3,
+                                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                backdropFilter: 'blur(20px)', // Strong blur for a glassy effect
+                                boxShadow: '0 0 50px 40px rgba(255, 255, 255, 0.05)', // Large spread shadow to fade edges
+                                width: '40%',
+                                // border: 'none',
+                                // '&::before': {
+                                //     content: '""',
+                                //     position: 'absolute',
+                                //     top: 0,
+                                //     left: 0,
+                                //     right: 0,
+                                //     bottom: 0,
+                                //     borderRadius: 3,
+                                //     background: 'inherit',
+                                //     filter: 'blur(10px)', // Blurs only the edges
+                                //     zIndex: -1, // Puts it behind the main box
+                                // }
+                            }}
+                        >
+                            {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                             Letters
                         </Typography> */}
-                        {pdfs.map((pdf) => (
-                            <LetterCard
-                            key={pdf._id}
-                            pdfUser={pdf.metadata.userName}
-                            pdfId={pdf._id}
-                            pdfTitle={pdf.metadata.title}
-                            onDelete={() => handleDeletePdf(pdf._id)}
-                        />
-                        ))}
+                            {pdfs.map((pdf) => (
+                                <LetterCard
+                                    key={pdf._id}
+                                    pdfUser={pdf.metadata.userName}
+                                    pdfId={pdf._id}
+                                    pdfTitle={pdf.metadata.title}
+                                    onDelete={() => handleDeletePdf(pdf._id)}
+                                />
+                            ))}
 
                             <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                                 <Button
@@ -255,38 +262,43 @@ export default function EditCapsule() {
                         </Box>
 
                         {/* Images Section */}
-                        <Box 
-                            component="section" 
-                            sx={{ 
-                                p: 3, 
-                                borderRadius: 3, 
-                                backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-                                width: '40%' 
-                                }}
+                        <Box
+                            component="section"
+                            sx={{
+                                p: 3,
+                                borderRadius: 3,
+                                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                width: '40%'
+                            }}
                         >
-                            {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Images</Typography> */}
                             {images.length > 0 ? (
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                    {images.map((img, index) => (
-                                        <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography variant="body2" sx={{ mb: 1 }}>{img.title}</Typography>
-                                            <img
-                                                src={`http://localhost:5001/api/photo/${img.filename}`}
-                                                alt={img.title}
-                                                style={{ maxWidth: '100%', borderRadius: '8px', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
-                                            />
-                                        </Box>
-                                    ))}
-                                </Box>
+                                images.map((img) => (
+                                    <PhotoCard
+                                        key={img._id}
+                                        photoId={img._id}
+                                        photoTitle={img.title}
+                                        filename={img.filename}
+                                        onDelete={() => handleDeleteImage(img._id)}
+                                    />
+                                ))
                             ) : (
-                                <Typography variant="body2" sx={{ color: 'gray' }}>No images uploaded.</Typography>
+                                <Typography variant="body2" sx={{ color: 'gray' }}>
+                                    No images uploaded.
+                                </Typography>
                             )}
 
                             {/* Button to upload a photo */}
                             <Link to="/upload-photo" state={{ capsuleId }} style={{ textDecoration: 'none' }}>
                                 <Button
                                     variant="contained"
-                                    sx={{ backgroundColor: '#c95eff', color: 'white', mt: 2, borderRadius: '20px', boxShadow: 2, '&:hover': { backgroundColor: '#b14ce3' } }}
+                                    sx={{
+                                        backgroundColor: '#c95eff',
+                                        color: 'white',
+                                        mt: 2,
+                                        borderRadius: '20px',
+                                        boxShadow: 2,
+                                        '&:hover': { backgroundColor: '#b14ce3' }
+                                    }}
                                 >
                                     Upload a Photo
                                 </Button>
@@ -295,6 +307,7 @@ export default function EditCapsule() {
                     </Box>
                 </Box>
             </Box>
+
 
 
 
