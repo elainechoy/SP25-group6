@@ -88,14 +88,17 @@ const PhotoUploadForm = () => {
 
   return (
     <>
+     
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#702b9d', pt: 4 }}>
       <AppHeader user={user} />
       {/* Back Arrow Button */}
       <IconButton 
         onClick={() => navigate('/edit-capsule', { state: { capsuleId } })}
         sx={{
           position: 'absolute',
-          top: '80px',      // push it 80px down from top
+          top: '110px',      // push it 80px down from top
           left: '16px',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
         }}
       >
         <ArrowBackIosNewIcon />
@@ -125,8 +128,9 @@ const PhotoUploadForm = () => {
 
           <Button
             variant="contained"
-            sx={{ backgroundColor: '#c95eff', '&:hover': { backgroundColor: '#d98eff' } }}
+            sx={{ backgroundColor: '#c95eff', '&:hover': { backgroundColor: '#d98eff' } , borderRadius: '30px',}}
             type="submit"
+            
             disabled={uploading}
             fullWidth
           >
@@ -140,7 +144,9 @@ const PhotoUploadForm = () => {
           </Typography>
         )}
       </Paper>
+      </Box>
     </>
+    
   );
 };
 
