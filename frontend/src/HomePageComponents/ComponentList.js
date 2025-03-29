@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 function ComponentList() {
     return(
-        <Container maxWidth="lg" sx={{ border: "2px solid gray", padding: 4, minHeight: "80vh", position: "relative", backgroundColor: "#eabfff", mt: 4 }}>
+        <Container maxWidth="lg" sx={{ padding: 4, minHeight: "80vh", position: "relative", mt: 4 }}>
             {/* Top-right button */}
             <Box 
                 sx={{ 
@@ -21,11 +21,19 @@ function ComponentList() {
                         sx={{ 
                             color: 'white', 
                             width: 'auto', 
-                            backgroundColor: '#c95eff', 
-                            padding: 2 
+                            backgroundColor: '#702b9d', 
+                            paddingX: 3,
+                            paddingY: 1.5,
+                            borderRadius: 3,
+                            textTransform: 'none',
+                            fontSize: 18,
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#702b9d'
+                            }
                         }}
                     >
-                        Create Capsule
+                        Create a capsule
                     </Button>
                 </Link>
                 
