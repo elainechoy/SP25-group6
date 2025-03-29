@@ -52,8 +52,7 @@ function AppHeader( {user} ) {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            onClick={() => navigate('/home')}
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -62,6 +61,7 @@ function AppHeader( {user} ) {
               letterSpacing: '.2rem',
               color: '#af25f5',
               textDecoration: 'none',
+              cursor: 'pointer',
             }}
           >
             TIMESNAP

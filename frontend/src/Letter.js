@@ -1,12 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup, ToggleButton, IconButton } from '@mui/material';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import jsPDF from 'jspdf';
 import './LetterEditor.css';
 import AppHeader from './HomePageComponents/AppHeader';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import UserContext from './UserContext.js'
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 export default function LetterEditor() {
     const { capsuleId } = useParams();
@@ -16,7 +17,9 @@ export default function LetterEditor() {
     const [title, setTitle] = useState('');
     const [background, setBackground] = useState('#ffffff');
     const [formats, setFormats] = useState([]);
- 
+
+    const navigate = useNavigate();
+
     const handleFormat = (event, newFormats) => {
         setFormats(newFormats);
     };
@@ -33,19 +36,28 @@ export default function LetterEditor() {
             doc.setFillColor(background);
             doc.rect(0, 0, 210, 297, 'F');
             doc.setFontSize(12);
-            if (formats.includes('bold')) doc.setFont(undefined, 'bold');
-            if (formats.includes('italic')) doc.setFont(undefined, 'italic');
-    
+            // Always set a default font first:
+            doc.setFont('helvetica', 'normal');
+
+            // If the user selected bold or italic, adjust:
+            if (formats.includes('bold') && formats.includes('italic')) {
+                doc.setFont('helvetica', 'bolditalic');
+            } else if (formats.includes('bold')) {
+                doc.setFont('helvetica', 'bold');
+            } else if (formats.includes('italic')) {
+                doc.setFont('helvetica', 'italic');
+            }
+
             const lines = doc.splitTextToSize(formattedText, 180);
             doc.text(lines, 10, 20);
-    
+
             const pdfBlob = doc.output('blob');
             const formData = new FormData();
             formData.append('file', pdfBlob, `${title || 'letter'}.pdf`);
             formData.append('title', title);
             formData.append('capsuleId', capsuleId);
             console.log("capsule id " + capsuleId)
-    
+
             const response = await fetch('http://localhost:5001/api/upload-pdf', {
                 method: "POST",
                 headers: {
@@ -65,7 +77,7 @@ export default function LetterEditor() {
             alert('Error uploading PDF');
         }
     };
-    
+
     const getStyle = () => {
         return {
             fontWeight: formats.includes('bold') ? 'bold' : 'normal',
@@ -84,79 +96,90 @@ export default function LetterEditor() {
 
     return (
         <>
-         <AppHeader user={user}/>
-      
-        <Box className="letter-editor-container" sx={{ backgroundColor: "#702b9d" }}>
-           
-        <Box  className="letter-editor-box" sx={{ p: 3, maxWidth: '800px', mx: 'auto' }}>
-            <Typography variant="h4" color="#702b9d" gutterBottom>Write Your Letter</Typography>
-
-            <TextField
-                fullWidth
-                label="Title"
-                variant="outlined"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                sx={{ mb: 2 }}
-            />
-
-            <Box display="flex" gap={2} alignItems="center" mb={2}>
-                <ToggleButtonGroup
-                    value={formats}
-                    onChange={handleFormat}
-                    aria-label="text formatting"
-                    size="small"
-                >
-                    <ToggleButton value="bold" aria-label="bold">
-                        <FormatBoldIcon />
-                    </ToggleButton>
-                    <ToggleButton value="italic" aria-label="italic">
-                        <FormatItalicIcon />
-                    </ToggleButton>
-                </ToggleButtonGroup>
-
-                <Select
-                    value={background}
-                    onChange={(e) => setBackground(e.target.value)}
-                    displayEmpty
-                    size="small"
-                >
-                    <MenuItem value="#ffffff">White</MenuItem>
-                    <MenuItem value="#f0f0f0">Light Grey</MenuItem>
-                    <MenuItem value="#fff99c">Yellow</MenuItem>
-                    <MenuItem value="#c8e6c9">Green</MenuItem>
-                    <MenuItem value="#bbdefb">Blue</MenuItem>
-                    <MenuItem value="#eabfff">Purple</MenuItem>
-                    <MenuItem value="#ffc3ec">Pink</MenuItem>
-                </Select>
-            </Box>
-
-            <textarea
-                style={getStyle()}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Start typing your letter here..."
-            />
-
-            <Button
-                variant="contained"
-                //color="primary"
-                fullWidth
-                onClick={generatePDFAndSubmit}
+            <AppHeader user={user} />
+            <IconButton
+                onClick={() => navigate('/edit-capsule', { state: { capsuleId } })}
                 sx={{
-                    backgroundColor: '#702b9d',
-                    color: 'white',
-                    paddingX: 3,
-                    paddingY: 1.5,
-                    borderRadius: 5,
-                    textTransform: 'none',
-                    fontSize: 17,
-                  }}
+                    position: 'absolute',
+                    top: '80px',
+                    left: '16px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                }}
             >
-                Save your letter to the capsule
-            </Button>
-        </Box>
-        </Box>
+                <ArrowBackIosNewIcon />
+            </IconButton>
+
+            <Box className="letter-editor-container" sx={{ backgroundColor: "#702b9d" }}>
+
+                <Box className="letter-editor-box" sx={{ p: 3, maxWidth: '800px', mx: 'auto' }}>
+                    <Typography variant="h4" color="#702b9d" gutterBottom>Write Your Letter</Typography>
+
+                    <TextField
+                        fullWidth
+                        label="Title"
+                        variant="outlined"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <Box display="flex" gap={2} alignItems="center" mb={2}>
+                        <ToggleButtonGroup
+                            value={formats}
+                            onChange={handleFormat}
+                            aria-label="text formatting"
+                            size="small"
+                        >
+                            <ToggleButton value="bold" aria-label="bold">
+                                <FormatBoldIcon />
+                            </ToggleButton>
+                            <ToggleButton value="italic" aria-label="italic">
+                                <FormatItalicIcon />
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+
+                        <Select
+                            value={background}
+                            onChange={(e) => setBackground(e.target.value)}
+                            displayEmpty
+                            size="small"
+                        >
+                            <MenuItem value="#ffffff">White</MenuItem>
+                            <MenuItem value="#f0f0f0">Light Grey</MenuItem>
+                            <MenuItem value="#fff99c">Yellow</MenuItem>
+                            <MenuItem value="#c8e6c9">Green</MenuItem>
+                            <MenuItem value="#bbdefb">Blue</MenuItem>
+                            <MenuItem value="#eabfff">Purple</MenuItem>
+                            <MenuItem value="#ffc3ec">Pink</MenuItem>
+                        </Select>
+                    </Box>
+
+                    <textarea
+                        style={getStyle()}
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder="Start typing your letter here..."
+                    />
+
+                    <Button
+                        variant="contained"
+                        //color="primary"
+                        fullWidth
+                        onClick={generatePDFAndSubmit}
+                        sx={{
+                            backgroundColor: '#702b9d',
+                            color: 'white',
+                            paddingX: 3,
+                            paddingY: 1.5,
+                            borderRadius: 5,
+                            textTransform: 'none',
+                            fontSize: 17,
+                        }}
+                    >
+                        Save your letter to the capsule
+                    </Button>
+                </Box>
+            </Box>
         </>
     );
 }
