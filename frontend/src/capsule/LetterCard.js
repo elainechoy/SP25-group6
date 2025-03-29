@@ -115,27 +115,29 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
         <Box sx={{ position: "absolute", bottom: 30, width: "50%", height: "3px", backgroundColor: "white", zIndex: 0 }} />
 
         {/* Close button (not for the overlay) */}
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation();
-            // Optional: add a delete handler here
-            handleDelete()
-          }}
-          sx={{
-            position: "absolute",
-            bottom: 5,
-            right: 5,
-            color: "black",
-            backgroundColor: "rgba(255,255,255,0.7)",
-            borderRadius: "50%",
-            width: "24px",
-            height: "24px",
-            zIndex: 3,
-            "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" }
-          }}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
+        {onDelete && (
+                <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Optional: add a delete handler here
+                  handleDelete()
+                }}
+                sx={{
+                  position: "absolute",
+                  bottom: 5,
+                  right: 5,
+                  color: "black",
+                  backgroundColor: "rgba(255,255,255,0.7)",
+                  borderRadius: "50%",
+                  width: "24px",
+                  height: "24px",
+                  zIndex: 3,
+                  "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" }
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+        )}
         {/* PDF Overlay */}
       </Box>
     </>

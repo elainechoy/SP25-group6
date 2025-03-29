@@ -11,6 +11,9 @@ import PropTypes from 'prop-types';
 // Configure worker
 // pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
+//look at this to try pdfjs worker
+//https://stackoverflow.com/questions/65740268/create-react-app-how-to-copy-pdf-worker-js-file-from-pdfjs-dist-build-to-your
+
 
 const PDFOverlay = ({ pdfUrl, onClose }) => {
   return (

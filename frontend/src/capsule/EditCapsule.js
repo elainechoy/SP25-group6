@@ -200,47 +200,56 @@ export default function EditCapsule() {
                             )}
                         </Box>
 
-                        {/* Letters Section */}
-                        <Box
-                            component="section"
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'flex-start',
-                                p: 3,
-                                borderRadius: 3,
-                                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                backdropFilter: 'blur(20px)', // Strong blur for a glassy effect
-                                boxShadow: '0 0 50px 40px rgba(255, 255, 255, 0.05)', // Large spread shadow to fade edges
-                                width: '40%',
-                                // border: 'none',
-                                // '&::before': {
-                                //     content: '""',
-                                //     position: 'absolute',
-                                //     top: 0,
-                                //     left: 0,
-                                //     right: 0,
-                                //     bottom: 0,
-                                //     borderRadius: 3,
-                                //     background: 'inherit',
-                                //     filter: 'blur(10px)', // Blurs only the edges
-                                //     zIndex: -1, // Puts it behind the main box
-                                // }
-                            }}
-                        >
-                            {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+ {/* Letters Section */}
+ <Box 
+                        component="section" 
+                        sx={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center', 
+                            justifyContent: 'flex-start', 
+                            p: 3, 
+                            borderRadius: 3, 
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                            backdropFilter: 'blur(20px)', // Strong blur for a glassy effect
+                            boxShadow: '0 0 50px 40px rgba(255, 255, 255, 0.05)', // Large spread shadow to fade edges
+                            width: '40%',
+                            // border: 'none',
+                            // '&::before': {
+                            //     content: '""',
+                            //     position: 'absolute',
+                            //     top: 0,
+                            //     left: 0,
+                            //     right: 0,
+                            //     bottom: 0,
+                            //     borderRadius: 3,
+                            //     background: 'inherit',
+                            //     filter: 'blur(10px)', // Blurs only the edges
+                            //     zIndex: -1, // Puts it behind the main box
+                            // }
+                        }}
+                    >
+                        {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                             Letters
                         </Typography> */}
-                            {pdfs.map((pdf) => (
-                                <LetterCard
-                                    key={pdf._id}
-                                    pdfUser={pdf.metadata.userName}
-                                    pdfId={pdf._id}
-                                    pdfTitle={pdf.metadata.title}
-                                    onDelete={() => handleDeletePdf(pdf._id)}
-                                />
-                            ))}
+                    {pdfs.length === 0 ? (
+                    <Typography
+                        variant="body2"
+                        sx={{ textAlign: 'center', mt: 4, fontStyle: 'italic', color: 'gray' }}
+                    >
+                        No letters found. Start by uploading a PDF.
+                    </Typography>
+                    ) : (
+                    pdfs.map((pdf) => (
+                        <LetterCard
+                        key={pdf._id}
+                        pdfUser={pdf.metadata.userName}
+                        pdfId={pdf._id}
+                        pdfTitle={pdf.metadata.title}
+                        onDelete={() => handleDeletePdf(pdf._id)}
+                    />
+                    ))
+                    )}
 
                             <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                                 <Button
