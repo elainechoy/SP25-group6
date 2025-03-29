@@ -97,137 +97,129 @@ export default function EditCapsule() {
 
     return (
     <>
-        <AppHeader />
+        <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#702b9d', color: 'white' , minHeight: '100vh' }}>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, m: 4 }}>
+            <AppHeader />
+    
+            <Box sx={{ gap: 3, m: 4 }}>
 
-            {/* Capsule Name and Seal Capsule Button */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                    {capsule.title || "Capsule Name"}
-                </Typography>
-                <Button 
-                    variant="contained" 
-                    sx={{
-                        backgroundColor: '#c95eff',
-                        color: 'white',
-                        borderRadius: '20px',
-                        boxShadow: 2,
-                        '&:hover': {
-                            backgroundColor: '#b14ce3'
-                        }
-                    }}
-                    onClick={sealCapsule}
-                >
-                    Seal Capsule
-                </Button>
-            </Box>
-
-            {/* Main Content Area */}
-            <Box sx={{ display: 'flex', gap: 3 }}>
-                {/* Capsule Details */}
-                <Box 
-                    component="section" 
-                    sx={{ 
-                        p: 3, 
-                        borderRadius: 3, 
-                        boxShadow: 3, 
-                        backgroundColor: '#ffffff', 
-                        width: '30%' 
-                    }}
-                >
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                        Description
+                {/* Capsule Name and Seal Capsule Button */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {capsule.title || "Capsule Name"}
                     </Typography>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                        {capsule.description || "No description available."}
-                    </Typography>
+                    <Button 
+                        sx={{
+                            backgroundColor: '#fbf2ff',
+                            color: '#702b9d',
+                            paddingX: 3,
+                            paddingY: 1.5,
+                            borderRadius: 5,
+                            boxShadow: 2,
+                            textTransform: 'none',
+                            fontSize: 18,
+                        }}
+                        onClick={sealCapsule}
+                    >
+                        Seal Capsule
+                    </Button>
+                </Box>
 
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                        Shared With:
-                    </Typography>
-                    {capsule.members && capsule.members.length > 0 ? (
-                        <Box component="ul" sx={{ pl: 2 }}>
-                            {capsule.members.map((member, index) => (
-                                <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
-                                    {member}
-                                </Typography>
-                            ))}
-                        </Box>
-                    ) : (
-                        <Typography variant="body2" sx={{ color: 'gray' }}>
-                            No members listed.
+                {/* Main Content Area */}
+                <Box sx={{ display: 'flex', gap: 3 }}>
+                    {/* Capsule Details */}
+                    <Box 
+                        component="section" 
+                        sx={{ 
+                            p: 3, 
+                            borderRadius: 3, 
+                            backgroundColor: '#702b9d', 
+                            color: 'white', 
+                            width: '20%' 
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                            Description
                         </Typography>
-                    )}
-                </Box>
+                        <Typography variant="body1" sx={{ mb: 2 }}>
+                            {capsule.description || "No description available."}
+                        </Typography>
 
-                {/* Letters Section */}
-                <Box 
-                    component="section" 
-                    sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        p: 3, 
-                        borderRadius: 3, 
-                        boxShadow: 3, 
-                        backgroundColor: '#ffffff', 
-                        width: '30%' 
-                    }}
-                >
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                        Letters
-                    </Typography>
-                    {pdfs.map((pdf) => (
-                        <LetterCard key={pdf._id} pdfUser={ pdf.metadata.userName } pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
-                    ))}
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                            Shared With:
+                        </Typography>
+                        {capsule.members && capsule.members.length > 0 ? (
+                            <Box component="ul" sx={{ pl: 2 }}>
+                                {capsule.members.map((member, index) => (
+                                    <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
+                                        {member}
+                                    </Typography>
+                                ))}
+                            </Box>
+                        ) : (
+                            <Typography variant="body2" sx={{ color: 'gray' }}>
+                                No members listed.
+                            </Typography>
+                        )}
+                    </Box>
 
-                    <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
-                        <Button 
-                            variant="contained"
-                            sx={{ 
-                                backgroundColor: '#c95eff', 
-                                color: 'white', 
-                                mt: 2,
-                                borderRadius: '20px',
-                                boxShadow: 2,
-                                '&:hover': {
-                                    backgroundColor: '#b14ce3'
-                                }
-                            }}
-                        >
-                            Write a Letter
-                        </Button>
-                    </Link>
-                </Box>
+                    {/* Letters Section */}
+                    <Box 
+                        component="section" 
+                        sx={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            p: 3, 
+                            borderRadius: 3, 
+                            backgroundColor: '#702b9d', 
+                            color: 'white', 
+                            width: '40%' 
+                        }}
+                    >
+                        {pdfs.map((pdf) => (
+                            <LetterCard key={pdf._id} pdfUser={ pdf.metadata.userName } pdfId={pdf._id.toString()} pdfTitle={pdf.metadata.title} />
+                        ))}
 
-                {/* Images Section */}
-                <Box 
-                    component="section" 
-                    sx={{ 
-                        p: 3, 
-                        borderRadius: 3, 
-                        boxShadow: 3, 
-                        backgroundColor: '#ffffff', 
-                        width: '30%' 
-                    }}
-                >
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                        Images
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'gray' }}>
-                        This box is for displaying images
-                    </Typography>
+                        <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
+                            <Button 
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#fbf2ff',
+                                    color: '#702b9d',
+                                    paddingX: 3,
+                                    paddingY: 1.5,
+                                    borderRadius: 5,
+                                    boxShadow: 2,
+                                    textTransform: 'none',
+                                    fontSize: 18,
+                                }}
+                            >
+                                Write a Letter
+                            </Button>
+                        </Link>
+                    </Box>
+
+                    {/* Images Section */}
+                    <Box 
+                        component="section" 
+                        sx={{ 
+                            p: 3, 
+                            borderRadius: 3, 
+                            backgroundColor: '#702b9d', 
+                            color: 'white', 
+                            width: '40%' 
+                        }}
+                    >
+                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                            This box is for displaying images
+                        </Typography>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
 
-
-
-
-
-
+        </Box>            
     </>
   );
 }

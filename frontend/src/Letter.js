@@ -85,10 +85,10 @@ export default function LetterEditor() {
         <>
          <AppHeader />
       
-        <Box className="letter-editor-container">
+        <Box className="letter-editor-container" sx={{ backgroundColor: "#702b9d" }}>
            
         <Box  className="letter-editor-box" sx={{ p: 3, maxWidth: '800px', mx: 'auto' }}>
-            <Typography variant="h4" gutterBottom>Write Your Letter</Typography>
+            <Typography variant="h4" color="#702b9d" gutterBottom>Write Your Letter</Typography>
 
             <TextField
                 fullWidth
@@ -142,9 +142,17 @@ export default function LetterEditor() {
                 //color="primary"
                 fullWidth
                 onClick={generatePDFAndSubmit}
-                sx={{ mt: 2,  backgroundColor: '#c95eff', '&:hover': { backgroundColor: '#d98eff'}}}
+                sx={{
+                    backgroundColor: '#702b9d',
+                    color: 'white',
+                    paddingX: 3,
+                    paddingY: 1.5,
+                    borderRadius: 5,
+                    textTransform: 'none',
+                    fontSize: 17,
+                  }}
             >
-                Submit Letter to Database
+                Save your letter to the capsule
             </Button>
         </Box>
         </Box>

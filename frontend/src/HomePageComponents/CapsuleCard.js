@@ -69,8 +69,17 @@ export default function CapsuleCard() {
                             <ButtonBase
                                 key={index}
                                 onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
-                                sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}
-                            >
+                                sx={{ 
+                                    width: "100%", 
+                                    display: "block", 
+                                    textAlign: "left", 
+                                    borderRadius: 3,
+                                    transition: "all 0.2s ease-in-out", // Smooth transition
+                                    '&:active': { 
+                                        transform: "scale(0.97)", // Slight shrink effect when clicked
+                                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" // Slightly stronger shadow
+                                    }
+                                }}                            >
                                 <Card
                                     sx={{
                                         minWidth: 300,
@@ -92,7 +101,7 @@ export default function CapsuleCard() {
                                         <Typography variant="h5" sx={{ paddingTop: 4, fontWeight: "bold", marginTop: 1 }}>
                                             {capsule.title || "Users Capsule"}
                                         </Typography>
-                                        <Typography variant="body2" sx={{ marginTop: 3, color: "black" }}>
+                                        <Typography variant="body1" sx={{ marginTop: 3, color: "black" }}>
                                             Open in
                                         </Typography>
                                         <Typography variant="h6" sx={{ paddingTop: 1, color: "red"}}>
@@ -107,8 +116,17 @@ export default function CapsuleCard() {
                             <ButtonBase
                                 key={index}
                                 onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
-                                sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}
-                            >
+                                sx={{ 
+                                    width: "100%", 
+                                    display: "block", 
+                                    textAlign: "left", 
+                                    borderRadius: 3,
+                                    // transition: "transform 1s ease-in-out", // Smooth zoom transition
+                                    // '&:active': { 
+                                    //     transform: "scale(0.97)", // Slight shrink effect when clicked
+                                    //     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" // Slightly stronger shadow
+                                    // }
+                                }}                                >
                                 <Card
                                     sx={{
                                         minWidth: 300,
@@ -117,7 +135,13 @@ export default function CapsuleCard() {
                                         padding: 2,
                                         backgroundColor: "white",
                                         transition: "0.3s",
-                                        "&:hover": { boxShadow: 6, backgroundColor: "#f5f5f5" }
+                                        "&:hover": { boxShadow: 6, backgroundColor: "#f5f5f5" },
+                                        // '&.clicked': {
+                                        //     // Add a custom animation to simulate opening
+                                        //     transform: "scale(1.05)", // Slight expansion
+                                        //     opacity: 0.3, // Slight fade effect
+                                        //     transition: "transform 10s, opacity 10s", // Smooth transition
+                                        // }
                                     }}
                                 >
                                     <CardContent sx={{ textAlign: "center" }}>
@@ -139,8 +163,16 @@ export default function CapsuleCard() {
                         <ButtonBase
                             key={index}
                             onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
-                            sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}
-                        >
+                            sx={{ 
+                                width: "100%", 
+                                display: "block", 
+                                textAlign: "left", 
+                                borderRadius: 3,
+                                '&:active': { 
+                                    transform: "scale(0.97)", // Slight shrink effect when clicked
+                                    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" // Slightly stronger shadow
+                                }
+                            }}                            >
                             <Card
                                 sx={{
                                     minWidth: 300,
@@ -161,7 +193,7 @@ export default function CapsuleCard() {
                                     <Typography variant="body1" sx={{ marginTop: 3, color: "black" }}>
                                         from
                                     </Typography>
-                                    <Typography variant="body1" sx={{ paddingTop: 1, color: "blue" }}>
+                                    <Typography variant="h6" sx={{ paddingTop: 1, color: "#702b9d" }}>
                                         {creationDate}
                                     </Typography>
                                 </CardContent>
