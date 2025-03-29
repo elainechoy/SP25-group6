@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { Box, Button, TextField, Typography, Input, Paper, CircularProgress } from '@mui/material';
+import { Box, Button, TextField, Typography, Input, Paper, CircularProgress, IconButton } from '@mui/material';
 import AppHeader from '../HomePageComponents/AppHeader.js';
 //import { useParams } from 'react-router-dom';
 import UserContext from '../UserContext.js';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const PhotoUploadForm = () => {
   const location = useLocation();
@@ -16,6 +17,8 @@ const PhotoUploadForm = () => {
  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
+  const navigate = useNavigate();
+
   const handleFileChange = (e) => {
     setPhoto(e.target.files[0]);
   };
@@ -25,12 +28,12 @@ const PhotoUploadForm = () => {
     setUploading(true);
 
     if (!title || !photo) {
-      setMessage('Please provide both title and JPG photo.');
+      setMessage('Please provide both title and photo.');
       return;
     }
 
-    if (!photo.type.includes('jpeg') && !photo.type.includes('jpg')) {
-      setMessage('Only JPG files are allowed.');
+    if (!photo.type.includes('jpeg') && !photo.type.includes('jpg') && !photo.type.includes('png')) {
+      setMessage('Only JPG and PNG files are allowed.');
       return;
     }
 
@@ -42,19 +45,64 @@ const PhotoUploadForm = () => {
     console.log('capsuleId:', capsuleId);
     console.log('photo:', photo);
 
-    await fetch("http://localhost:5001/api/upload-photo", {
-      method: "POST",
-      body: formData
-    });
-    setUploading(false);
+    // await fetch("http://localhost:5001/api/upload-photo", {
+    //   method: "POST",
+    //   body: formData
+    // });
+    // setUploading(false);
+    try {
+      // Send to backend
+      const response = await fetch("http://localhost:5001/api/upload-photo", {
+        method: "POST",
+        body: formData
+      });
+  
+      setUploading(false);
+  
+      if (!response.ok) {
+        // If server responded with an error, parse message if available
+        const errorText = await response.text();
+        setMessage(errorText || 'Upload failed. Please try again.');
+        return;
+      }
+  
+      // If response is OK (status 200)
+      // You could do a toast, alert, or just setMessage
+      // For example, show a success alert:
+      alert('Photo uploaded successfully!');
+  
+      // Or, set your success message:
+      // setMessage('Photo uploaded successfully!');
+  
+      // Optionally, reset form
+      setTitle('');
+      setPhoto(null);
+  
+    } catch (err) {
+      console.error("Upload error:", err);
+      setMessage('Error uploading photo. Please try again.');
+      setUploading(false);
+    }
   };
+  
 
   return (
     <>
       <AppHeader user={user} />
+      {/* Back Arrow Button */}
+      <IconButton 
+        onClick={() => navigate('/edit-capsule', { state: { capsuleId } })}
+        sx={{
+          position: 'absolute',
+          top: '80px',      // push it 80px down from top
+          left: '16px',
+        }}
+      >
+        <ArrowBackIosNewIcon />
+      </IconButton>
       <Paper elevation={3} sx={{ p: 4, maxWidth: 500, mx: 'auto', mt: 6 }}>
         <Typography variant="h5" gutterBottom>
-          Upload a JPG Photo
+          Upload a JPG or PNG Photo
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <TextField
@@ -69,7 +117,7 @@ const PhotoUploadForm = () => {
 
           <Input
             type="file"
-            inputProps={{ accept: '.jpg,.jpeg' }}
+            inputProps={{ accept: '.jpg,.jpeg,.png' }}
             onChange={handleFileChange}
             required
             sx={{ my: 2 }}

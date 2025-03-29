@@ -23,8 +23,8 @@ router.post('/upload-photo', upload.single('photo'), async (req, res) => {
     }
     // Optional: check extension if you want to allow only .jpg/.jpeg
     const ext = req.file.originalname.split('.').pop().toLowerCase();
-    if (!['jpg', 'jpeg'].includes(ext)) {
-      return res.status(400).send("Only .jpg or .jpeg files are allowed.");
+    if (!['jpg', 'jpeg','png'].includes(ext)) {
+      return res.status(400).send("Only .jpg or .jpeg or .png files are allowed.");
     }
 
     // If you want capsuleId as an ObjectId
@@ -112,6 +112,34 @@ router.get('/get-photos-by-capsule/:capsuleId', async (req, res) => {
   } catch (error) {
     console.error("Error fetching photos:", error);
     res.status(500).send("Failed to fetch photos");
+  }
+});
+
+router.delete("/delete-photo/:id", async (req, res) => {
+  const db = req.app.locals.db;
+  const bucket = new GridFSBucket(db, { bucketName: "photoUploads" });
+
+  try {
+    // Convert route param to ObjectId
+    const photoId = new ObjectId(req.params.id);
+
+    // 1) Find the photo metadata in 'photos' collection
+    const photoDoc = await db.collection("photos").findOne({ _id: photoId });
+    if (!photoDoc) {
+      return res.status(404).json({ message: "Photo not found." });
+    }
+
+    // 2) Delete the file from GridFS
+    //    The stored file's ObjectId is in photoDoc.fileId
+    await bucket.delete(photoDoc.fileId);
+
+    // 3) Remove the metadata document from 'photos' collection
+    await db.collection("photos").deleteOne({ _id: photoId });
+
+    return res.status(200).json({ message: "Photo deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting photo:", err);
+    return res.status(500).json({ message: "Failed to delete photo.", error: err.message });
   }
 });
 
