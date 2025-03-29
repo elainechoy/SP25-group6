@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -6,15 +6,17 @@ import jsPDF from 'jspdf';
 import './LetterEditor.css';
 import AppHeader from './HomePageComponents/AppHeader';
 import { useParams } from 'react-router-dom';
+import UserContext from './UserContext.js'
 
 export default function LetterEditor() {
     const { capsuleId } = useParams();
+    const { user } = useContext(UserContext);
 
     const [text, setText] = useState('');
     const [title, setTitle] = useState('');
     const [background, setBackground] = useState('#ffffff');
     const [formats, setFormats] = useState([]);
-
+ 
     const handleFormat = (event, newFormats) => {
         setFormats(newFormats);
     };
@@ -64,7 +66,6 @@ export default function LetterEditor() {
         }
     };
     
-
     const getStyle = () => {
         return {
             fontWeight: formats.includes('bold') ? 'bold' : 'normal',
@@ -83,7 +84,7 @@ export default function LetterEditor() {
 
     return (
         <>
-         <AppHeader />
+         <AppHeader user={user}/>
       
         <Box className="letter-editor-container" sx={{ backgroundColor: "#702b9d" }}>
            
