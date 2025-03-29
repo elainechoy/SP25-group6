@@ -38,7 +38,6 @@ async function connectDB() {
       app.use('/api', letterRoutes);
       app.use('/api', photoRoutes);
 
-
       // const userId = addUser('Harris', 'h.s.kim@wustl.edu')
       // console.log("Added user with ID:", userId);
       // const user = retriveUserById()
@@ -130,31 +129,6 @@ async function generatePDF(content) {
 
     doc.end();
   });
-}
-
-//need to make it so you use gridfs
-async function createCapsule(userId, title, fileContent, timeLimit) {
-  try {
-    const capsules = app.locals.db.collection("capsules");
-    if(!capsules) throw new Error("the database not connected");
-
-    const pdfBuffer = await generatePDF(fileContent);
-
-    const newCapsule = {
-      userId,
-      title,
-      fileContent: pdfBuffer,
-      timeLimit,
-      sharedWith: [],
-      createdAt: new Date()
-    }
-
-    const result = await capsules.insertOne(newCapsule);
-    console.log("added capsule to database with ID: ", result.insertedId);
-    return result.insertedId;
-  } catch (error) {
-    console.error("Error adding the capsule: ", error);
-  }
 }
 
 async function retrieveUserCapsules(userId) {

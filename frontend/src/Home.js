@@ -11,8 +11,9 @@ function Home() {
     }
 
     return(
-        <div style={{ backgroundColor: "#fbf2ff", minHeight: '100vh' }}>
+        <div style={{ backgroundColor: "#702b9d", minHeight: '100vh' }}>
             <AppHeader user={user}/>
+
             <ComponentList />
         </div>
     )

@@ -1,5 +1,6 @@
 .letter-editor-container {
-    background-image: url('./joshua-bartell-6vvIBTvL90A-unsplash.jpg'); /* Replace with your image */
+    /* background-image: url('./joshua-bartell-6vvIBTvL90A-unsplash.jpg'); Replace with your image */
+    background-color: "#702b9d";
     background-size: cover;
     background-position: center;
     min-height: 100vh;
