@@ -51,7 +51,8 @@ function PhotoCard({ photoId, photoTitle, filename, onDelete }) {
         variant="h6"
         sx={{
           textAlign: "center",
-          mb: 1
+          mb: 1,
+          color: "black"
         }}
       >
         {photoTitle || "Untitled Photo"}

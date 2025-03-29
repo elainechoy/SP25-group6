@@ -271,27 +271,34 @@ export default function EditCapsule() {
                                 width: '40%'
                             }}
                         >
-                            {images.map((img) => (
-                                <PhotoCard
-                                    key={img._id}
-                                    photoId={img._id}
-                                    photoTitle={img.title}
-                                    filename={img.filename}
-                                    // Here’s the callback for removing it from the UI
-                                    onDelete={() => handleDeleteImage(img._id)}
-                                />
-                            ))}
-                        </Box>
-                        
+                            {images.length > 0 ? (
+                                images.map((img) => (
+                                    <PhotoCard
+                                        key={img._id}
+                                        photoId={img._id}
+                                        photoTitle={img.title}
+                                        filename={img.filename}
+                                        onDelete={() => handleDeleteImage(img._id)}
+                                    />
+                                ))
                             ) : (
-                                <Typography variant="body2" sx={{ color: 'gray' }}>No images uploaded.</Typography>
+                                <Typography variant="body2" sx={{ color: 'gray' }}>
+                                    No images uploaded.
+                                </Typography>
                             )}
 
                             {/* Button to upload a photo */}
                             <Link to="/upload-photo" state={{ capsuleId }} style={{ textDecoration: 'none' }}>
                                 <Button
                                     variant="contained"
-                                    sx={{ backgroundColor: '#c95eff', color: 'white', mt: 2, borderRadius: '20px', boxShadow: 2, '&:hover': { backgroundColor: '#b14ce3' } }}
+                                    sx={{
+                                        backgroundColor: '#c95eff',
+                                        color: 'white',
+                                        mt: 2,
+                                        borderRadius: '20px',
+                                        boxShadow: 2,
+                                        '&:hover': { backgroundColor: '#b14ce3' }
+                                    }}
                                 >
                                     Upload a Photo
                                 </Button>
@@ -299,12 +306,13 @@ export default function EditCapsule() {
                         </Box>
                     </Box>
                 </Box>
+            </Box>
 
 
 
 
 
 
-            </>
-            );
+        </>
+    );
 }
