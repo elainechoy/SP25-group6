@@ -14,10 +14,22 @@ export default function CapsuleCard() {
 
     React.useEffect(() => {
         const fetchCapsules = async () => {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                alert("User not authenticated");
+                return;
+            }
             try {
-                const response = await fetch('http://localhost:5001/api/get_all_capsules');
+                const response = await fetch('http://localhost:5001/api/get_all_capsules', {
+                    method: "GET",
+                    headers: {
+                     'Content-Type': 'application/json',
+                      Authorization: `Bearer ${token}`, // Send token for authentication
+                    },
+                });
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Network response was not ok');
                 }
                 const data = await response.json();
                 setCapsules(data);
@@ -86,9 +98,8 @@ export default function CapsuleCard() {
                                         borderRadius: 3,
                                         boxShadow: 3,
                                         padding: 2,
-                                        backgroundColor: "white",
+                                        backgroundColor: "#ffffff",
                                         transition: "0.3s",
-                                        "&:hover": { boxShadow: 6, backgroundColor: "#f5f5f5" }
                                     }}
                                 >
                                     <CardContent sx={{ textAlign: "center" }}>
@@ -121,27 +132,18 @@ export default function CapsuleCard() {
                                     display: "block", 
                                     textAlign: "left", 
                                     borderRadius: 3,
-                                    // transition: "transform 1s ease-in-out", // Smooth zoom transition
-                                    // '&:active': { 
-                                    //     transform: "scale(0.97)", // Slight shrink effect when clicked
-                                    //     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" // Slightly stronger shadow
-                                    // }
                                 }}                                >
                                 <Card
                                     sx={{
                                         minWidth: 300,
                                         borderRadius: 3,
-                                        boxShadow: 3,
                                         padding: 2,
-                                        backgroundColor: "white",
                                         transition: "0.3s",
                                         "&:hover": { boxShadow: 6, backgroundColor: "#f5f5f5" },
-                                        // '&.clicked': {
-                                        //     // Add a custom animation to simulate opening
-                                        //     transform: "scale(1.05)", // Slight expansion
-                                        //     opacity: 0.3, // Slight fade effect
-                                        //     transition: "transform 10s, opacity 10s", // Smooth transition
-                                        // }
+                                        backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                                        backdropFilter: 'blur(20px)',
+                                        boxShadow: '0 0 50px 40px rgba(255, 255, 255, 0.05)',
+                                        width: '40%',
                                     }}
                                 >
                                     <CardContent sx={{ textAlign: "center" }}>
@@ -179,9 +181,8 @@ export default function CapsuleCard() {
                                     borderRadius: 3,
                                     boxShadow: 3,
                                     padding: 2,
-                                    backgroundColor: "white",
+                                    backgroundColor: "#ffffff",
                                     transition: "0.3s",
-                                    "&:hover": { boxShadow: 6, backgroundColor: "#f5f5f5" }
                                 }}
                             >
                                 <CardContent sx={{ textAlign: "center" }}>
