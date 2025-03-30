@@ -11,6 +11,7 @@ function Profile() {
             
             <div>
                 Welcome, {user.name}! email: {user.email} We will work on this page later 
+                {user.friends} and {user.capsules}
             </div>
         )
     }
