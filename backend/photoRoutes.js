@@ -2,6 +2,7 @@
 const express = require("express");
 const multer = require("multer");
 const { ObjectId, GridFSBucket } = require("mongodb");
+const jwt = require('jsonwebtoken'); 
 
 const router = express.Router();
 
@@ -9,7 +10,18 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post('/upload-photo', upload.single('photo'), async (req, res) => {
+const authenticateJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Forbidden" });
+    req.user = user;
+    next();
+  });
+};
+
+router.post('/upload-photo', authenticateJWT, upload.single('photo'), async (req, res) => {
   try {
     const db = req.app.locals.db;
     const bucket = new GridFSBucket(db, { bucketName: 'photoUploads' });
