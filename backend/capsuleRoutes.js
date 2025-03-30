@@ -1,10 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const { ObjectId } = require('mongodb');
+// const { authenticateJWT } = require('./server')
+
+const jwt = require('jsonwebtoken');
+
+// a copy of authenticateJWY
+const authenticateJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Forbidden" });
+    req.user = user;
+    next();
+  });
+};
 
 // create the capsule route
-router.post('/create_capsule', async (req, res) => {
-  const { title, description, unlockDate, members } = req.body;
+router.post('/create_capsule', authenticateJWT, async (req, res) => {
+  let { title, description, unlockDate, members } = req.body;
   if (!title || !description || !unlockDate) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
@@ -14,6 +29,11 @@ router.post('/create_capsule', async (req, res) => {
   const usersCollection = db.collection("users")
 
   try {
+    // Include the creator to the members
+    if (!members.includes(req.user.email)) {
+      members.push(req.user.email);
+    }
+
     // Check if all emails in the members array exist in the users collection
     const userEmails = await usersCollection.find({ email: { $in: members } }).toArray();
     const existingEmails = userEmails.map(user => user.email);
@@ -54,51 +74,31 @@ router.post('/create_capsule', async (req, res) => {
 });
 
 
-// // get all capsules route
-// router.get('/get_all_capsules', async (req, res) => {
-//   try {
-//     const db = req.app.locals.db;
-//     const capsulesCollection = db.collection("capsules");
-//     const usersCollection = db.collection("users");
-
-//     const userId = req.user.id; // Assuming the JWT contains userId as 'id'
-//         // Query the 'users' collection to get the user's document and the capsules array
-//         const user = await usersCollection.findOne({ _id: new MongoClient.ObjectId(userId) });
-    
-//         if (!user) {
-//           return res.status(404).json({ message: "User not found" });
-//         }
-    
-//         // Get the array of capsule IDs from the user's document
-//         const capsuleIds = user.capsules; // Assuming 'capsules' is an array of ObjectId(s)
-    
-//         if (!capsuleIds || capsuleIds.length === 0) {
-//           return res.status(404).json({ message: "No capsules found for this user" });
-//         }
-    
-//         // Query the 'capsules' collection to get detailed information about each capsule
-//         const userCapsules = await capsulesCollection.find({ _id: { $in: capsuleIds.map(id => new MongoClient.ObjectId(id)) } }).toArray();
-    
-//         if (!userCapsules || userCapsules.length === 0) {
-//           return res.status(404).json({ message: "No capsule details found" });
-//         }
-    
-//         // Send the capsules information as the response
-//         res.json(userCapsules);
-
-//   } catch (error) {
-//     console.error("Error retrieving capsules:", error);
-//     return res.status(500).json({ message: 'Failed to retrieve capsules.' });
-//   }
-// });
-
-router.get('/get_all_capsules', async (req, res) => {
-  const db = req.app.locals.db;
-  const capsulesCollection = db.collection("capsules");
-
+// get all capsules route
+router.get('/get_all_capsules', authenticateJWT, async (req, res) => {
   try {
-    const capsules = await capsulesCollection.find({}).toArray();
-    return res.status(200).json(capsules);
+    const db = req.app.locals.db;
+    const capsulesCollection = db.collection("capsules");
+    const usersCollection = db.collection("users");
+
+    const user = await usersCollection.findOne({ _id: req.user.id })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const capsuleIds = user.capsules; // Assuming 'capsules' is an array of ObjectId(s)
+    if (!capsuleIds || capsuleIds.length === 0) {
+      return res.status(404).json({ message: "No capsules found for this user" });
+    }
+    
+    // Query the 'capsules' collection to get detailed information about each capsule
+    const userCapsules = await capsulesCollection.find({ _id: { $in: capsuleIds } }).toArray();
+    if (!userCapsules || userCapsules.length === 0) {
+      return res.status(404).json({ message: "No capsule details found" });
+    }
+    
+    // Send the capsules information as the response
+    res.json(userCapsules);
 
   } catch (error) {
     console.error("Error retrieving capsules:", error);

@@ -87,7 +87,7 @@ app.get("/profile", authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ name: user.username, email: user.email }); // Send back user details
+    res.json({ name: user.username, email: user.email, friends: user.friends, capsules: user.capsules}); // Send back user details
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ message: "Error fetching user profile", error });
@@ -106,3 +106,5 @@ app.get('/logout', (req, res) => {
 
 
 app.listen(PORT, () => console.log('Server running on http://localhost:3001'));
+
+module.exports = { authenticateJWT };

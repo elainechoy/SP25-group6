@@ -37,6 +37,12 @@ export default function CreateCapsule() {
   };
 
   const handleSubmit = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        alert("User not authenticated");
+        return;
+    }
+
     if (!title || !description || !unlockDate) {
       alert("Please fill in all required fields.");
       return;
@@ -58,7 +64,8 @@ export default function CreateCapsule() {
       const response = await fetch("http://localhost:5001/api/create_capsule", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // Specify content type
+          Authorization: `Bearer ${token}`, // Send token for authentication
         },
         body: JSON.stringify(capsuleData),
       });
