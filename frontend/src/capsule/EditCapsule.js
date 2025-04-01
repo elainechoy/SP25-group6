@@ -96,7 +96,6 @@ export default function EditCapsule() {
     }, [capsuleId]);
 
 
-
     const sealCapsule = async () => {
         const capsuleData = { capsuleId };
 
@@ -131,7 +130,6 @@ export default function EditCapsule() {
     };
 
 
-
     return (
         <>
             <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#702b9d', color: 'white', minHeight: '100vh' }}>
@@ -152,7 +150,7 @@ export default function EditCapsule() {
                                 color: '#702b9d',
                                 paddingX: 3,
                                 paddingY: 1.5,
-                                borderRadius: 5,
+                                borderRadius: '20px',
                                 boxShadow: 2,
                                 textTransform: 'none',
                                 fontSize: 18,
@@ -165,6 +163,7 @@ export default function EditCapsule() {
 
                     {/* Main Content Area */}
                     <Box sx={{ display: 'flex', gap: 3 }}>
+                        
                         {/* Capsule Details */}
                         <Box
                             component="section"
@@ -173,8 +172,7 @@ export default function EditCapsule() {
                                 borderRadius: 3,
                                 backgroundColor: '#702b9d',
                                 width: '20%'
-                            }}
-                        >
+                            }}>
                             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                                 Description
                             </Typography>
@@ -200,69 +198,51 @@ export default function EditCapsule() {
                             )}
                         </Box>
 
- {/* Letters Section */}
- <Box 
-                        component="section" 
-                        sx={{ 
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            alignItems: 'center', 
-                            justifyContent: 'flex-start', 
-                            p: 3, 
-                            borderRadius: 3, 
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-                            backdropFilter: 'blur(20px)', // Strong blur for a glassy effect
-                            boxShadow: '0 0 50px 40px rgba(255, 255, 255, 0.05)', // Large spread shadow to fade edges
-                            width: '40%',
-                            // border: 'none',
-                            // '&::before': {
-                            //     content: '""',
-                            //     position: 'absolute',
-                            //     top: 0,
-                            //     left: 0,
-                            //     right: 0,
-                            //     bottom: 0,
-                            //     borderRadius: 3,
-                            //     background: 'inherit',
-                            //     filter: 'blur(10px)', // Blurs only the edges
-                            //     zIndex: -1, // Puts it behind the main box
-                            // }
-                        }}
-                    >
-                        {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                            Letters
-                        </Typography> */}
-                    {pdfs.length === 0 ? (
-                    <Typography
-                        variant="body2"
-                        sx={{ textAlign: 'center', mt: 4, fontStyle: 'italic', color: 'gray' }}
-                    >
-                        No letters found. Start by uploading a PDF.
-                    </Typography>
-                    ) : (
-                    pdfs.map((pdf) => (
-                        <LetterCard
-                        key={pdf._id}
-                        pdfUser={pdf.metadata.userName}
-                        pdfId={pdf._id}
-                        pdfTitle={pdf.metadata.title}
-                        onDelete={() => handleDeletePdf(pdf._id)}
-                    />
-                    ))
-                    )}
+                        {/* Letters Section */}
+                        <Box 
+                            component="section" 
+                            sx={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                alignItems: 'center', 
+                                justifyContent: 'flex-start',
+                                // backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+                                p: 2, 
+                                borderRadius: 3, 
+                                width: '40%',
+                            }}>
+                            {pdfs.length === 0 ? (
+                                <Typography
+                                    variant="body2"
+                                    sx={{ textAlign: 'center', mt: 4, fontStyle: 'italic', color: 'gray' }}
+                                >
+                                    No letters found. Start by uploading a PDF.
+                                </Typography>
+                            ) : (
+                            pdfs.map((pdf) => (
+                                <LetterCard
+                                    key={pdf._id}
+                                    pdfUser={pdf.metadata.userName}
+                                    pdfId={pdf._id}
+                                    pdfTitle={pdf.metadata.title}
+                                    onDelete={() => handleDeletePdf(pdf._id)}
+                                />
+                            ))
+                            )}
 
                             <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                                 <Button
                                     variant="contained"
                                     sx={{
-                                        backgroundColor: '#c95eff',
-                                        color: 'white',
+                                        backgroundColor: '#fbf2ff',
+                                        color: '#702b9d',
                                         mt: 2,
+                                        paddingX: 2.5,
+                                        paddingY: 1,
                                         borderRadius: '20px',
                                         boxShadow: 2,
-                                        '&:hover': {
-                                            backgroundColor: '#b14ce3'
-                                        }
+                                        textTransform: 'none',
+                                        fontSize: 18,
                                     }}
                                 >
                                     Write a Letter
@@ -274,12 +254,15 @@ export default function EditCapsule() {
                         <Box
                             component="section"
                             sx={{
-                                p: 3,
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                alignItems: 'center', 
+                                justifyContent: 'flex-start', 
+                                p: 3, 
                                 borderRadius: 3,
-                                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                width: '40%'
-                            }}
-                        >
+                                // backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                width: '40%',
+                            }}>
                             {images.length > 0 ? (
                                 images.map((img) => (
                                     <PhotoCard
@@ -296,17 +279,19 @@ export default function EditCapsule() {
                                 </Typography>
                             )}
 
-                            {/* Button to upload a photo */}
                             <Link to="/upload-photo" state={{ capsuleId }} style={{ textDecoration: 'none' }}>
                                 <Button
                                     variant="contained"
                                     sx={{
-                                        backgroundColor: '#c95eff',
-                                        color: 'white',
+                                        backgroundColor: '#fbf2ff',
+                                        color: '#702b9d',
                                         mt: 2,
+                                        paddingX: 2.5,
+                                        paddingY: 1,
                                         borderRadius: '20px',
                                         boxShadow: 2,
-                                        '&:hover': { backgroundColor: '#b14ce3' }
+                                        textTransform: 'none',
+                                        fontSize: 18,
                                     }}
                                 >
                                     Upload a Photo
@@ -316,12 +301,6 @@ export default function EditCapsule() {
                     </Box>
                 </Box>
             </Box>
-
-
-
-
-
-
         </>
     );
 }
