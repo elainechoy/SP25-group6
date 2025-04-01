@@ -58,16 +58,16 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
         onClick={!showOverlay ? handleShowFullPDF : () => {}}
         sx={{
           width: "80%",
-          height: 180,
+          height: 210,
           position: "relative",
           backgroundColor: "#FFDCDC",
           borderRadius: "10px",
-          boxShadow: 3,
+          boxShadow: "0px 0px 50px 20px rgb(255, 255, 255, 0.18)",
           transition: "height 0.5s ease",
           overflow: "hidden",
           mt: 2,
-          mb: 2,
-          cursor: showOverlay ? "default" : "pointer"
+          mb: 3,
+          cursor: showOverlay ? "default" : "pointer",
         }}
       >
         {/* Envelope Flap */}
@@ -104,14 +104,17 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
           variant="h6"
           sx={{
             fontFamily: "Handwriting, cursive",
+            color: "red",
             position: "relative",
             zIndex: 1,
-            mt: 6,
+            mt: 11,
             textAlign: "center",
             display: showOverlay ? "none" : "block"
           }}
         >
-          by <span style={{ color: "red" }}> :) {pdfUser || "Loading..."}</span>
+
+          A letter by <span style={{ color: "red" }}> 💫 {pdfUser || "Loading..."} </span>
+
         </Typography>
 
         {/* Decoration lines */}
@@ -128,7 +131,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
                 }}
                 sx={{
                   position: "absolute",
-                  bottom: 5,
+                  top: 5,
                   right: 5,
                   color: "black",
                   backgroundColor: "rgba(255,255,255,0.7)",

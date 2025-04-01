@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { ObjectId } = require('mongodb');
-// const { authenticateJWT } = require('./server')
-
-const jwt = require('jsonwebtoken');
 
 // a copy of authenticateJWY
+const jwt = require('jsonwebtoken');
 const authenticateJWT = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ message: "Unauthorized" });

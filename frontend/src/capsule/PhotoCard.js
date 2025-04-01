@@ -36,34 +36,26 @@ function PhotoCard({ photoId, photoTitle, filename, onDelete }) {
   return (
     <Box
       sx={{
+        alignItems: "center",
+        justifyContent: 'flex-start',
         width: "80%",
         position: "relative",
-        backgroundColor: "#F0F0F0",
-        borderRadius: "10px",
-        boxShadow: 3,
-        mt: 2,
-        mb: 2,
-        p: 2
+        mt: 1,
+        // mb: 1,
+        // p: 1
       }}
     >
-      {/* Photo Title */}
-      <Typography
-        variant="h6"
-        sx={{
-          textAlign: "center",
-          mb: 1,
-          color: "black"
-        }}
-      >
-        {photoTitle || "Untitled Photo"}
-      </Typography>
 
       {/* Full Image */}
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
         <img
           src={`http://localhost:5001/api/photo/${filename}`}
           alt={photoTitle || "Photo"}
-          style={{ maxWidth: "100%", borderRadius: "5px" }}
+          style={{
+            maxWidth: "100%",
+            borderRadius: "5px",
+            boxShadow: "0px 0px 50px 20px rgb(255, 255, 255, 0.2)", // Adjust blur intensity
+          }}
         />
       </Box>
 
@@ -85,6 +77,21 @@ function PhotoCard({ photoId, photoTitle, filename, onDelete }) {
       >
         <CloseIcon fontSize="small" />
       </IconButton>
+
+      {/* Photo Title */}
+      <Typography
+        sx={{
+          textAlign: "center",
+          mb: 2,
+          color: "white",
+          fontSize: "1.2rem",
+          // pt: 2,
+          pb: 1, 
+        }}
+      >
+        {photoTitle || "Untitled Photo"}
+      </Typography>
+
     </Box>
   );
 }
