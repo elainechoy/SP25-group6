@@ -44,19 +44,19 @@ const PDFOverlay = ({ pdfUrl, onClose }) => {
       >
         <IconButton
           onClick={onClose}
-          sx={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}
+          sx={{ position: "absolute", top: 8, right: 8, zIndex: 10, color: "white" }}
         >
           <CloseIcon />
         </IconButton>
 
-        <iframe
-          src={pdfUrl}
-          width="100%"
-          height="100%"
-          title="Letter PDF"
-          style={{ border: "none" }}
-        />
-      </Box>
+        <embed src={pdfUrl} width="100%" height="100%" type="application/pdf" />
+        {/* <Document
+        file={pdfUrl}
+        >
+          <Page pageNumber="1"/>
+        </Document> */}
+
+        </Box>
     </Box>
   );
 };
