@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Typography, IconButton, Button } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Typography,  Button } from "@mui/material";
+// import CloseIcon from "@mui/icons-material/Close"; IconButton,
 import PropTypes from "prop-types";
 
-const PDFPreviewOverlay = ({ pdfTitle, previewText, onClose }) => {
+const PDFPreviewOverlay = ({ pdfTitle, previewText, onClose, onOpenFullPdf, pdfUrl }) => {
+
   return (
     <Box
       sx={{
@@ -19,15 +20,12 @@ const PDFPreviewOverlay = ({ pdfTitle, previewText, onClose }) => {
         zIndex: 2,
         transform: "translateY(-10px)",
         transition: "all 0.3s ease-in-out",
+        '&:hover': {
+          cursor: 'pointer', // 👈 Changes the mouse shape
+        }
       }}
+      onClick={onClose}
     >
-        <IconButton
-          size="small"
-          onClick={onClose}
-          sx={{ position: "absolute", top: 4, right: 8, zIndex: 10 }}
-        >
-          <CloseIcon />
-        </IconButton>
         <Typography
             variant="body1"
             sx={{
@@ -69,7 +67,7 @@ const PDFPreviewOverlay = ({ pdfTitle, previewText, onClose }) => {
         <Button
           variant="contained"
           size="small"
-          // onClick={onReadMore} open the pdf preview
+          onClick={() => onOpenFullPdf(pdfUrl)}
           sx={{
             backgroundColor: "#333",
             color: "#fff",
@@ -88,9 +86,12 @@ const PDFPreviewOverlay = ({ pdfTitle, previewText, onClose }) => {
 };
 
 PDFPreviewOverlay.propTypes = {
+  pdfId: PropTypes.string,
     pdfTitle: PropTypes.string,
   previewText: PropTypes.string,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  onOpenFullPdf: PropTypes.func,
+  pdfUrl: PropTypes.string
 };
 
 export default PDFPreviewOverlay;

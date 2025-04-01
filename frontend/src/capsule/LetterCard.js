@@ -4,9 +4,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
 import PDFPreviewOverlay from "../PDFPreviewOverlay";
 
-function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
+function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [previewText, setPreviewText] = useState("");
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   // Fetch preview text when component mounts
   useEffect(() => {
@@ -22,6 +23,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
     };
 
     fetchPreview();
+    setPdfUrl(`http://localhost:5001/api/pdf/${pdfId}`);
   }, [pdfId]);
 
   const handleShowFullPDF = () => setShowOverlay(true);
@@ -56,16 +58,16 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
         onClick={!showOverlay ? handleShowFullPDF : () => {}}
         sx={{
           width: "80%",
-          height: 180,
+          height: 210,
           position: "relative",
           backgroundColor: "#FFDCDC",
           borderRadius: "10px",
-          boxShadow: 3,
+          boxShadow: "0px 0px 50px 20px rgb(255, 255, 255, 0.18)",
           transition: "height 0.5s ease",
           overflow: "hidden",
           mt: 2,
-          mb: 2,
-          cursor: showOverlay ? "default" : "pointer"
+          mb: 3,
+          cursor: showOverlay ? "default" : "pointer",
         }}
       >
         {/* Envelope Flap */}
@@ -91,6 +93,8 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
                 pdfTitle={pdfTitle}
                 previewText={previewText}
                 onClose={handleCloseOverlay}
+                pdfUrl={pdfUrl}
+                onOpenFullPdf={onOpenFullPdf}
                 />
             </Box>
         </Fade>
@@ -100,14 +104,17 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
           variant="h6"
           sx={{
             fontFamily: "Handwriting, cursive",
+            color: "red",
             position: "relative",
             zIndex: 1,
-            mt: 6,
+            mt: 11,
             textAlign: "center",
             display: showOverlay ? "none" : "block"
           }}
         >
-          by <span style={{ color: "red" }}>❤️ {pdfUser || "Loading..."}</span>
+
+          A letter by <span style={{ color: "red" }}> 💫 {pdfUser || "Loading..."} </span>
+
         </Typography>
 
         {/* Decoration lines */}
@@ -124,7 +131,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete }) {
                 }}
                 sx={{
                   position: "absolute",
-                  bottom: 5,
+                  top: 5,
                   right: 5,
                   color: "black",
                   backgroundColor: "rgba(255,255,255,0.7)",
@@ -148,7 +155,8 @@ LetterCard.propTypes = {
   pdfUser: PropTypes.string,
   pdfId: PropTypes.string.isRequired,
   pdfTitle: PropTypes.string,
-  onDelete: PropTypes.func
+  onDelete: PropTypes.func,
+  onOpenFullPdf: PropTypes.func
 };
 
 export default LetterCard;

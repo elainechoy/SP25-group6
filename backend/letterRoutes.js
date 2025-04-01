@@ -218,7 +218,7 @@ router.get('/pdf/:id/preview', async (req, res) => {
         const previewText = parsedData.text
           .split('\n')
           .filter(line => line.trim() !== '')
-          .slice(0, 3)
+          .slice(1, 3)
           .join('\n');
 
         res.json({ previewText });

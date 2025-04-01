@@ -35,6 +35,15 @@ export default function LetterEditor() {
             const formattedText = text;
             doc.setFillColor(background);
             doc.rect(0, 0, 210, 297, 'F');
+
+            // Title (centered, bold, larger)
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            const titleWidth = doc.getTextWidth(title);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const titleX = (pageWidth - titleWidth) / 2;
+            doc.text(title, titleX, 20);
+
             doc.setFontSize(12);
             // Always set a default font first:
             doc.setFont('helvetica', 'normal');
@@ -49,7 +58,7 @@ export default function LetterEditor() {
             }
 
             const lines = doc.splitTextToSize(formattedText, 180);
-            doc.text(lines, 10, 20);
+            doc.text(lines, 10, 40);
 
             const pdfBlob = doc.output('blob');
             const formData = new FormData();
