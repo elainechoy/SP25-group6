@@ -6,7 +6,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import UserContext from '../UserContext.js';
 import PhotoCard from './PhotoCard.js';
-// import PDFOverlay from '../PDFOverlay.js'; // import this at the top
+import PDFOverlay from '../PDFOverlay.js';
 
 
 export default function EditCapsule() {
@@ -15,6 +15,7 @@ export default function EditCapsule() {
     const capsuleId = location.state?.capsuleId;
     const { user } = useContext(UserContext);
     const [images, setImages] = useState([]);
+    const [activePdf, setActivePdf] = useState(null);
 
     // get capsule info
     const [capsule, setCapsule] = useState("");
@@ -200,8 +201,8 @@ export default function EditCapsule() {
                             )}
                         </Box>
 
- {/* Letters Section */}
- <Box 
+                    {/* Letters Section */}
+                    <Box 
                         component="section" 
                         sx={{ 
                             display: 'flex', 
@@ -247,6 +248,7 @@ export default function EditCapsule() {
                         pdfId={pdf._id}
                         pdfTitle={pdf.metadata.title}
                         onDelete={() => handleDeletePdf(pdf._id)}
+                        onOpenFullPdf={(url) => setActivePdf(url)}
                     />
                     ))
                     )}
@@ -315,6 +317,12 @@ export default function EditCapsule() {
                         </Box>
                     </Box>
                 </Box>
+                {activePdf && (
+                <PDFOverlay
+                    pdfUrl={activePdf}
+                    onClose={() => setActivePdf(null)}
+                />
+                )}
             </Box>
 
 
