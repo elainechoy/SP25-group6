@@ -11,7 +11,7 @@ import EditCapsule from './capsule/EditCapsule.js'
 import Letter from "./Letter.js";
 import LetterList from './LetterList.js';
 import Profile from './Profile.js';
-import PhotoUploadForm from './media_upload/PhotoUpload.js';
+import PhotoUploadForm from './PhotoUpload.js';
 
 const App = () => {
   return (
