@@ -2,6 +2,7 @@
 import React from 'react';
 import './App.css';
 import Home from './Home.js';
+import Friends from './Friends.js';
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/friends" element={<Friends />} />
 
         <Route path="/create-capsule" element={<CreateCapsule />} />
         <Route path="/capsule" element={<Capsule />} />

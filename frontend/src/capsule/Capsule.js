@@ -175,9 +175,7 @@ const Capsule = () => {
                           // }
                       }}
                   >
-                      {/* <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                          Letters
-                      </Typography> */}
+
                   {pdfs.length === 0 ? (
                   <Typography
                       variant="body2"
@@ -201,10 +199,14 @@ const Capsule = () => {
                       <Box
                           component="section"
                           sx={{
-                              p: 3,
-                              borderRadius: 3,
-                              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                              width: '40%'
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center', 
+                            justifyContent: 'flex-start', 
+                            p: 3, 
+                            borderRadius: 3,
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                            width: '40%',
                           }}
                       >
                           {images.length > 0 ? (

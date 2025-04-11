@@ -96,17 +96,6 @@ async function retrieveUserById(userId) {
   }
 }
 
-async function retrieveUserByEmail(userEmail) {
-  try {
-    const users = app.locals.db.collection("users");
-    if (!users) throw new Error("Database not connected yet");
-    return await users.findOne({ email: userEmail });
-
-  } catch (error) {
-    console.error("Error retrieving user:", error);
-  }
-}
-
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 
