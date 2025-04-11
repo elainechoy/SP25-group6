@@ -87,7 +87,8 @@ app.get("/profile", authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ name: user.username, email: user.email, friends: user.friends, capsules: user.capsules}); // Send back user details
+    //this is 
+    res.json({ name: user.username, email: user.email, friends: user.friends, capsules: user.capsules, profileImageId: user.profileImageId }); // Send back user details
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ message: "Error fetching user profile", error });

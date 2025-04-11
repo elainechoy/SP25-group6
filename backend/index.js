@@ -75,7 +75,8 @@ async function addUser(username, email, id) {
         _id: id,
         username, 
         email, 
-        friends: [] 
+        friends: [],
+        profileImageId: null
       };
       const result = await users.insertOne(newUser);
       console.log("User added with ID:", result.insertedId);

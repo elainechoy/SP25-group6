@@ -7,7 +7,8 @@ import Typography from '@mui/material/Typography';
 import UserContext from '../UserContext.js';
 import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
-
+import AddIcon from '@mui/icons-material/Add';
+import ReactPlayer from "react-player/youtube";
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -16,6 +17,8 @@ export default function EditCapsule() {
     const { user } = useContext(UserContext);
     const [images, setImages] = useState([]);
     const [activePdf, setActivePdf] = useState(null);
+    const [videoLink, setVideoLink] = useState(null);
+    const [showInput, setShowInput] = useState(false);
 
     // get capsule info
     const [capsule, setCapsule] = useState("");
@@ -36,6 +39,7 @@ export default function EditCapsule() {
                     }
                     const data = await response.json();
                     setCapsule(data);
+                    setVideoLink(data.videoLink);
 
                 } catch (error) {
                     console.error("Error fetching capsules:", error);
@@ -95,6 +99,33 @@ export default function EditCapsule() {
             fetchPhotos();
         }
     }, [capsuleId]);
+
+    const updateVideoLink = async () => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await fetch(`http://localhost:5001/api/update-video-link`, {
+                method: "PATCH",
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ capsuleId: capsuleId, videoLink: videoLink }),
+            });
+        
+            const data = await response.json();
+        
+            if (response.ok) {
+                console.log("Video link updated!");
+                setVideoLink(videoLink); // update local state
+                setShowInput(false); // hide input
+            } else {
+                alert(data.message || "Failed to update video");
+            }
+            } catch (error) {
+                console.error("Failed to update video link", error);
+                alert("Error updating video");
+            }
+    }
 
 
     const sealCapsule = async () => {
@@ -197,6 +228,62 @@ export default function EditCapsule() {
                                     No members listed.
                                 </Typography>
                             )}
+
+                            <Box
+                            sx={{
+                                // border: "1px solid black",
+                                width: '100%',
+                                mt: 15,
+                                textAlign: 'center',
+                            }}
+                            >
+                                <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
+                                    Add a youtube link to a song for this capsule
+                                </Typography>
+                                {videoLink && (
+                                    <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+                                        <ReactPlayer url={videoLink} controls width="100%" height="250px" />
+                                    </Box>
+                                )}
+                                {!showInput && (
+                                    <AddIcon 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                    }}
+                                    onClick={() => setShowInput(true)}
+    
+                                    />
+                                )}
+                                {showInput && (
+                                    <input
+                                    type="text"
+                                    placeholder="Paste YouTube link here"
+                                    value={videoLink || ""}
+                                    onChange={(e) => setVideoLink(e.target.value)}
+                                    onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        setShowInput(false);
+                                        updateVideoLink()
+                                    }
+                                    }}
+                                    onBlur={() => {
+                                        setShowInput(false);
+                                        updateVideoLink();
+                                      }}
+                                    style={{
+                                    padding: "8px",
+                                    width: "80%",
+                                    maxWidth: "300px",
+                                    borderRadius: "8px",
+                                    border: "1px solid white",
+                                    marginBottom: "16px"
+                                    }}
+                                />
+                                )}
+
+                            </Box>
                         </Box>
 
 

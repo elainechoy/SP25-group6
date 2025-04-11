@@ -50,7 +50,8 @@ router.post('/create_capsule', authenticateJWT, async (req, res) => {
       unlockDate: new Date(unlockDate),
       members,
       createdAt: new Date(),
-      isSealed: false
+      isSealed: false,
+      videoLink: null
     });
 
     const capsuleId = result.insertedId;
@@ -173,6 +174,29 @@ router.post('/seal_capsule', async (req, res) => {
   } catch (error) {
     console.error("Error updating isSealed:", error);
     return res.status(500).json({ message: 'Failed to seal capsule.' });
+  }
+});
+
+
+// Update videoLink in capsule
+router.patch('/update-video-link', async (req, res) => {
+  const db = req.app.locals.db;
+  const { capsuleId, videoLink } = req.body;
+
+  try {
+    const result = await db.collection('capsules').updateOne(
+      { _id: new ObjectId(capsuleId.toString()) },
+      { $set: { videoLink } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Capsule not found" });
+    }
+
+    return res.status(200).json({ message: "Video link updated successfully" });
+  } catch (error) {
+    console.error("Error updating videoLink:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
