@@ -19,6 +19,7 @@ const settings = ['Profile', 'Logout'];
 function AppHeader( {user} ) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [profileImage, setProfileImage] = React.useState();
   const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
@@ -44,6 +45,16 @@ function AppHeader( {user} ) {
     localStorage.removeItem("authToken"); 
     navigate("/"); 
   };
+
+  React.useEffect(() => {
+    const fetchImage = async () => {
+      if (user?.profileImageId) {
+        setProfileImage(`http://localhost:5001/api/profile-image/${user.profileImageId}`);
+      }
+    };
+
+    fetchImage();
+  }, [user]);
 
   return (
     <AppBar position="static" sx={{backgroundColor: '#f7e8ff'}}>
@@ -127,7 +138,7 @@ function AppHeader( {user} ) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={user.name} src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user.name} src={profileImage} />
               </IconButton>
             </Tooltip>
             <Menu
@@ -172,6 +183,7 @@ function AppHeader( {user} ) {
 AppHeader.propTypes = {
   user: PropTypes.shape({
       name: PropTypes.string.isRequired, // Ensures `user.name` is a required string
+      profileImageId: PropTypes.string
   }).isRequired, // Ensures `user` object is required
 };
 export default AppHeader;
