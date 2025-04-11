@@ -1,5 +1,5 @@
 import React, { useState, useContext, useCallback } from 'react';
-import { Box, Button, TextField, Typography, Input, Paper, CircularProgress, IconButton } from '@mui/material';
+import { Box, Button, TextField, Typography, Input, Paper, CircularProgress, IconButton, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import AppHeader from './HomePageComponents/AppHeader.js';
 import UserContext from './UserContext.js';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -22,6 +22,8 @@ const PhotoUploadForm = () => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const [cropAspect, setCropAspect] = useState(1);
 
   const navigate = useNavigate();
 
@@ -56,7 +58,7 @@ const PhotoUploadForm = () => {
         canvas.width = pixelCrop.width;
         canvas.height = pixelCrop.height;
         const ctx = canvas.getContext('2d');
-  
+
         ctx.drawImage(
           image,
           pixelCrop.x,
@@ -68,7 +70,7 @@ const PhotoUploadForm = () => {
           pixelCrop.width,
           pixelCrop.height
         );
-  
+
         canvas.toBlob(blob => {
           if (!blob) {
             return reject(new Error('Canvas is empty'));
@@ -138,6 +140,13 @@ const PhotoUploadForm = () => {
     }
   };
 
+  const handleAspectToggle = (event, newAspect) => {
+    // Prevent null update if user clicks the already active value.
+    if (newAspect !== null) {
+      setCropAspect(newAspect);
+    }
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: '#702b9d', pt: 4 }}>
       <AppHeader user={user} />
@@ -177,6 +186,25 @@ const PhotoUploadForm = () => {
             sx={{ my: 2 }}
           />
 
+          {/* Toggle for crop shape: Square vs. Rectangle */}
+          {imageSrc && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <ToggleButtonGroup
+                value={cropAspect}
+                exclusive
+                onChange={handleAspectToggle}
+                aria-label="Crop Aspect Ratio"
+              >
+                <ToggleButton value={1} aria-label="Square">
+                  Square
+                </ToggleButton>
+                <ToggleButton value={16 / 9} aria-label="Rectangle">
+                  Rectangle
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          )}
+
           {imageSrc && (
             <Box
               sx={{
@@ -191,7 +219,7 @@ const PhotoUploadForm = () => {
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
+                aspect={cropAspect} // Use the dynamic aspect value here
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
@@ -199,29 +227,32 @@ const PhotoUploadForm = () => {
             </Box>
           )}
 
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: '#c95eff',
-              '&:hover': { backgroundColor: '#d98eff' },
-              borderRadius: '30px',
-              mt: 2,
-            }}
-            type="submit"
-            disabled={uploading}
-            fullWidth
-          >
-            {uploading ? <CircularProgress size={24} /> : 'Upload Photo'}
-          </Button>
-        </Box>
 
-        {message && (
-          <Typography sx={{ mt: 2 }} color="secondary">
-            {message}
-          </Typography>
-        )}
-      </Paper>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#c95eff',
+            '&:hover': { backgroundColor: '#d98eff' },
+            borderRadius: '30px',
+            mt: 2,
+          }}
+          type="submit"
+          disabled={uploading}
+          fullWidth
+        >
+          {uploading ? <CircularProgress size={24} /> : 'Upload Photo'}
+        </Button>
     </Box>
+
+        {
+    message && (
+      <Typography sx={{ mt: 2 }} color="secondary">
+        {message}
+      </Typography>
+    )
+  }
+      </Paper >
+    </Box >
   );
 };
 
