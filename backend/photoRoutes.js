@@ -9,6 +9,19 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// a copy of authenticateJWY
+const jwt = require('jsonwebtoken');
+const authenticateJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Forbidden" });
+    req.user = user;
+    next();
+  });
+};
+
 router.post('/upload-photo', upload.single('photo'), async (req, res) => {
   try {
     const db = req.app.locals.db;
@@ -142,5 +155,70 @@ router.delete("/delete-photo/:id", async (req, res) => {
     return res.status(500).json({ message: "Failed to delete photo.", error: err.message });
   }
 });
+
+//profile photo stuff
+
+router.post('/upload-profile-image', authenticateJWT, upload.single('profileImage'), async (req, res) => {
+  const db = req.app.locals.db;
+  const bucket = new GridFSBucket(db, { bucketName: 'profileImages' });
+
+  console.log("req.user:", req.user);
+
+  try {
+    const userId = req.user.id; // from JWT
+    const stream = bucket.openUploadStream(req.file.originalname, {
+      metadata: { userId }
+    });
+
+    stream.end(req.file.buffer);
+
+    stream.on('finish', async () => {
+      try {
+        // Safely update the user's document by pushing the new image ID
+        await db.collection('users').updateOne(
+          { _id: userId },
+          { $set: { profileImageId: stream.id } } // dynamically adds or updates this field
+        );
+    
+        res.status(200).json({ message: 'Profile image uploaded.', fileId: stream.id });
+      } catch (error) {
+        console.error("Error updating user with profileImageId:", error);
+        res.status(500).json({ message: 'Failed to link image to user.' });
+      }
+    });
+
+    stream.on('error', (err) => {
+      console.error(err);
+      res.status(500).send('Upload failed.');
+    });
+
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).send('Server error.');
+  }
+});
+
+router.get('/profile-image/:id', async (req, res) => {
+  const db = req.app.locals.db;
+  const bucket = new GridFSBucket(db, { bucketName: 'profileImages' });
+
+  try {
+    const fileId = req.params.id;
+
+    const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
+
+    res.set('Content-Type', 'image/jpeg'); // or image/png depending on what you accept
+    downloadStream.pipe(res);
+
+    downloadStream.on('error', () => {
+      res.status(404).json({ message: 'Image not found' });
+    });
+
+  } catch (err) {
+    console.error("Error serving image:", err);
+    res.status(500).json({ message: 'Server error while fetching image' });
+  }
+});
+
 
 module.exports = router;
