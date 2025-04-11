@@ -11,7 +11,10 @@ function Home() {
     }
 
     return(
-        <div style={{ backgroundColor: "#702b9d", minHeight: '100vh' }}>
+        <div style={{ 
+            background: 'linear-gradient(to bottom right, #702b9d, #b991db, #702b9d)', 
+            // background: 'linear-gradient(to bottom right, #b991db, #702b9d, #b991db)', 
+            minHeight: '100vh' }}>
             <AppHeader user={user}/>
 
             <ComponentList />

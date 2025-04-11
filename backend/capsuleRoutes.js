@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ObjectId } = require('mongodb');
 
-// a copy of authenticateJWY
+// a copy of authenticateJWT
 const jwt = require('jsonwebtoken');
 const authenticateJWT = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -177,6 +177,27 @@ router.post('/seal_capsule', async (req, res) => {
   }
 });
 
+// retrieve user by email
+router.post('/retrieve_user_by_email', async (req, res) => {
+  const db = req.app.locals.db;
+  const usersCollection = db.collection("users");
+
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: 'User email is required.' });
+  }
+
+  try {
+    const user = await usersCollection.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error retrieving user by email:", error);
+    res.status(500).json({ message: 'Server error retrieving user.' });
+  }
+});
 
 // Update videoLink in capsule
 router.patch('/update-video-link', async (req, res) => {
@@ -199,7 +220,5 @@ router.patch('/update-video-link', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
 
 module.exports = router;
