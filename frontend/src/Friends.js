@@ -56,7 +56,7 @@ const Friends = () => {
           
               return {
                 username: friendInfo.username,
-                photo: friendInfo.profilePhoto,
+                photo: `http://localhost:5001/api/profile-image/${friendInfo.profileImageId}`,
                 sharedCapsules: allFriends[email].sharedCapsules,
               };
             })
