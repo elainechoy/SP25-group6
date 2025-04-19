@@ -75,7 +75,8 @@ async function addUser(username, email, id) {
         _id: id,
         username, 
         email, 
-        friends: [] 
+        friends: [],
+        profileImageId: null
       };
       const result = await users.insertOne(newUser);
       console.log("User added with ID:", result.insertedId);
@@ -90,17 +91,6 @@ async function retrieveUserById(userId) {
     const users = app.locals.db.collection("users");
     if (!users) throw new Error("Database not connected yet");
     return await users.findOne({ _id: userId });
-
-  } catch (error) {
-    console.error("Error retrieving user:", error);
-  }
-}
-
-async function retrieveUserByEmail(userEmail) {
-  try {
-    const users = app.locals.db.collection("users");
-    if (!users) throw new Error("Database not connected yet");
-    return await users.findOne({ email: userEmail });
 
   } catch (error) {
     console.error("Error retrieving user:", error);
