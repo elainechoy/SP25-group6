@@ -8,7 +8,7 @@ import UserContext from '../UserContext.js';
 import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
-
+import { lighten } from 'polished';
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -82,7 +82,6 @@ export default function EditCapsule() {
 
     // get PDFs in the capsule
     const [pdfs, setPdfs] = useState([]);
-
     useEffect(() => {
         if (capsuleId) {
             const fetchUserPDFs = async () => {
@@ -110,6 +109,10 @@ export default function EditCapsule() {
         }
     }, [capsuleId]);
 
+    const handleDeletePdf = (pdfIdToDelete) => {
+        setPdfs(prev => prev.filter(pdf => pdf._id !== pdfIdToDelete));
+    };
+
     // Get photos in the capsule
     useEffect(() => {
         if (capsuleId) {
@@ -130,6 +133,12 @@ export default function EditCapsule() {
         }
     }, [capsuleId]);
 
+    const handleDeleteImage = (imageIdToDelete) => {
+        // Simply remove the deleted image from the local state
+        setImages(prevImages => prevImages.filter((img) => img._id !== imageIdToDelete));
+    };
+
+    // Upload video link
     const updateVideoLink = async () => {
         try {
             const token = localStorage.getItem("authToken");
@@ -157,6 +166,7 @@ export default function EditCapsule() {
             }
     }
 
+    // Seal the capsule
     const sealCapsule = async () => {
         const capsuleData = { capsuleId };
 
@@ -181,19 +191,20 @@ export default function EditCapsule() {
             alert("An error occurred. Please try again.");
         }
     };
-    const handleDeletePdf = (pdfIdToDelete) => {
-        setPdfs(prev => prev.filter(pdf => pdf._id !== pdfIdToDelete));
-    };
 
-    const handleDeleteImage = (imageIdToDelete) => {
-        // Simply remove the deleted image from the local state
-        setImages(prevImages => prevImages.filter((img) => img._id !== imageIdToDelete));
+    // for custmozing background color
+    const [bgColor, setBgColor] = useState('rgb(161, 52, 234)');
+    const generateGradientColors = (color) => {
+        return {
+        light: lighten(0.25, color),  // Much lighter shade of bgColor
+        dark: lighten(0.1, color),    // Lighter shade of bgColor
+        };
     };
-
+    const { light, dark } = generateGradientColors(bgColor);
 
     return (
         <>
-            <Box sx={{ display: 'flex', flexDirection: 'column', background: 'linear-gradient(135deg, #702b9d 0%, #a874d6 40%, #b991db 60%, #702b9d 100%)', color: 'white', minHeight: '100vh' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', background: `linear-gradient(140deg, ${bgColor} 0%, ${dark} 30%, ${light} 70%, ${dark} 100%, ${bgColor} 100%)`, color: 'white', minHeight: '100vh' }}>
 
                 <AppHeader user={user} />
 
@@ -202,8 +213,15 @@ export default function EditCapsule() {
                     {/* Capsule Name and Seal Capsule Button */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                            {capsule.title || "Capsule Name"}
+                            {capsule.title || "Capsule Name"} 
+                            <input
+                            type="color"
+                            value={bgColor}
+                            onChange={(e) => setBgColor(e.target.value)}
+                            style={{ cursor: 'pointer', marginRight: '16px' }}
+                        />
                         </Typography>
+
                         <Button
                             variant="contained"
                             sx={{

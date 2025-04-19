@@ -51,7 +51,8 @@ router.post('/create_capsule', authenticateJWT, async (req, res) => {
       members,
       createdAt: new Date(),
       isSealed: false,
-      videoLink: null
+      videoLink: null,
+      color: 'rgb(161, 52, 234)'
     });
 
     const capsuleId = result.insertedId;
