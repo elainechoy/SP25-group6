@@ -39,8 +39,8 @@ router.post('/create_capsule', authenticateJWT, async (req, res) => {
     // If any member email is not found in the users collection, return an error message
     const invalidMembers = members.filter(email => !existingEmails.includes(email));
     if (invalidMembers.length > 0) {
-      alert("Not all members are signed up: ${invalidMembers.join(', ')}")
-      return res.status(400).json({ message: `Not all members are signed up: ${invalidMembers.join(', ')}` });
+      console.log(`Invalid members: ${invalidMembers.join(', ')}`);
+      return res.status(400).json({ message: `The following users are not signed up: ${invalidMembers.join(', ')}`, invalidMembers });
     }
 
     // Add new capsule

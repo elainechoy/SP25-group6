@@ -47,7 +47,7 @@ const Login = () => {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        background: "linear-gradient(to right, #a855f7, #7c3aed)",
+        background: "linear-gradient(to bottom right, #7c3aed, rgb(183, 124, 239), #7c3aed)",
         color: "white",
       }}
     >

@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
 import AppHeader from '../HomePageComponents/AppHeader';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Card, Avatar } from '@mui/material';
 import LetterCard from './LetterCard.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import UserContext from '../UserContext.js';
 import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
-import AddIcon from '@mui/icons-material/Add';
 import ReactPlayer from "react-player/youtube";
+
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -22,7 +22,6 @@ export default function EditCapsule() {
 
     // get capsule info
     const [capsule, setCapsule] = useState("");
-
     useEffect(() => {
         if (capsuleId) {
             const getCapsule = async () => {
@@ -49,6 +48,37 @@ export default function EditCapsule() {
         }
     }, [capsuleId]);
 
+    // turn members (emails) to usernames to show in the capsule
+    const [membersInfo, setMembersInfo] = useState([]);
+    useEffect(() => {
+      const fetchMemberInfo = async () => {
+        if (!capsule || !capsule.members) return; // 👈 prevent error
+        const memberInfoPromises = capsule.members.map(async (email) => {
+          try {
+            const response = await fetch(`http://localhost:5001/api/retrieve_user_by_email`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+            });
+  
+            if (!response.ok) {
+              throw new Error(`Failed to fetch data for ${email}`);
+            }
+  
+            const user = await response.json();
+            return { email, username: user.username, photo: `http://localhost:5001/api/profile-image/${user.profileImageId}` };
+          } catch (error) {
+            console.error('Error fetching member info:', error);
+            return { email, username: email };  // Fallback to email if user is not found
+          }
+        });
+  
+        const members = await Promise.all(memberInfoPromises);
+        setMembersInfo(members);
+      };
+  
+      fetchMemberInfo();
+    }, [capsule]);
 
     // get PDFs in the capsule
     const [pdfs, setPdfs] = useState([]);
@@ -127,7 +157,6 @@ export default function EditCapsule() {
             }
     }
 
-
     const sealCapsule = async () => {
         const capsuleData = { capsuleId };
 
@@ -164,7 +193,7 @@ export default function EditCapsule() {
 
     return (
         <>
-            <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#702b9d', color: 'white', minHeight: '100vh' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', background: 'linear-gradient(135deg, #702b9d 0%, #a874d6 40%, #b991db 60%, #702b9d 100%)', color: 'white', minHeight: '100vh' }}>
 
                 <AppHeader user={user} />
 
@@ -198,13 +227,15 @@ export default function EditCapsule() {
                         
                         {/* Capsule Details */}
                         <Box
-                            component="section"
-                            sx={{
-                                p: 3,
-                                borderRadius: 3,
-                                backgroundColor: '#702b9d',
-                                width: '20%'
-                            }}>
+                        component="section"
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            // backgroundColor: '#702b9d',
+                            width: '20%'
+                        }}>
+
+                            {/* Description */}
                             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                                 Description
                             </Typography>
@@ -212,14 +243,22 @@ export default function EditCapsule() {
                                 {capsule.description || "No description available."}
                             </Typography>
 
+                            {/* Shared with */}
                             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                                 Shared With:
                             </Typography>
-                            {capsule.members && capsule.members.length > 0 ? (
+                            {/* {capsule.members && capsule.members.length > 0 ? (
+                                // <Box component="ul" sx={{ pl: 2 }}>
+                                //     {capsule.members.map((member, index) => (
+                                //         <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
+                                //             {member}
+                                //         </Typography>
+                                //     ))}
+                                // </Box>
                                 <Box component="ul" sx={{ pl: 2 }}>
-                                    {capsule.members.map((member, index) => (
+                                    {membersInfo.map((member, index) => (
                                         <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
-                                            {member}
+                                        {member.username}
                                         </Typography>
                                     ))}
                                 </Box>
@@ -227,62 +266,128 @@ export default function EditCapsule() {
                                 <Typography variant="body2" sx={{ color: 'gray' }}>
                                     No members listed.
                                 </Typography>
+                            )} */}
+                            {capsule.members && capsule.members.length > 0 ? (
+                            <Box display="flex" flexDirection="column" gap={2}>
+                                {membersInfo.map((member, index) => (
+                                <Card
+                                    key={index}
+                                    elevation={2}
+                                    sx={{
+                                    borderRadius: 3,
+                                    padding: 2,
+                                    backgroundColor: '#753b9c',
+                                    color: 'white',
+                                    }}
+                                >
+                                    <Box display="flex" alignItems="center" gap={1.5}>
+                                    <Avatar
+                                        alt={member.username}
+                                        src={member.photo}
+                                        sx={{
+                                        width: 60,
+                                        height: 60,
+                                        fontSize: 24,
+                                        bgcolor: 'white',
+                                        color: '#702b9d',
+                                        }}
+                                    >
+                                        {member.username ? member.username[0] : "?"}
+                                    </Avatar>
+                                    <Box>
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: 15 }}>
+                                        {member.username}
+                                        </Typography>
+                                        <Typography variant="caption" sx={{ fontSize: 12, color: '#e0d6ec' }}>
+                                        {member.email}
+                                        </Typography>
+                                    </Box>
+                                    </Box>
+                                </Card>
+                                ))}
+                            </Box>
+                            ) : (
+                            <Typography variant="body1" sx={{ color: 'gray' }}>
+                                No members listed.
+                            </Typography>
                             )}
 
+                            {/* Youtube video or song section */}
                             <Box
                             sx={{
-                                // border: "1px solid black",
                                 width: '100%',
-                                mt: 15,
-                                textAlign: 'center',
+                                mt: 3,
                             }}
                             >
-                                <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
-                                    Add a youtube link to a song for this capsule
+                            {!videoLink ? (
+                            <Typography variant="body1" sx={{ color: 'white', mb: 3, textAlign: 'center' }}>
+                                Missing a vibe? <br/ > Add a song to set the mood 🎵
+                            </Typography>
+                            ) : (
+                            <>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5 }}>
+                                Your vibe is set:
                                 </Typography>
-                                {videoLink && (
-                                    <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
-                                        <ReactPlayer url={videoLink} controls width="100%" height="250px" />
-                                    </Box>
-                                )}
-                                {!showInput && (
-                                    <AddIcon 
-                                    sx={{
-                                        p: 1,
-                                        border: "1px solid white",
-                                        borderRadius: "10px",
-                                    }}
-                                    onClick={() => setShowInput(true)}
-    
-                                    />
-                                )}
-                                {showInput && (
-                                    <input
-                                    type="text"
-                                    placeholder="Paste YouTube link here"
-                                    value={videoLink || ""}
-                                    onChange={(e) => setVideoLink(e.target.value)}
-                                    onKeyDown={(e) => {
+                                <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+                                <ReactPlayer url={videoLink} controls width="100%" height="250px" />
+                                </Box>
+                            </>
+                            )}
+
+                            {!showInput && (
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button
+                                variant="outlined"
+                                sx={{
+                                    color: 'white',
+                                    borderColor: 'white',
+                                    borderRadius: '20px',
+                                    px: 3,
+                                    py: 1,
+                                    fontSize: 18,
+                                    fontWeight: 'bold', 
+                                    textTransform: 'none',
+                                    mb: 2,
+                                    '&:hover': {
+                                    borderColor: 'white',
+                                    backgroundColor: 'rgba(255,255,255,0.1)',
+                                    },
+                                }}
+                                onClick={() => setShowInput(true)}
+                                >
+                                {videoLink ? 'Change a song' : 'Add a song'}
+                                </Button>
+                                </Box>
+                            )}
+
+                            {showInput && (
+                                <input
+                                type="text"
+                                placeholder="Paste YouTube link here"
+                                value={videoLink || ""}
+                                onChange={(e) => setVideoLink(e.target.value)}
+                                onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
-                                        setShowInput(false);
-                                        updateVideoLink()
+                                    setShowInput(false);
+                                    updateVideoLink();
                                     }
-                                    }}
-                                    onBlur={() => {
-                                        setShowInput(false);
-                                        updateVideoLink();
-                                      }}
-                                    style={{
+                                }}
+                                onBlur={() => {
+                                    setShowInput(false);
+                                    updateVideoLink();
+                                }}
+                                style={{
                                     padding: "8px",
                                     width: "80%",
                                     maxWidth: "300px",
                                     borderRadius: "8px",
                                     border: "1px solid white",
-                                    marginBottom: "16px"
-                                    }}
+                                    marginBottom: "16px",
+                                    backgroundColor: 'transparent',
+                                    color: 'white'
+                                }}
                                 />
-                                )}
-
+                            )}
                             </Box>
                         </Box>
 
@@ -302,10 +407,10 @@ export default function EditCapsule() {
                             }}>
                             {pdfs.length === 0 ? (
                                 <Typography
-                                    variant="body2"
-                                    sx={{ textAlign: 'center', mt: 4, fontStyle: 'italic', color: 'gray' }}
+                                    variant="body1"
+                                    sx={{ textAlign: 'center', mb: 3, color: 'white' }}
                                 >
-                                    No letters found. Start by uploading a PDF.
+                                    Oops, it’s empty...
                                 </Typography>
                             ) : (
                             pdfs.map((pdf) => (
@@ -315,24 +420,28 @@ export default function EditCapsule() {
                                     pdfId={pdf._id}
                                     pdfTitle={pdf.metadata.title}
                                     onDelete={() => handleDeletePdf(pdf._id)}
-                                           onOpenFullPdf={(url) => setActivePdf(url)}
+                                    onOpenFullPdf={(url) => setActivePdf(url)}
                                 />
                             ))
                             )}
 
                             <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                                 <Button
-                                    variant="contained"
+                                    variant="outlined"
                                     sx={{
-                                        backgroundColor: '#fbf2ff',
-                                        color: '#702b9d',
-                                        mt: 2,
-                                        paddingX: 2.5,
-                                        paddingY: 1,
+                                        color: 'white',
+                                        borderColor: 'white',
                                         borderRadius: '20px',
-                                        boxShadow: 2,
-                                        textTransform: 'none',
+                                        px: 3,
+                                        py: 1,
                                         fontSize: 18,
+                                        fontWeight: 'bold', 
+                                        textTransform: 'none',
+                                        mb: 2,
+                                        '&:hover': {
+                                        borderColor: 'white',
+                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        },
                                     }}
                                 >
                                     Write a Letter
@@ -364,24 +473,28 @@ export default function EditCapsule() {
                                     />
                                 ))
                             ) : (
-                                <Typography variant="body2" sx={{ color: 'gray' }}>
-                                    No images uploaded.
+                                <Typography variant="body1" sx={{ color: 'white', mb: 3 }}>
+                                    Add a picture to start filling the space!
                                 </Typography>
                             )}
 
                             <Link to="/upload-photo" state={{ capsuleId }} style={{ textDecoration: 'none' }}>
                                 <Button
-                                    variant="contained"
+                                    variant="outlined"
                                     sx={{
-                                        backgroundColor: '#fbf2ff',
-                                        color: '#702b9d',
-                                        mt: 2,
-                                        paddingX: 2.5,
-                                        paddingY: 1,
+                                        color: 'white',
+                                        borderColor: 'white',
                                         borderRadius: '20px',
-                                        boxShadow: 2,
-                                        textTransform: 'none',
+                                        px: 3,
+                                        py: 1,
                                         fontSize: 18,
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        mb: 2,
+                                        '&:hover': {
+                                        borderColor: 'white',
+                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        },
                                     }}
                                 >
                                     Upload a Photo
