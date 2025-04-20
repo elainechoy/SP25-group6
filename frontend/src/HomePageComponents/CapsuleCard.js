@@ -75,20 +75,20 @@ export default function CapsuleCard() {
         const daysLeft = calculateDaysLeft(capsule.unlockDate);
         const creationDate = new Date(capsule.createdAt).toLocaleDateString();
 
-        // Unlocked capsules
+        // Open capsules
         if (passToday(capsule.unlockDate)) {
             return (
                 <ButtonBase key={index} onClick={() => handleClick(capsule.isSealed, capsule.unlockDate, capsule._id.toString())}
                     sx={{ width: "100%", display: "block", textAlign: "left", borderRadius: 3 }}>
                     <Card sx={{ minWidth: 300, borderRadius: 3, boxShadow: 3, padding: 2, backgroundColor: "#f5f5f5", mb: 2 }}>
                         <CardContent sx={{ textAlign: "center" }}>
-                            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                            <Typography variant="h5" sx={{ fontWeight: "bold", mt: 2 }}>
                                 {capsule.title || "Users Capsule"}
                             </Typography>
                             <Typography variant="body1" sx={{ mt: 2 }}>
                                 from
                             </Typography>
-                            <Typography variant="h6" sx={{ mt: 1, color: "#702b9d" }}>
+                            <Typography variant="h6" sx={{ mt: 1, color: "#702b9d", fontweight: 'bold' }}>
                                 {creationDate}
                             </Typography>
                         </CardContent>
@@ -105,7 +105,7 @@ export default function CapsuleCard() {
                     <Card sx={{ minWidth: 300, borderRadius: 3, boxShadow: 3, padding: 2, backgroundColor: "#f5f5f5", mb: 2 }}>
                         <CardContent sx={{ textAlign: "center" }}>
                             <Box sx={{ position: "absolute", top: 30, left: "50%", transform: "translateX(-50%)" }}>
-                                <LockIcon sx={{ fontSize: 25, color: "#c95eff" }} />
+                                <LockIcon sx={{ fontSize: 25, color: "rgb(161, 52, 234)" }} />
                             </Box>
                             <Typography variant="h5" sx={{ paddingTop: 4, fontWeight: "bold", mt: 1 }}>
                                 {capsule.title || "Users Capsule"}
@@ -113,7 +113,7 @@ export default function CapsuleCard() {
                             <Typography variant="body1" sx={{ mt: 3 }}>
                                 Open in
                             </Typography>
-                            <Typography variant="h6" sx={{ pt: 1, color: "red" }}>
+                            <Typography variant="h6" sx={{ pt: 1, color: "#702b9d" }}>
                                 {daysLeft} days
                             </Typography>
                         </CardContent>
@@ -152,14 +152,18 @@ export default function CapsuleCard() {
 
     return (
         <Box sx={{ display: 'flex', gap: 2, padding: 2 }}>
-            {/* Unlocked */}
+            {/* Open */}
             <Box sx={{ flex: 1 }}>
                 <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                📬 Unlocked Capsules
+                🕰️ Open Capsules
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
                 <Box sx={{ maxHeight: '75vh', overflowY: 'auto', pr: 1 }}>
-                {renderCapsules(unlockedCapsules)}
+                    {unlockedCapsules.length > 0 ? renderCapsules(unlockedCapsules) : (
+                        <Typography variant="body1" sx={{ textAlign: "center", mt: 1, color: "white" }}>
+                            No open capsules yet. <br/> Come back when the time is right ⏳
+                        </Typography>
+                    )}
                 </Box>
             </Box>
 
@@ -170,18 +174,26 @@ export default function CapsuleCard() {
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
                 <Box sx={{ maxHeight: '75vh', overflowY: 'auto', pr: 1 }}>
-                {renderCapsules(sealedCapsules)}
+                    {sealedCapsules.length > 0 ? renderCapsules(sealedCapsules) : (
+                        <Typography variant="body1" sx={{ textAlign: "center", mt: 1, color: "white" }}>
+                            No sealed capsules yet.
+                        </Typography>
+                    )}
                 </Box>
             </Box>
       
-          {/* Unsealed */}
+          {/* Capsules to edit */}
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-              📝 Unsealed Capsules
+              📝 Capsules to edit...
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Box sx={{ maxHeight: '75vh', overflowY: 'auto', pr: 1 }}>
-              {renderCapsules(unsealedCapsules)}
+                {unsealedCapsules.length > 0 ? renderCapsules(unsealedCapsules) : (
+                    <Typography variant="body1" sx={{ textAlign: "center", mt: 1, color: "white" }}>
+                        No capsules to edit yet. <br /> Create a new one to capsule some memories
+                    </Typography>
+                )}
             </Box>
           </Box>
         </Box> 
