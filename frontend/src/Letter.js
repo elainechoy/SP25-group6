@@ -150,7 +150,7 @@ export default function LetterEditor() {
                 <ArrowBackIosNewIcon />
             </IconButton>
 
-            <Box className="letter-editor-container" sx={{ backgroundColor: "#702b9d" }}>
+            <Box className="letter-editor-container" sx={{ background: "linear-gradient(to bottom right, #7c3aed, rgb(183, 124, 239), #7c3aed)" }}>
 
                 <Box className="letter-editor-box" sx={{ p: 3, maxWidth: '800px', mx: 'auto' }}>
                     <Typography variant="h4" color="#702b9d" gutterBottom>Write Your Letter</Typography>
@@ -209,7 +209,7 @@ export default function LetterEditor() {
                         fullWidth
                         onClick={generatePDFAndSubmit}
                         sx={{
-                            backgroundColor: '#702b9d',
+                            backgroundColor: 'rgba(106, 20, 220, 0.7)',
                             color: 'white',
                             paddingX: 3,
                             paddingY: 1.5,

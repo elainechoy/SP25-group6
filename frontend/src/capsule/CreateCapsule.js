@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import UserContext from '../UserContext.js';
 import {
   Card,
   CardContent,
@@ -11,6 +12,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Autocomplete,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -22,8 +24,68 @@ export default function CreateCapsule() {
   const [newMember, setNewMember] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
-
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const [memberOptions, setMemberOptions] = useState([]);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      const token = localStorage.getItem("authToken");
+  
+      const capsuleRes = await fetch('http://localhost:5001/api/get_all_capsules', {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const userCapsules = await capsuleRes.json();
+      const friendEmailsSet = new Set();
+      for (const capsule of userCapsules) {
+        for (const email of capsule.members) {
+          if (email !== user.email) {
+            friendEmailsSet.add(email);
+          }
+        }
+      }
+      const friendEmails = Array.from(friendEmailsSet);
+  
+      const friendsInfo = await Promise.all(
+        friendEmails.map(async (email) => {
+          const friendRes = await fetch(`http://localhost:5001/api/retrieve_user_by_email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          if (!friendRes.ok) return null;
+  
+          const friendInfo = await friendRes.json();
+          return {
+            name: friendInfo.username,
+            email: friendInfo.email,
+          };
+        })
+      );
+  
+      const memberOptions = friendsInfo.filter(Boolean);
+      setMemberOptions(memberOptions);
+    };
+  
+    fetchFriends();
+  }, [user]);
+
+  const handleClickAdd = () => {
+    const isValidGmail = /^[^\s@]+@gmail\.com$/.test(newMember.trim());
+    if (isValidGmail) {
+      handleAddMember(newMember.trim());
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
 
   const handleAddMember = () => {
     if (newMember && !members.includes(newMember)) {
@@ -70,29 +132,23 @@ export default function CreateCapsule() {
         body: JSON.stringify(capsuleData),
       });
 
-      let errorMessage = "Failed to create capsule."; // Default message
-
       console.log("Response Status:", response.status);
-      const data = await response.json();
-      errorMessage = data.message || "Failed to create capsule.";
-      console.log("Error Message:", errorMessage);
-
+      const result = await response.json();
       if (response.ok) {
         alert("Capsule created successfully!");
         navigate("/home");
       } else {
-        alert("Failed to create capsule.");
-        alert(errorMessage)
+        alert(`${result.message}`); 
       }
 
     } catch (error) {
-      // console.error("Error creating capsule:", error);
-      // alert("An error occurred. Please try again.");
+      console.error("Error creating capsule:", error);
+      alert("An error occurred. Please try again.");
     }
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "#702b9d" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "linear-gradient(to bottom right, #7c3aed, rgb(183, 124, 239), #7c3aed)", }}>
       <Card style={{ width: "100%", maxWidth: 600, padding: 16, boxShadow: "0px 4px 10px rgba(0,0,0,0.2)"}}>
         <CardHeader
           title={<Typography variant="h5" sx={{ color: "#702b9d" , fontWeight: "bold"}}> Create a capsule </Typography>}
@@ -142,13 +198,36 @@ export default function CreateCapsule() {
             <div>
               <Typography variant="subtitle1" color="#702b9d" >Add Members</Typography>
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <TextField
+                {/* <TextField
                   label="Enter email address"
                   value={newMember}
                   onChange={(e) => setNewMember(e.target.value)}
                   fullWidth
                   variant="outlined"
+                /> */}
+
+                <Autocomplete
+                  freeSolo
+                  options={memberOptions.map((option) => `${option.name} (${option.email})`)}
+                  onInputChange={(event, value) => {
+                    const emailMatch = value.match(/\(([^)]+)\)$/);
+                    setNewMember(emailMatch ? emailMatch[1] : value);
+                    setError(false); // reset error while typing
+                  }}
+                  inputValue={newMember}
+                  renderInput={(params) => (
+                    <TextField 
+                      {...params} 
+                      label="Select or enter Gmail" 
+                      variant="outlined" 
+                      fullWidth 
+                      error={error}
+                      helperText={error ? "Please enter a valid Gmail address." : ""}
+                    />
+                  )}
+                  sx={{ width: '100%' }}
                 />
+
                 <Button 
                   sx={{
                     backgroundColor: 'white',
@@ -163,7 +242,7 @@ export default function CreateCapsule() {
                       color: 'white'
                     }
                   }}
-                  onClick={handleAddMember}>
+                  onClick={handleClickAdd}>
                   Add
                 </Button>
               </div>
