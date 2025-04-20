@@ -21,6 +21,7 @@ export default function EditCapsule() {
     const [videoLink, setVideoLink] = useState(null);
     const [showInput, setShowInput] = useState(false);
     const [mapLoc, setMapLoc] = useState(null);
+    const [showMapUI, setShowMapUI] = useState(false);
 
 
     // get capsule info
@@ -44,6 +45,13 @@ export default function EditCapsule() {
                     setCapsule(data);
                     setVideoLink(data.videoLink);
 
+                    // unpack the GeoJSON coords into {lat,lng}
+                    const coords = data.location?.coordinates;
+                    const locationName = data.location?.name;
+                    if (Array.isArray(coords) && coords.length === 2) {
+                        const [lat, lng] = coords;
+                        setMapLoc({ name: locationName, lat, lng });
+                    }
                 } catch (error) {
                     console.error("Error fetching capsules:", error);
                 }
@@ -164,9 +172,36 @@ export default function EditCapsule() {
         setImages(prevImages => prevImages.filter((img) => img._id !== imageIdToDelete));
     };
 
-    const handleLocationSelect = loc => {
-        setMapLoc(loc);
-      };
+    const handleLocationSelect = async loc => {
+        console.log("handle location select reached");
+        setShowMapUI(false);
+
+        //set location parameter to the capsule in the backend
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await fetch(`http://localhost:5001/api/update-location`, {
+                method: "PATCH",
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ capsuleId: capsuleId, name: loc.name, latitude: loc.lat, longitude: loc.lng }),
+            });
+        
+            const data = await response.json();
+        
+            if (response.ok) {
+                console.log("Location updated!");
+                setMapLoc(loc);
+                setShowInput(false); // hide input
+            } else {
+                alert(data.message || "Failed to update location");
+            }
+            } catch (error) {
+                console.error("Failed to update location", error);
+                alert("Error updating location");
+            }
+    };
 
 
     return (
@@ -317,12 +352,32 @@ export default function EditCapsule() {
                                     Add location
                                 </Typography>
 
-                                <LocationPicker onSelect={handleLocationSelect} />
+                                {!showMapUI && !mapLoc && (
+                                    <AddIcon 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                    }}
+                                    onClick={() => setShowMapUI(true)}
+                                    />
+                                )}
 
-                                {mapLoc && (
-                                <p style={{ position: 'absolute', bottom: 8, left: 240, fontSize: 12 }}>
-                                    Selected: {mapLoc.address}
-                                </p>
+                                {showMapUI && (
+                                    <LocationPicker onSelect={handleLocationSelect} toggleUI={() => setShowMapUI(false)} />
+                                )}
+
+                                {!showMapUI && mapLoc && (
+                                    <Button 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                        color: 'white'
+                                    }}
+                                    onClick={() => setShowMapUI(true)}>
+                                        {mapLoc.name}
+                                    </Button>
                                 )}
                             </Box>
                         </Box>

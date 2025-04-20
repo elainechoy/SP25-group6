@@ -13,6 +13,7 @@ import Letter from "./Letter.js";
 import LetterList from './LetterList.js';
 import Profile from './Profile.js';
 import PhotoUploadForm from './media_upload/PhotoUpload.js';
+import MapViewer from './MapsComponents/MapViewer.js'
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
 
         <Route path="/upload-photo" element={<PhotoUploadForm />} />
+        <Route path="/map" element={<MapViewer />} />
       </Routes>
     </Router>
   );

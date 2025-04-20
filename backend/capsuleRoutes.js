@@ -221,4 +221,38 @@ router.patch('/update-video-link', async (req, res) => {
   }
 });
 
+router.patch('/update-location', async (req, res) => {
+  const db = req.app.locals.db;
+  const { capsuleId, name, latitude, longitude } = req.body;
+
+  if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+    return res
+      .status(400)
+      .json({ error: 'Both latitude and longitude must be numbers' });
+  }
+
+  try {
+    const result = await db.collection('capsules').updateOne(
+      { _id: new ObjectId(capsuleId.toString()) },
+      { $set: {
+        location: {
+          type: 'Point',
+          name: name,
+          coordinates: [latitude, longitude]
+        }
+      }}
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Capsule not found" });
+    }
+
+    return res.status(200).json({ message: "location changed successfully" });
+  } catch (error) {
+    console.error("Error updating location:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 module.exports = router;

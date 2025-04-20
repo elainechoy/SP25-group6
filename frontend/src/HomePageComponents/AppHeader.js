@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const pages = ['Home', 'Friends'];
+const pages = ['Home', 'Map', 'Friends'];
 const settings = ['Profile', 'Logout'];
 
 function AppHeader( {user} ) {
