@@ -4,7 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
 import PDFPreviewOverlay from "../PDFPreviewOverlay";
 
-function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
+function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf, clickSound }) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [previewText, setPreviewText] = useState("");
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -27,6 +27,9 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
   }, [pdfId]);
 
   const handleShowFullPDF = () => {
+        // rewind & play
+       clickSound.currentTime = 0;
+       clickSound.play();
         // then show your preview overlay
         setShowOverlay(true);
       };
@@ -160,6 +163,7 @@ LetterCard.propTypes = {
   pdfTitle: PropTypes.string,
   onDelete: PropTypes.func,
   onOpenFullPdf: PropTypes.func,
+  clickSound: PropTypes.instanceOf(Audio).isRequired,
 };
 
 export default LetterCard;

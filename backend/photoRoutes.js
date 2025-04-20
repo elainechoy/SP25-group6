@@ -2,7 +2,6 @@
 const express = require("express");
 const multer = require("multer");
 const { ObjectId, GridFSBucket } = require("mongodb");
-const jwt = require('jsonwebtoken'); 
 
 const router = express.Router();
 
@@ -37,7 +36,7 @@ router.post('/upload-photo', upload.single('photo'), async (req, res) => {
     }
     // Optional: check extension if you want to allow only .jpg/.jpeg
     const ext = req.file.originalname.split('.').pop().toLowerCase();
-    if (!['jpg', 'jpeg','png'].includes(ext)) {
+    if (!['jpg', 'jpeg', 'png'].includes(ext)) {
       return res.status(400).send("Only .jpg or .jpeg or .png files are allowed.");
     }
 
@@ -95,13 +94,19 @@ router.post('/upload-photo', upload.single('photo'), async (req, res) => {
   }
 });
 
+
 // GET /api/photo/:filename → Stream a photo file from GridFS
 router.get('/photo/:filename', async (req, res) => {
   try {
     const db = req.app.locals.db;
     const bucket = new GridFSBucket(db, { bucketName: 'photoUploads' });
-    const downloadStream = bucket.openDownloadStreamByName(req.params.filename);
+    //const downloadStream = bucket.openDownloadStreamByName(req.params.filename);
 
+    // get the most recent file with this filename:
+    const downloadStream = bucket.openDownloadStreamByName(
+      req.params.filename,
+      { revision: -1 }
+    );
     res.set('Content-Type', 'image/jpeg');
     downloadStream.on('error', () => {
       res.status(404).send("Image not found");
@@ -112,6 +117,7 @@ router.get('/photo/:filename', async (req, res) => {
     res.status(500).send("Error retrieving image");
   }
 });
+
 
 // GET /api/get-photos-by-capsule/:capsuleId → Fetch photo metadata by capsule
 router.get('/get-photos-by-capsule/:capsuleId', async (req, res) => {
@@ -180,7 +186,7 @@ router.post('/upload-profile-image', authenticateJWT, upload.single('profileImag
           { _id: userId },
           { $set: { profileImageId: stream.id } } // dynamically adds or updates this field
         );
-    
+
         res.status(200).json({ message: 'Profile image uploaded.', fileId: stream.id });
       } catch (error) {
         console.error("Error updating user with profileImageId:", error);

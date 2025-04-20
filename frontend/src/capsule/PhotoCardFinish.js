@@ -8,7 +8,6 @@ function PhotoCardFinish({ photoTitle, filename }) {
       sx={{
         alignItems: "center",
         justifyContent: "flex-start",
-        width: "80%",
         position: "relative",
         mt: 1,
       }}
@@ -19,6 +18,7 @@ function PhotoCardFinish({ photoTitle, filename }) {
           alt={photoTitle || "Photo"}
           style={{
             maxWidth: "100%",
+            objectFit: 'contain',
             borderRadius: "5px",
             boxShadow: "0px 0px 50px 20px rgb(255, 255, 255, 0.2)",
           }}

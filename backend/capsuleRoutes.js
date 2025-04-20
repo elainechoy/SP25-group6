@@ -51,7 +51,7 @@ router.post('/create_capsule', authenticateJWT, async (req, res) => {
       members,
       createdAt: new Date(),
       isSealed: false,
-      videoLink: null
+      videoLink: null,
     });
 
     const capsuleId = result.insertedId;
@@ -220,5 +220,7 @@ router.patch('/update-video-link', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
 
 module.exports = router;

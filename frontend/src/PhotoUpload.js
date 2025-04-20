@@ -1,111 +1,77 @@
-import React, { useState, useContext, useCallback } from 'react';
-import { Box, Button, TextField, Typography, Input, Paper, CircularProgress, IconButton, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import AppHeader from './HomePageComponents/AppHeader.js';
-import UserContext from './UserContext.js';
+import React, { useState, useContext, useRef } from 'react';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Input,
+  Paper,
+  CircularProgress,
+  IconButton
+} from '@mui/material';
+import AppHeader from './HomePageComponents/AppHeader';
+import UserContext from './UserContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-
-import Cropper from 'react-easy-crop';
-import 'react-easy-crop/react-easy-crop.css';
+import Cropper from "react-cropper";
+//import 'cropperjs/dist/cropper.css';
 
 const PhotoUploadForm = () => {
   const location = useLocation();
   const capsuleId = location.state?.capsuleId;
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
   const [photo, setPhoto] = useState(null);
-  const [imageSrc, setImageSrc] = useState('');
+  const [imageSrc, setImageSrc] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const cropperRef = useRef(null);
 
-  const [cropAspect, setCropAspect] = useState(1);
-
-  const navigate = useNavigate();
-
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (!file) return;
-
-    console.log('file', file);
-    if (!file.type.includes('jpeg') && !file.type.includes('jpg') && !file.type.includes('png')) {
+    if (!file.type.match(/jpeg|jpg|png/)) {
       setMessage('Only JPG and PNG files are allowed.');
       return;
     }
-
     setPhoto(file);
-
-    // Create a blob URL for preview
+    setMessage('');
     const url = URL.createObjectURL(file);
-    console.log('Image src:', url);
     setImageSrc(url);
+   // setCropBoxWidth(0);
+   // setCropBoxHeight(0);
   };
 
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
 
-  const getCroppedImg = (imageSrc, pixelCrop) => {
-    return new Promise((resolve, reject) => {
-      const image = new Image();
-      image.src = imageSrc;
-      image.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = pixelCrop.width;
-        canvas.height = pixelCrop.height;
-        const ctx = canvas.getContext('2d');
 
-        ctx.drawImage(
-          image,
-          pixelCrop.x,
-          pixelCrop.y,
-          pixelCrop.width,
-          pixelCrop.height,
-          0,
-          0,
-          pixelCrop.width,
-          pixelCrop.height
-        );
-
-        canvas.toBlob(blob => {
-          if (!blob) {
-            return reject(new Error('Canvas is empty'));
-          }
-          resolve(blob);
-        }, 'image/jpeg');
-      };
-      image.onerror = error => {
-        reject(error);
-      };
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      alert('User not authenticated');
+    if (!photo) {
+      setMessage('Please select a photo.');
       return;
     }
-
-    if (!title || !photo) {
-      setMessage('Please provide both title and photo.');
-      return;
-    }
-
     setUploading(true);
-
     try {
-      // Get the cropped image blob using our helper
-      let fileToUpload = photo; // fallback: original file
-      if (imageSrc && croppedAreaPixels) {
-        const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-        fileToUpload = new File([croppedBlob], photo.name, { type: croppedBlob.type });
+      // Get cropped blob
+      let blob = null;
+      const cropper = cropperRef.current;
+      if (cropper) {
+        blob = await new Promise(resolve =>
+          cropper.getCroppedCanvas().toBlob(resolve, 'image/jpeg')
+        );
+      }
+      const fileToUpload = blob
+        ? new File([blob], photo.name, { type: blob.type })
+        : photo;
+
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('User not authenticated');
+        setUploading(false);
+        return;
       }
 
       const formData = new FormData();
@@ -115,35 +81,23 @@ const PhotoUploadForm = () => {
 
       const response = await fetch('http://localhost:5001/api/upload-photo', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
       });
 
       setUploading(false);
-
       if (!response.ok) {
         const errorText = await response.text();
-        setMessage(errorText || 'Upload failed. Please try again.');
+        setMessage(errorText || 'Upload failed.');
         return;
       }
 
       alert('Photo uploaded successfully!');
-      setTitle('');
-      setPhoto(null);
-      setImageSrc('');
+      navigate('/edit-capsule', { state: { capsuleId } });
     } catch (err) {
-      console.error('Upload error:', err);
-      setMessage('Error uploading photo. Please try again.');
+      console.error(err);
+      setMessage('Error uploading photo.');
       setUploading(false);
-    }
-  };
-
-  const handleAspectToggle = (event, newAspect) => {
-    // Prevent null update if user clicks the already active value.
-    if (newAspect !== null) {
-      setCropAspect(newAspect);
     }
   };
 
@@ -152,29 +106,22 @@ const PhotoUploadForm = () => {
       <AppHeader user={user} />
       <IconButton
         onClick={() => navigate('/edit-capsule', { state: { capsuleId } })}
-        sx={{
-          position: 'absolute',
-          top: '110px',
-          left: '16px',
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        }}
+        sx={{ position: 'absolute', top: '110px', left: '16px', backgroundColor: 'rgba(255,255,255,0.5)' }}
       >
         <ArrowBackIosNewIcon />
       </IconButton>
 
-      <Paper elevation={3} sx={{ p: 4, maxWidth: 500, mx: 'auto', mt: 6 }}>
+      <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto', mt: 6 }}>
         <Typography variant="h5" gutterBottom>
           Upload and Crop a JPG or PNG Photo
         </Typography>
-
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <TextField
             fullWidth
             label="Photo Title"
-            variant="outlined"
             margin="normal"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             required
           />
 
@@ -182,77 +129,48 @@ const PhotoUploadForm = () => {
             type="file"
             inputProps={{ accept: '.jpg,.jpeg,.png' }}
             onChange={handleFileChange}
-            required
             sx={{ my: 2 }}
+            required
           />
 
-          {/* Toggle for crop shape: Square vs. Rectangle */}
           {imageSrc && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-              <ToggleButtonGroup
-                value={cropAspect}
-                exclusive
-                onChange={handleAspectToggle}
-                aria-label="Crop Aspect Ratio"
-              >
-                <ToggleButton value={1} aria-label="Square">
-                  Square
-                </ToggleButton>
-                <ToggleButton value={16 / 9} aria-label="Rectangle">
-                  Rectangle
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
-          )}
-
-          {imageSrc && (
-            <Box
-              sx={{
-                position: 'relative',
-                width: '100%',
-                height: 300,
-                background: '#333',
-                mt: 2,
+            <Cropper
+              src={imageSrc}
+              style={{ height: 400, width: '100%' }}
+              guides={true}
+              viewMode={1}
+              background={false}
+              responsive
+              autoCropArea={0.8}
+              checkOrientation={false}
+              onInitialized={instance => {
+                cropperRef.current = instance;
               }}
-            >
-              <Cropper
-                image={imageSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={cropAspect} // Use the dynamic aspect value here
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-            </Box>
+            />
           )}
 
-
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: '#c95eff',
-            '&:hover': { backgroundColor: '#d98eff' },
-            borderRadius: '30px',
-            mt: 2,
-          }}
-          type="submit"
-          disabled={uploading}
-          fullWidth
-        >
-          {uploading ? <CircularProgress size={24} /> : 'Upload Photo'}
-        </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: '#c95eff',
+              '&:hover': { backgroundColor: '#d98eff' },
+              borderRadius: '30px',
+              mt: 2
+            }}
+            type="submit"
+            disabled={uploading}
+            fullWidth
+          >
+            {uploading ? <CircularProgress size={24} /> : 'Upload Photo'}
+          </Button>
+        </Box>
+        {message && (
+          <Typography sx={{ mt: 2 }} color="secondary">
+            {message}
+          </Typography>
+        )}
+      </Paper>
     </Box>
-
-        {
-    message && (
-      <Typography sx={{ mt: 2 }} color="secondary">
-        {message}
-      </Typography>
-    )
-  }
-      </Paper >
-    </Box >
   );
 };
 
