@@ -251,7 +251,7 @@ export default function CreateCapsule() {
                   <ListItem
                   key={member}
                   sx={{
-                    backgroundColor: "#eabfff",
+                    backgroundColor: "#fbf2ff",
                     marginBottom: 1,
                     borderRadius: 1,
                     display: 'flex',

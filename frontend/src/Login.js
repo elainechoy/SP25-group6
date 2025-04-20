@@ -86,7 +86,7 @@ const Login = () => {
           Save your memories <br /> in a Snap
         </Typography>
         <Typography variant="h6" sx={{ maxWidth: "500px", mb: 4 }}>
-          Create a digital time capsule with your friends to capture thoughts, photos, and moments together.
+          Create a Digital Time Capsule with your friends to capture thoughts, photos, and moments together.
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2 }}>

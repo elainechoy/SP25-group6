@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, IconButton, Fade } from "@mui/material";
+import { Box, Typography, IconButton, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
-import PDFPreviewOverlay from "../PDFPreviewOverlay";
 
 function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
-  const [showOverlay, setShowOverlay] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [previewText, setPreviewText] = useState("");
   const [pdfUrl, setPdfUrl] = useState(null);
 
@@ -25,9 +24,6 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
     fetchPreview();
     setPdfUrl(`http://localhost:5001/api/pdf/${pdfId}`);
   }, [pdfId]);
-
-  const handleShowFullPDF = () => setShowOverlay(true);
-  const handleCloseOverlay = () => setShowOverlay(false);
 
   const handleDelete = async () => {
     const confirm = window.confirm("Are you sure you want to delete this letter?");
@@ -50,24 +46,28 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
       console.error("Delete error:", err.message);
       alert("Failed to delete PDF.");
     }
-  }
+  };
 
   return (
     <>
       <Box
-        onClick={!showOverlay ? handleShowFullPDF : () => {}}
+        onClick={() => setShowPreview(!showPreview)}
         sx={{
           width: "80%",
-          height: 210,
+          height: showPreview ? "auto" : 210,
           position: "relative",
           backgroundColor: "#FFDCDC",
           borderRadius: "10px",
           boxShadow: "0px 0px 50px 20px rgb(255, 255, 255, 0.18)",
-          transition: "height 0.5s ease",
+          transition: "height 0.5s ease, transform 0.3s ease",
           overflow: "hidden",
           mt: 2,
           mb: 3,
-          cursor: showOverlay ? "default" : "pointer",
+          cursor: "pointer",
+          "&:hover": !showPreview && {
+            transform: "scale(1.02)",
+            boxShadow: "0px 0px 60px 25px rgba(255, 255, 255, 0.2)",
+          },
         }}
       >
         {/* Envelope Flap */}
@@ -79,73 +79,87 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
             width: "100%",
             height: "50%",
             backgroundColor: "#FFB6C1",
-            clipPath: showOverlay
+            clipPath: showPreview
               ? "polygon(0 0, 100% 0, 100% 0, 0% 0)"
               : "polygon(0 0, 100% 0, 50% 90%)",
             transition: "clip-path 0.5s ease",
             zIndex: 0
           }}
         />
-        {/* Preview text shows only after open */}
-        <Fade in={showOverlay} timeout={500} unmountOnExit>
-            <Box> {/* This gives Fade a real DOM node to animate */}
-                <PDFPreviewOverlay
-                pdfTitle={pdfTitle}
-                previewText={previewText}
-                onClose={handleCloseOverlay}
-                pdfUrl={pdfUrl}
-                onOpenFullPdf={onOpenFullPdf}
-                />
-            </Box>
-        </Fade>
-
-        {/* Sender */}
-        <Typography
-          variant="h6"
-          sx={{
-            fontFamily: "Handwriting, cursive",
-            color: "red",
-            position: "relative",
-            zIndex: 1,
-            mt: 11,
-            textAlign: "center",
-            display: showOverlay ? "none" : "block"
-          }}
-        >
-
-          A letter by <span style={{ color: "red" }}> 💫 {pdfUser || "Loading..."} </span>
-
-        </Typography>
-
-        {/* Decoration lines */}
-        <Box sx={{ position: "absolute", bottom: 20, width: "60%", height: "3px", backgroundColor: "white", zIndex: 0 }} />
-        <Box sx={{ position: "absolute", bottom: 30, width: "50%", height: "3px", backgroundColor: "white", zIndex: 0 }} />
-
-        {/* Close button (not for the overlay) */}
-        {onDelete && (
-                <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Optional: add a delete handler here
-                  handleDelete()
-                }}
-                sx={{
-                  position: "absolute",
-                  top: 5,
-                  right: 5,
-                  color: "black",
-                  backgroundColor: "rgba(255,255,255,0.7)",
-                  borderRadius: "50%",
-                  width: "24px",
-                  height: "24px",
-                  zIndex: 3,
-                  "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" }
-                }}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
+        
+        {/* Delete button */}
+        {onDelete && !showPreview && (
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+            sx={{
+              position: "absolute",
+              top: 5,
+              right: 5,
+              color: "black",
+              backgroundColor: "rgba(255,255,255,0.7)",
+              borderRadius: "50%",
+              width: "24px",
+              height: "24px",
+              zIndex: 3,
+              "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" }
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
         )}
-        {/* PDF Overlay */}
+        
+        {/* Show preview text when clicked */}
+        {showPreview ? (
+          <Box sx={{ position: "relative", zIndex: 1, padding: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color: "black" }}>
+              {pdfTitle || "Letter Title"}
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, color: "black" }}>
+              {previewText}
+            </Typography>
+            <Button
+              onClick={() => onOpenFullPdf(pdfUrl)}
+              sx={{
+                backgroundColor: "#FFB6C1",
+                color: "#fff",
+                fontWeight: "bold",
+                textTransform: "none",
+                borderRadius: "20px",
+                padding: "8px 20px",
+                "&:hover": {
+                  backgroundColor: "#FF8C94",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+                },
+              }}
+            >
+              Read More
+            </Button>
+          </Box>
+        ) : (
+          <>
+            {/* Sender text */}
+            <Typography
+              variant="h6"
+              sx={{
+                fontFamily: "Handwriting, cursive",
+                color: "red",
+                position: "relative",
+                zIndex: 1,
+                mt: 11,
+                textAlign: "center",
+              }}
+            >
+              A letter by <span style={{ color: "red" }}> 💫 {pdfUser || "Loading..."} </span>
+            </Typography>
+
+            {/* Decoration lines */}
+            <Box sx={{ position: "absolute", bottom: 20, width: "60%", height: "3px", backgroundColor: "white", zIndex: 0 }} />
+            <Box sx={{ position: "absolute", bottom: 30, width: "50%", height: "3px", backgroundColor: "white", zIndex: 0 }} />
+          </>
+        )}
       </Box>
     </>
   );
