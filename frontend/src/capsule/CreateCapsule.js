@@ -148,7 +148,7 @@ export default function CreateCapsule() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "#702b9d" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "linear-gradient(to bottom right, #7c3aed, rgb(183, 124, 239), #7c3aed)", }}>
       <Card style={{ width: "100%", maxWidth: 600, padding: 16, boxShadow: "0px 4px 10px rgba(0,0,0,0.2)"}}>
         <CardHeader
           title={<Typography variant="h5" sx={{ color: "#702b9d" , fontWeight: "bold"}}> Create a capsule </Typography>}

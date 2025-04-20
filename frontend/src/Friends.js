@@ -89,7 +89,7 @@ const Friends = () => {
             alignItems: 'center',
             minHeight: '100vh',
             backgroundColor: '# ',
-            background: 'linear-gradient(to bottom right, #702b9d, #b991db, #702b9d)',
+            background: "linear-gradient(to bottom right, #7c3aed, rgb(183, 124, 239), #7c3aed)",
             overflow: 'auto',
             p: 2,
         }}
@@ -128,7 +128,7 @@ const Friends = () => {
                     sx={{
                     borderRadius: 4,
                     padding: 3,
-                    backgroundColor: '#753b9c',
+                    backgroundColor: 'rgba(106, 20, 220, 0.7)',
                     color: 'white',
                     }}
                 >
