@@ -9,6 +9,7 @@ import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
 import { lighten } from 'polished';
+// import e from 'cors';
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -192,15 +193,59 @@ export default function EditCapsule() {
         }
     };
 
-    // for custmozing background color
-    const [bgColor, setBgColor] = useState('rgb(161, 52, 234)');
+    // for customizing background color
+    const [bgColor, setBgColor] = useState('#a134ea');
+    const [light, setLight] = useState(lighten(0.25, '#702b9d'));
+    const [dark, setDark] = useState(lighten(0.1, '#702b9d'));
+
     const generateGradientColors = (color) => {
         return {
         light: lighten(0.25, color),  // Much lighter shade of bgColor
         dark: lighten(0.1, color),    // Lighter shade of bgColor
         };
     };
-    const { light, dark } = generateGradientColors(bgColor);
+
+    useEffect(() => {
+        const fetchColor = async () => {
+        try {
+            const res = await fetch(`http://localhost:5001/api/get-color/${capsuleId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await res.json();
+            if (res.ok && data.color) {
+                setBgColor(data.color);
+                const { light, dark } = generateGradientColors(data.color);
+                setLight(light);
+                setDark(dark);
+            }
+        } catch (error) {
+            console.error('Failed to fetch capsule color:', error);
+        }
+        };
+
+        fetchColor();
+    }, [capsuleId]);
+
+    const handleColorChange = async (c) => {
+        // set current background color
+        setBgColor(c)
+        const { light, dark } = generateGradientColors(c);
+        setLight(light);
+        setDark(dark);
+
+        // update color in the capsule
+        try {
+            await fetch(`http://localhost:5001/api/set-color/${capsuleId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ color: c }),
+            });
+        } catch (error) {
+            console.error('Error setting capsule color:', error);
+        }
+    };
+
 
     return (
         <>
@@ -217,16 +262,16 @@ export default function EditCapsule() {
                             <input
                             type="color"
                             value={bgColor}
-                            onChange={(e) => setBgColor(e.target.value)}
+                            onChange={(e) => handleColorChange(e.target.value)}
                             style={{ cursor: 'pointer', marginRight: '16px' }}
-                        />
+                            />
                         </Typography>
 
                         <Button
                             variant="contained"
                             sx={{
-                                backgroundColor: '#fbf2ff',
-                                color: '#702b9d',
+                                backgroundColor: 'white',
+                                color: bgColor,
                                 paddingX: 3,
                                 paddingY: 1.5,
                                 borderRadius: '20px',
@@ -265,26 +310,6 @@ export default function EditCapsule() {
                             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                                 Shared With:
                             </Typography>
-                            {/* {capsule.members && capsule.members.length > 0 ? (
-                                // <Box component="ul" sx={{ pl: 2 }}>
-                                //     {capsule.members.map((member, index) => (
-                                //         <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
-                                //             {member}
-                                //         </Typography>
-                                //     ))}
-                                // </Box>
-                                <Box component="ul" sx={{ pl: 2 }}>
-                                    {membersInfo.map((member, index) => (
-                                        <Typography component="li" key={index} sx={{ fontSize: '14px' }}>
-                                        {member.username}
-                                        </Typography>
-                                    ))}
-                                </Box>
-                            ) : (
-                                <Typography variant="body2" sx={{ color: 'gray' }}>
-                                    No members listed.
-                                </Typography>
-                            )} */}
                             {capsule.members && capsule.members.length > 0 ? (
                             <Box display="flex" flexDirection="column" gap={2}>
                                 {membersInfo.map((member, index) => (
@@ -294,8 +319,8 @@ export default function EditCapsule() {
                                     sx={{
                                     borderRadius: 3,
                                     padding: 2,
-                                    backgroundColor: '#753b9c',
-                                    color: 'white',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    color: bgColor,
                                     }}
                                 >
                                     <Box display="flex" alignItems="center" gap={1.5}>
@@ -316,7 +341,7 @@ export default function EditCapsule() {
                                         <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: 15 }}>
                                         {member.username}
                                         </Typography>
-                                        <Typography variant="caption" sx={{ fontSize: 12, color: '#e0d6ec' }}>
+                                        <Typography variant="caption" sx={{ fontSize: 12 }}>
                                         {member.email}
                                         </Typography>
                                     </Box>

@@ -52,7 +52,7 @@ router.post('/create_capsule', authenticateJWT, async (req, res) => {
       createdAt: new Date(),
       isSealed: false,
       videoLink: null,
-      color: 'rgb(161, 52, 234)'
+      color: '#a134ea'
     });
 
     const capsuleId = result.insertedId;
@@ -221,5 +221,49 @@ router.patch('/update-video-link', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// set capsule background color
+router.post('/set-color/:capsuleId', async (req, res) => {
+  const db = req.app.locals.db;
+  const capsulesCollection = db.collection("capsules");
+
+  const { capsuleId } = req.params;
+  const { color } = req.body;
+
+  try {
+    const result = await capsulesCollection.updateOne(
+      { _id: new ObjectId(capsuleId) },
+      { $set: { color } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Capsule not found' });
+    }
+    return res.status(200).json({ message: 'Capsule color updated successfully' });
+  } catch (error) {
+    console.error('Error updating capsule color:', error);
+    return res.status(500).json({ message: 'Failed to update capsule color', error: error.message });
+  }
+});
+
+// get capsule background color
+router.get('/get-color/:capsuleId', async (req, res) => {
+  const db = req.app.locals.db;
+  const capsulesCollection = db.collection("capsules");
+  
+  try {
+    const { capsuleId } = req.params;
+    const capsule = await capsulesCollection.findOne({ _id: new ObjectId(capsuleId) });
+
+    if (!capsule) {
+      return res.status(404).json({ message: 'Capsule not found' });
+    }
+    return res.status(200).json({ color: capsule.color || '#a134ea' }); // Use a hex fallback
+  } catch (error) {
+    console.error('Error getting capsule color:', error); // Log full error
+    return res.status(500).json({ message: 'Failed to get capsule color', error: error.message || error });
+  }
+});
+
 
 module.exports = router;
