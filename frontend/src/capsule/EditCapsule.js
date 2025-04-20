@@ -9,6 +9,7 @@ import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
 import AddIcon from '@mui/icons-material/Add';
 import ReactPlayer from "react-player/youtube";
+import LocationPicker from '../MapsComponents/LocationPicker'
 
 export default function EditCapsule() {
     const navigate = useNavigate()
@@ -19,6 +20,8 @@ export default function EditCapsule() {
     const [activePdf, setActivePdf] = useState(null);
     const [videoLink, setVideoLink] = useState(null);
     const [showInput, setShowInput] = useState(false);
+    const [mapLoc, setMapLoc] = useState(null);
+
 
     // get capsule info
     const [capsule, setCapsule] = useState("");
@@ -161,6 +164,10 @@ export default function EditCapsule() {
         setImages(prevImages => prevImages.filter((img) => img._id !== imageIdToDelete));
     };
 
+    const handleLocationSelect = loc => {
+        setMapLoc(loc);
+      };
+
 
     return (
         <>
@@ -233,7 +240,7 @@ export default function EditCapsule() {
                             sx={{
                                 // border: "1px solid black",
                                 width: '100%',
-                                mt: 15,
+                                mt: 5,
                                 textAlign: 'center',
                             }}
                             >
@@ -245,7 +252,7 @@ export default function EditCapsule() {
                                         <ReactPlayer url={videoLink} controls width="100%" height="250px" />
                                     </Box>
                                 )}
-                                {!showInput && (
+                                {!showInput && !videoLink && (
                                     <AddIcon 
                                     sx={{
                                         p: 1,
@@ -255,6 +262,18 @@ export default function EditCapsule() {
                                     onClick={() => setShowInput(true)}
     
                                     />
+                                )}
+                                {!showInput && videoLink && (
+                                    <Button 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                        color: 'white'
+                                    }}
+                                    onClick={() => setShowInput(true)}>
+                                        Edit Video link
+                                    </Button>
                                 )}
                                 {showInput && (
                                     <input
@@ -283,6 +302,28 @@ export default function EditCapsule() {
                                 />
                                 )}
 
+                            </Box>
+
+                            {/* Location stuff */}
+                            <Box
+                                sx={{
+                                    // border: "1px solid black",
+                                    width: '100%',
+                                    mt: 5,
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
+                                    Add location
+                                </Typography>
+
+                                <LocationPicker onSelect={handleLocationSelect} />
+
+                                {mapLoc && (
+                                <p style={{ position: 'absolute', bottom: 8, left: 240, fontSize: 12 }}>
+                                    Selected: {mapLoc.address}
+                                </p>
+                                )}
                             </Box>
                         </Box>
 

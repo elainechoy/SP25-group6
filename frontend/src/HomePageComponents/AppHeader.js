@@ -54,7 +54,7 @@ function AppHeader( {user} ) {
     };
 
     fetchImage();
-  }, [user]);
+  }, [user.profileImageId]);
 
   return (
     <AppBar position="static" sx={{backgroundColor: '#f7e8ff'}}>

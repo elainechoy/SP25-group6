@@ -162,10 +162,30 @@ router.post('/upload-profile-image', authenticateJWT, upload.single('profileImag
   const db = req.app.locals.db;
   const bucket = new GridFSBucket(db, { bucketName: 'profileImages' });
 
-  console.log("req.user:", req.user);
-
   try {
     const userId = req.user.id; // from JWT
+
+    const existingFile = await db.collection('profileImages.files').findOne({
+      filename: req.file.originalname,
+      'metadata.userId': userId
+    });
+    
+    if (existingFile) {
+      try {
+        await db.collection('users').updateOne(
+          { _id: userId },
+          { $set: { profileImageId: existingFile._id } } // dynamically adds or updates this field
+        );
+        return res.status(200).json({
+          message: 'Image already exists.',
+          fileId: existingFile._id
+        });
+      } catch (error) {
+        console.error("Error updating user with profileImageId:", error);
+        res.status(500).json({ message: 'image exists already but Failed to link image to user.' });
+      }
+    }
+
     const stream = bucket.openUploadStream(req.file.originalname, {
       metadata: { userId }
     });
