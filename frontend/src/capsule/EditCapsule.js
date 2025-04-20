@@ -21,6 +21,7 @@ export default function EditCapsule() {
     const [videoLink, setVideoLink] = useState(null);
     const [showInput, setShowInput] = useState(false);
 
+
     // get capsule info
     const [capsule, setCapsule] = useState("");
     useEffect(() => {
@@ -146,14 +147,14 @@ export default function EditCapsule() {
             const response = await fetch(`http://localhost:5001/api/update-video-link`, {
                 method: "PATCH",
                 headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ capsuleId: capsuleId, videoLink: videoLink }),
             });
-        
+
             const data = await response.json();
-        
+
             if (response.ok) {
                 console.log("Video link updated!");
                 setVideoLink(videoLink); // update local state
@@ -161,13 +162,24 @@ export default function EditCapsule() {
             } else {
                 alert(data.message || "Failed to update video");
             }
-            } catch (error) {
-                console.error("Failed to update video link", error);
-                alert("Error updating video");
-            }
+        } catch (error) {
+            console.error("Failed to update video link", error);
+            alert("Error updating video");
+        }
     }
 
-    // Seal the capsule
+    useEffect(() => {
+        if (!capsuleId) return;
+        fetch(`.../get_capsule/${capsuleId}`)
+            .then(r => r.json())
+            .then(data => {
+                setCapsule(data);
+                setVideoLink(data.videoLink);
+               // setGradientColor(data.gradientColor || '#702b9d');
+            });
+    }, [capsuleId]);
+
+
     const sealCapsule = async () => {
         const capsuleData = { capsuleId };
 
@@ -254,6 +266,7 @@ export default function EditCapsule() {
                 <AppHeader user={user} />
 
                 <Box sx={{ gap: 3, m: 4 }}>
+
 
                     {/* Capsule Name and Seal Capsule Button */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -466,7 +479,7 @@ export default function EditCapsule() {
                                     onOpenFullPdf={(url) => setActivePdf(url)}
                                 />
                             ))
-                            )}
+                        )}
 
                             <Link to={`/letter/${capsuleId}`} style={{ textDecoration: 'none' }}>
                                 <Button
@@ -551,8 +564,8 @@ export default function EditCapsule() {
                     pdfUrl={activePdf}
                     onClose={() => setActivePdf(null)}
                 />
-                )}
-            </Box>
+            )}
+        </Box >
         </>
     );
 }
