@@ -36,10 +36,12 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import loginPic from './Login_pic.png'; // Adjust path accordingly
+import { AUTH_URL } from './config.js'
 
 const Login = () => {
   const handleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google";
+    console.log(`${AUTH_URL}`)
+    window.location.href = `${AUTH_URL}/auth/google`;
   };
 
   return (

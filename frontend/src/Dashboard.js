@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 // import UserContext from './UserContext.js'
+import { AUTH_URL } from './config.js'
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Dashboard = () => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await fetch("http://localhost:3001/profile", {
+      const response = await fetch(`${AUTH_URL}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();

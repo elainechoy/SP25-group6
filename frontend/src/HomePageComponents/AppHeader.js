@@ -12,6 +12,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { API_URL } from '../config.js'
 
 const pages = ['Home', 'Map', 'Friends'];
 const settings = ['Profile', 'Logout'];
@@ -49,7 +50,7 @@ function AppHeader( {user} ) {
   React.useEffect(() => {
     const fetchImage = async () => {
       if (user?.profileImageId) {
-        setProfileImage(`http://localhost:5001/api/profile-image/${user.profileImageId}`);
+        setProfileImage(`${API_URL}/api/profile-image/${user.profileImageId}`);
       }
     };
 

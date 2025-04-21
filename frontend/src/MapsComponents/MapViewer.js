@@ -10,6 +10,7 @@ import UserContext from '../UserContext.js'
 import AppHeader from '../HomePageComponents/AppHeader'
 import MarkerOverlay from './MarkerOverlay'
 import { useNavigate } from "react-router-dom";
+import { API_URL } from '../config.js'
 
 const containerStyle = { width: '100%', height: '100vh' };
 const defaultCenter = { lat: 38, lng: -90 };
@@ -33,7 +34,7 @@ export default function MapViewer() {
             return;
         }
         try {
-            const response = await fetch('http://localhost:5001/api/get_all_capsules', {
+            const response = await fetch(`${API_URL}/api/get_all_capsules`, {
                 method: "GET",
                 headers: {
                  'Content-Type': 'application/json',

@@ -9,7 +9,10 @@ const { addUser, retrieveUserById } = require("./index");
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3001;
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
+const GOOGLE_CALLBACK = process.env.GOOGLE_CALLBACK || "http://localhost:3001/auth/google/callback";
+
+app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
 app.use(session({ secret: 'your_secret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -17,7 +20,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3001/auth/google/callback" 
+  callbackURL: GOOGLE_CALLBACK
 },
 (accessToken, refreshToken, profile, done) => {
   return done(null, profile);
@@ -69,7 +72,7 @@ app.get('/auth/google/callback',
       const token = jwt.sign(userToken, process.env.JWT_SECRET, { expiresIn: '1h' });
       console.log("Generated Token:", token);
 
-      res.redirect(`http://localhost:3000/dashboard?token=${token}`);
+      res.redirect(`${CLIENT_ORIGIN}/dashboard?token=${token}`);
     } catch (error) {
       console.error("Error in Google OAuth callback:", error);
       res.status(500).json({ message: "Internal Server Error" });
@@ -79,7 +82,7 @@ app.get('/auth/google/callback',
 
 
 
-app.get("/profile", authenticateJWT, async (req, res) => {
+app.get("/auth/profile", authenticateJWT, async (req, res) => {
   try {
     let user = await retrieveUserById(req.user.id)
 
@@ -95,7 +98,7 @@ app.get("/profile", authenticateJWT, async (req, res) => {
   }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/auth/logout', (req, res) => {
   req.logout(() => {
       res.clearCookie('connect.sid');
       req.session.destroy((err) => {

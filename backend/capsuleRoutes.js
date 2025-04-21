@@ -229,7 +229,7 @@ router.patch('/update-location', async (req, res) => {
   if (typeof latitude !== 'number' || typeof longitude !== 'number') {
     return res
       .status(400)
-      .json({ error: 'Both latitude and longitude must be numbers' });
+      .json({ error: 'Both latitude and longitude must be numbers'});
   }
 
   try {
@@ -254,7 +254,6 @@ router.patch('/update-location', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 })
-
 
 // set capsule background color
 router.post('/set-color/:capsuleId', async (req, res) => {

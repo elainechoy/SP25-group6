@@ -10,6 +10,8 @@ import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
 import LocationPicker from '../MapsComponents/LocationPicker'
 import { lighten } from 'polished';
+import AddIcon from '@mui/icons-material/Add';
+import { API_URL } from '../config.js'
 // import e from 'cors';
 
 export default function EditCapsule() {
@@ -32,7 +34,7 @@ export default function EditCapsule() {
         if (capsuleId) {
             const getCapsule = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5001/api/get_capsule/${capsuleId}`, {
+                    const response = await fetch(`${API_URL}/api/get_capsule/${capsuleId}`, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -68,7 +70,7 @@ export default function EditCapsule() {
         if (!capsule || !capsule.members) return; // 👈 prevent error
         const memberInfoPromises = capsule.members.map(async (email) => {
           try {
-            const response = await fetch(`http://localhost:5001/api/retrieve_user_by_email`, {
+            const response = await fetch(`${API_URL}/api/retrieve_user_by_email`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email })
@@ -79,7 +81,7 @@ export default function EditCapsule() {
             }
   
             const user = await response.json();
-            return { email, username: user.username, photo: `http://localhost:5001/api/profile-image/${user.profileImageId}` };
+            return { email, username: user.username, photo: `${API_URL}/api/profile-image/${user.profileImageId}` };
           } catch (error) {
             console.error('Error fetching member info:', error);
             return { email, username: email };  // Fallback to email if user is not found
@@ -101,7 +103,7 @@ export default function EditCapsule() {
                 const token = localStorage.getItem("authToken");
 
                 try {
-                    const response = await fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
+                    const response = await fetch(`${API_URL}/api/get-pdfs-by-capsule/${capsuleId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -131,7 +133,7 @@ export default function EditCapsule() {
         if (capsuleId) {
             const fetchPhotos = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5001/api/get-photos-by-capsule/${capsuleId}`);
+                    const response = await fetch(`${API_URL}/api/get-photos-by-capsule/${capsuleId}`);
                     if (response.ok) {
                         const data = await response.json();
                         setImages(data);
@@ -155,7 +157,7 @@ export default function EditCapsule() {
     const updateVideoLink = async () => {
         try {
             const token = localStorage.getItem("authToken");
-            const response = await fetch(`http://localhost:5001/api/update-video-link`, {
+            const response = await fetch(`${API_URL}/api/update-video-link`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -195,7 +197,7 @@ export default function EditCapsule() {
         const capsuleData = { capsuleId };
 
         try {
-            const response = await fetch("http://localhost:5001/api/seal_capsule", {
+            const response = await fetch(`${API_URL}/api/seal_capsule`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -231,7 +233,7 @@ export default function EditCapsule() {
     useEffect(() => {
         const fetchColor = async () => {
         try {
-            const res = await fetch(`http://localhost:5001/api/get-color/${capsuleId}`, {
+            const res = await fetch(`${API_URL}/api/get-color/${capsuleId}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -259,7 +261,7 @@ export default function EditCapsule() {
 
         // update color in the capsule
         try {
-            await fetch(`http://localhost:5001/api/set-color/${capsuleId}`, {
+            await fetch(`${API_URL}/api/set-color/${capsuleId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ color: c }),
@@ -271,12 +273,13 @@ export default function EditCapsule() {
 
     const handleLocationSelect = async loc => {
         console.log("handle location select reached");
+        console.log(loc.lat + ' ' + loc.lng)
         setShowMapUI(false);
 
         //set location parameter to the capsule in the backend
         try {
             const token = localStorage.getItem("authToken");
-            const response = await fetch(`http://localhost:5001/api/update-location`, {
+            const response = await fetch(`${API_URL}/api/update-location`, {
                 method: "PATCH",
                 headers: {
                 "Content-Type": "application/json",

@@ -11,6 +11,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import paperRip from './assets/paper-rip.mp3';
 import './CarouselOverrides.css';
+import { API_URL } from '../config.js'
 
 const Capsule = () => {
   const location = useLocation();
@@ -29,7 +30,7 @@ const Capsule = () => {
   // Fetch capsule info
   useEffect(() => {
     if (!capsuleId) return;
-    fetch(`http://localhost:5001/api/get_capsule/${capsuleId}`, {
+    fetch(`${API_URL}/api/get_capsule/${capsuleId}`, {
       headers: { 'Content-Type': 'application/json' },
     })
       .then(res => {
@@ -44,7 +45,7 @@ const Capsule = () => {
   useEffect(() => {
     if (!capsuleId) return;
     const token = localStorage.getItem('authToken');
-    fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
+    fetch(`${API_URL}/api/get-pdfs-by-capsule/${capsuleId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {
@@ -58,7 +59,7 @@ const Capsule = () => {
   // Fetch images
   useEffect(() => {
     if (!capsuleId) return;
-    fetch(`http://localhost:5001/api/get-photos-by-capsule/${capsuleId}`)
+    fetch(`${API_URL}/api/get-photos-by-capsule/${capsuleId}`)
       .then(res => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
