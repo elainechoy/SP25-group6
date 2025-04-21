@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import AppHeader from './HomePageComponents/AppHeader.js';
 import ComponentList from './HomePageComponents/ComponentList.js'
 import UserContext from './UserContext.js'
+// import MapViewer from './MapViewer.js'
 
 function Home() {
     const { user } = useContext(UserContext);

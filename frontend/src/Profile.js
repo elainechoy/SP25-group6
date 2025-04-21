@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 function Profile() {
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const [profileImage, setProfileImage] = useState(null);
 
     const handleFileChange = (event) => {
@@ -44,9 +44,10 @@ function Profile() {
           });
     
           if (response.ok) {
-            // const data = await response.json();
+            const data = await response.json();
             alert('Upload successful!');
-            // optionally trigger a refresh or fetch the file from GridFS
+            setUser({ ...user, profileImageId: data.fileId });
+
           } else {
             alert('Upload failed.');
           }
@@ -64,7 +65,7 @@ function Profile() {
         };
     
         fetchImage();
-      }, [user]);
+      }, [user.profileImageId]);
 
     if (!user) {
         return <div>No user data available</div>;
@@ -77,7 +78,9 @@ function Profile() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        mt: 5,
+                        pt: 5,
+                        background: 'linear-gradient(to bottom right, #702b9d, #b991db, #702b9d)',
+                        height: '100vh'
                     }}
                     >
                     <Typography variant="h4" sx={{ color: "#702b9d" }} gutterBottom>
