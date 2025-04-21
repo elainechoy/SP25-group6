@@ -9,6 +9,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import UserContext from './UserContext.js'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import paperTexture from './assets/worn-paper.jpg';
+import texture from './assets/texture.jpg';
+import butterfly from './assets/butterfly.png';
+import wrinkle from './assets/wrinkle-paper.jpg';
+
 
 
 export default function LetterEditor() {
@@ -193,6 +197,9 @@ export default function LetterEditor() {
                             <MenuItem value="#eabfff">Purple</MenuItem>
                             <MenuItem value="#ffc3ec">Pink</MenuItem>
                             <MenuItem value={paperTexture}>Worn Paper</MenuItem>
+                            <MenuItem value={texture}>Textured Paper</MenuItem>
+                            <MenuItem value={butterfly}>Butterfly Paper</MenuItem>
+                            <MenuItem value={wrinkle}>Wrinkled Paper</MenuItem>
                         </Select>
                     </Box>
 
