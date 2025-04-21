@@ -89,6 +89,8 @@ const Capsule = () => {
     mx: 'auto',       // center horizontally
   };
 
+
+
   return (
     <Box sx={{
       display: 'flex',
@@ -148,6 +150,8 @@ const Capsule = () => {
                   pdfUser={pdf.metadata.userName}
                   pdfId={pdf._id}
                   pdfTitle={pdf.metadata.title}
+                  envelopeColor={pdf.metadata.envelopeColor || '#FFDCDC'}
+                  flapColor={pdf.metadata.flapColor || '#E393AE'}
                   clickSound={clickSound}
                   onOpenFullPdf={(url) => setActivePdf(url)}
                 />
@@ -227,7 +231,7 @@ const Capsule = () => {
                     >
                       {images.map(img => (
                         <Box key={img._id} sx={{ width: '100%', px: 1, display: 'flex', justifyContent: 'center' }}>
-                          <PhotoCardFinish key = {img._id} photoTitle={img.title} filename={img.filename} mode = "scroll" />
+                          <PhotoCardFinish key={img._id} photoTitle={img.title} filename={img.filename} mode="scroll" />
                         </Box>
                       ))}
                     </Carousel>
@@ -247,7 +251,7 @@ const Capsule = () => {
                   >
                     {images.map(img => (
                       <PhotoCardFinish
-                      key = {img._id}
+                        key={img._id}
                         photoTitle={img.title}
                         filename={img.filename}
                         mode="scroll"
@@ -268,10 +272,10 @@ const Capsule = () => {
                   >
                     {images.map(img => (
                       <PhotoCardFinish
-                        key = {img._id}
+                        key={img._id}
                         photoTitle={img.title}
                         filename={img.filename}
-                        mode = "grid"
+                        mode="grid"
                       />
                     ))}
                   </Box>
