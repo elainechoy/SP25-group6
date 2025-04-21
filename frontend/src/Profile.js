@@ -10,27 +10,29 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PersonIcon from '@mui/icons-material/Person';
+import { API_URL } from './config.js'
 
 function Profile() {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [profileImage, setProfileImage] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Preview the uploaded image
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
+      // TODO: Upload to server here using fetch or axios
       handleUpload(file);
     }
-  };
-
+};
   const handleUpload = async (file) => {
     const token = localStorage.getItem('authToken');
     const formData = new FormData();
     formData.append('profileImage', file);
 
     try {
-      const response = await fetch('http://localhost:5001/api/upload-profile-image', {
+      const response = await fetch(`${API_URL}/api/upload-profile-image`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,7 +41,10 @@ function Profile() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         alert('Upload successful!');
+        setUser({ ...user, profileImageId: data.fileId });
+
       } else {
         alert('Upload failed.');
       }
@@ -52,11 +57,11 @@ function Profile() {
   useEffect(() => {
     const fetchImage = async () => {
       if (user?.profileImageId) {
-        setProfileImage(`http://localhost:5001/api/profile-image/${user.profileImageId}`);
+        setProfileImage(`${API_URL}/api/profile-image/${user.profileImageId}`);
       }
     };
     fetchImage();
-  }, [user]);
+  }, [user.profileImageId]);
 
   if (!user) {
     return <Typography textAlign="center" mt={10}>No user data available</Typography>;
@@ -131,3 +136,4 @@ function Profile() {
 }
 
 export default Profile;
+

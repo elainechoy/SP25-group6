@@ -34,7 +34,7 @@ export default function LetterEditor() {
         switch (envelopeColor) {
             case '#FFFFFF': setFlapColor('#F7F7F7'); setEnvelopeColor("#FFFFFF"); break; //white
             case '#FFB6C1': setFlapColor('#E393AE'); setEnvelopeColor("#FFB6C1"); break; //pink
-            case '#ADD8E6': setFlapColor('#81BFDA'); setEnvelopeColor("#B1F0F7"); break; //blue
+            case '#ADD8E6': setFlapColor('#81BFDA'); setEnvelopeColor("#ADD8E6"); break; //blue
             default: setFlapColor(envelopeColor);
         }
     }, [envelopeColor]);

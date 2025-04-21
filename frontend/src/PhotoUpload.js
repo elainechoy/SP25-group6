@@ -103,7 +103,7 @@ const PhotoUploadForm = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#702b9d', pt: 4 }}>
+    <Box sx={{ minHeight: '100vh', background: "linear-gradient(to bottom right, #7c3aed, rgb(183, 124, 239), #7c3aed)", pt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <AppHeader user={user} />
       <IconButton
         onClick={() => navigate('/edit-capsule', { state: { capsuleId } })}
