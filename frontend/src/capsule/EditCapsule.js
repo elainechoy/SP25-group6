@@ -10,6 +10,7 @@ import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
 import LocationPicker from '../MapsComponents/LocationPicker'
 import { lighten } from 'polished';
+import AddIcon from '@mui/icons-material/Add';
 // import e from 'cors';
 
 export default function EditCapsule() {
