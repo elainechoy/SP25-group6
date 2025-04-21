@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { TextField, Button, Select, MenuItem, Box, Typography, ToggleButtonGroup, ToggleButton, IconButton } from '@mui/material';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -24,120 +24,140 @@ export default function LetterEditor() {
     const [background, setBackground] = useState('#ffffff');
     const [formats, setFormats] = useState([]);
 
+    // body‐color state
+    const [envelopeColor, setEnvelopeColor] = useState('#FFFFFF');
+    // flap‐color will be derived from envelopeColor
+    const [flapColor, setFlapColor] = useState('#F7F7F7');
+
+    // whenever the body‐color changes, set a matching flap‐color
+    useEffect(() => {
+        switch (envelopeColor) {
+            case '#FFFFFF': setFlapColor('#F7F7F7'); setEnvelopeColor("#FFFFFF"); break; //white
+            case '#FFB6C1': setFlapColor('#E393AE'); setEnvelopeColor("#FFB6C1"); break; //pink
+            case '#ADD8E6': setFlapColor('#81BFDA'); setEnvelopeColor("#B1F0F7"); break; //blue
+            default: setFlapColor(envelopeColor);
+        }
+    }, [envelopeColor]);
+
+
     const navigate = useNavigate();
 
     const handleFormat = (event, newFormats) => {
         setFormats(newFormats);
     };
 
+
+
     const loadImageAsDataURL = (url) => {
         return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width  = img.width;
-            canvas.height = img.height;
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            resolve(canvas.toDataURL('image/jpeg'));
-          };
-          img.onerror = reject;
-          img.src = url;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/jpeg'));
+            };
+            img.onerror = reject;
+            img.src = url;
         });
-      };
+    };
 
-      const generatePDFAndSubmit = async () => {
+    const generatePDFAndSubmit = async () => {
         const token = localStorage.getItem("authToken");
         if (!token) {
-          alert("User not authenticated");
-          return;
+            alert("User not authenticated");
+            return;
         }
-    
+
         // decide if we’re using a color or an image
         const isImageBackground = /\.(jpe?g|png)$/i.test(background);
-    
+
         // create the PDF
         const doc = new jsPDF();
-    
+
         // 1) draw background
         if (isImageBackground) {
-          const dataUrl = await loadImageAsDataURL(background);
-          // A4 is 210×297mm
-          doc.addImage(dataUrl, 'JPEG', 0, 0, 210, 297);
+            const dataUrl = await loadImageAsDataURL(background);
+            // A4 is 210×297mm
+            doc.addImage(dataUrl, 'JPEG', 0, 0, 210, 297);
         } else {
-          doc.setFillColor(background);
-          doc.rect(0, 0, 210, 297, 'F');
+            doc.setFillColor(background);
+            doc.rect(0, 0, 210, 297, 'F');
         }
-    
+
         // 2) draw text (title + body)
         // Title
         doc.setFont('helvetica', 'bold').setFontSize(20);
-        const pageWidth  = doc.internal.pageSize.getWidth();
+        const pageWidth = doc.internal.pageSize.getWidth();
         const titleWidth = doc.getTextWidth(title);
-        const titleX     = (pageWidth - titleWidth) / 2;
+        const titleX = (pageWidth - titleWidth) / 2;
         doc.text(title, titleX, 20);
-    
+
         // Body
         doc.setFontSize(12).setFont('helvetica', 'normal');
         if (formats.includes('bold') && formats.includes('italic')) {
-          doc.setFont('helvetica', 'bolditalic');
+            doc.setFont('helvetica', 'bolditalic');
         } else if (formats.includes('bold')) {
-          doc.setFont('helvetica', 'bold');
+            doc.setFont('helvetica', 'bold');
         } else if (formats.includes('italic')) {
-          doc.setFont('helvetica', 'italic');
+            doc.setFont('helvetica', 'italic');
         }
-    
+
         const lines = doc.splitTextToSize(text, 180);
         doc.text(lines, 10, 40);
-    
+
         // 3) upload
         const pdfBlob = doc.output('blob');
         const formData = new FormData();
-        formData.append('file', pdfBlob, `${title || 'letter'}.pdf`);
         formData.append('title', title);
+        formData.append('envelopeColor', envelopeColor);
+        formData.append('flapColor', flapColor);
         formData.append('capsuleId', capsuleId);
-    
+        formData.append('file', pdfBlob, `${title || 'letter'}.pdf`);
+
         const res = await fetch('http://localhost:5001/api/upload-pdf', {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData,
         });
-    
+
         if (res.ok) {
-          navigate('/edit-capsule', { state: { capsuleId } });
+            navigate('/edit-capsule', { state: { capsuleId } });
         } else {
-          alert('Error uploading PDF');
+            alert('Error uploading PDF');
         }
-      };
+    };
 
     const getStyle = () => {
         const isImage = background.endsWith('.png') || background.endsWith('.jpg');
         return {
-          fontWeight: formats.includes('bold') ? 'bold' : 'normal',
-          fontStyle:  formats.includes('italic') ? 'italic' : 'normal',
-          width:       '100%',
-          minHeight:   '300px',
-          padding:     '10px',
-          border:      '1px solid #ccc',
-          borderRadius:'5px',
-          outline:     'none',
-          resize:      'none',
-          fontSize:    '16px',
-      
-          // **if it's an image URL, use it as backgroundImage**, otherwise backgroundColor
-          ...(isImage
-            ? {
-                backgroundImage:    `url(${background})`,
-                backgroundSize:     'cover',
-                backgroundPosition: 'center center'
-              }
-            : {
-                backgroundColor: background
-              }
-          )
+            fontWeight: formats.includes('bold') ? 'bold' : 'normal',
+            fontStyle: formats.includes('italic') ? 'italic' : 'normal',
+            width: '100%',
+            minHeight: '300px',
+            padding: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            outline: 'none',
+            resize: 'none',
+            fontSize: '16px',
+
+            // **if it's an image URL, use it as backgroundImage**, otherwise backgroundColor
+            ...(isImage
+                ? {
+                    backgroundImage: `url(${background})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center center'
+                }
+                : {
+                    backgroundColor: background
+                }
+            )
         };
-      };
-      
+    };
+
 
     return (
         <>
@@ -200,6 +220,16 @@ export default function LetterEditor() {
                             <MenuItem value={texture}>Textured Paper</MenuItem>
                             <MenuItem value={butterfly}>Butterfly Paper</MenuItem>
                             <MenuItem value={wrinkle}>Wrinkled Paper</MenuItem>
+                        </Select>
+                        <Typography>Envelope Color:</Typography>
+                        <Select
+                            value={envelopeColor}
+                            onChange={e => setEnvelopeColor(e.target.value)}
+                            size="small"
+                        >
+                            <MenuItem value="#FFFFFF">White</MenuItem>
+                            <MenuItem value="#FFB6C1">Pink</MenuItem>
+                            <MenuItem value="#ADD8E6">Light Blue</MenuItem>
                         </Select>
                     </Box>
 
