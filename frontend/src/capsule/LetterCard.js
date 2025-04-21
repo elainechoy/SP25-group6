@@ -170,7 +170,7 @@ LetterCard.propTypes = {
   pdfId: PropTypes.string.isRequired,
   pdfTitle: PropTypes.string,
   onDelete: PropTypes.func,
-  onOpenFullPdf: PropTypes.func
+  onOpenFullPdf: PropTypes.func,
 };
 
 export default LetterCard;
