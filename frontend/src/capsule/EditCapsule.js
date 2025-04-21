@@ -562,6 +562,8 @@ export default function EditCapsule() {
                                     pdfUser={pdf.metadata.userName}
                                     pdfId={pdf._id}
                                     pdfTitle={pdf.metadata.title}
+                                    envelopeColor={pdf.metadata.envelopeColor || '#FFDCDC'}
+                                    flapColor={  pdf.metadata.flapColor || '#E393AE'}
                                     onDelete={() => handleDeletePdf(pdf._id)}
                                     onOpenFullPdf={(url) => setActivePdf(url)}
                                 />
