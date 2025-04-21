@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
+import { API_URL } from '../config.js'
 
 function PhotoCard({ photoId, photoTitle, filename, onDelete }) {
   // Delete logic
@@ -13,7 +14,7 @@ function PhotoCard({ photoId, photoTitle, filename, onDelete }) {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/delete-photo/${photoId}`, {
+      const res = await fetch(`${API_URL}/api/delete-photo/${photoId}`, {
         method: "DELETE",
       });
 
@@ -49,7 +50,7 @@ function PhotoCard({ photoId, photoTitle, filename, onDelete }) {
       {/* Full Image */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
         <img
-          src={`http://localhost:5001/api/photo/${filename}`}
+          src={`${API_URL}/api/photo/${filename}`}
           alt={photoTitle || "Photo"}
           style={{
             maxWidth: "100%",

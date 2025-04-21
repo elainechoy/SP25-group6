@@ -15,6 +15,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { API_URL } from '../config.js'
 
 export default function CreateCapsule() {
   const [title, setTitle] = useState("");
@@ -34,7 +35,7 @@ export default function CreateCapsule() {
     const fetchFriends = async () => {
       const token = localStorage.getItem("authToken");
   
-      const capsuleRes = await fetch('http://localhost:5001/api/get_all_capsules', {
+      const capsuleRes = await fetch(`${API_URL}/api/get_all_capsules`, {
         method: "GET",
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +56,7 @@ export default function CreateCapsule() {
   
       const friendsInfo = await Promise.all(
         friendEmails.map(async (email) => {
-          const friendRes = await fetch(`http://localhost:5001/api/retrieve_user_by_email`, {
+          const friendRes = await fetch(`${API_URL}/api/retrieve_user_by_email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),
@@ -123,7 +124,7 @@ export default function CreateCapsule() {
     };
 
     try {
-      const response = await fetch("http://localhost:5001/api/create_capsule", {
+      const response = await fetch(`${API_URL}/api/create_capsule`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Specify content type

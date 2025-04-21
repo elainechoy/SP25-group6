@@ -10,10 +10,10 @@ export default function LocationPicker({ onSelect, toggleUI }) {
   });
 
   // 2️⃣ Local state
-  const [inputValue, setInputValue]       = useState('');
-  const [suggestions, setSuggestions]     = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const autocompleteService = useRef(null);
-  const placesService       = useRef(null);
+  const placesService = useRef(null);
 
   // 3️⃣ Once maps is ready, create the services
   useEffect(() => {
@@ -53,14 +53,15 @@ export default function LocationPicker({ onSelect, toggleUI }) {
 
   // 5️⃣ When the user picks one, fetch its details
   const handleSelect = (placeId, description) => {
+    console.log("handle select yayyayyyy")
     placesService.current.getDetails(
       { placeId, fields: ['name','formatted_address','geometry'] },
       (place, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK) {
           const loc = place.geometry.location;
+          console.log("calling onSelect");
           onSelect({
             name:    place.name,
-            address: place.formatted_address,
             lat:     loc.lat(),
             lng:     loc.lng()
           });
@@ -82,7 +83,9 @@ export default function LocationPicker({ onSelect, toggleUI }) {
         placeholder="Search a place…"
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
-        onBlur={() => toggleUI()}
+        onBlur={() => {
+            setTimeout(toggleUI, 100);
+        }}
         style={{
           width: '100%',
           padding: 8,
@@ -132,67 +135,3 @@ LocationPicker.propTypes = {
   onSelect:  PropTypes.func.isRequired,
   toggleUI:  PropTypes.func.isRequired,
 };
-
-// const { isLoaded, loadError } = useLoadScript({
-//     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY,
-//     libraries: ['places'],
-//   });
-//   const containerRef = useRef(null);
-
-//   useEffect(() => {
-//     if (!isLoaded || !containerRef.current) return;
-  
-//     window.google.maps
-//       .importLibrary('places')
-//       .then(places => {
-//         const widget = new places.PlaceAutocompleteElement({
-//           fields: ['name','formatted_address','geometry']
-//         });
-
-//         widget.style.display     = 'block';
-//         widget.style.width       = '100%';        // fill its container
-//         widget.style.height      = '40px';        // a tappable height
-//         widget.style.padding     = '8px';         // some inset
-//         widget.style.fontSize    = '16px';
-//         widget.style.border      = '1px solid #ccc';
-//         widget.style.borderRadius= '4px';
-//         widget.style.boxSizing   = 'border-box';
-  
-//         // clear out an old widget if you re‑open
-//         containerRef.current.innerHTML = '';
-//         containerRef.current.appendChild(widget);
-  
-//         widget.addListener('gmp-select', () => {
-//           const place = widget.getPlace();
-//           if (!place.geometry) return;
-//           const loc = place.geometry.location.toJSON();
-//           onSelect({
-//             name:    place.name,
-//             address: place.formatted_address,
-//             lat:     loc.lat,
-//             lng:     loc.lng
-//           });
-//           toggleUI();
-//         });
-//       })
-//       .catch(err => console.error('Places import failed', err));
-//   }, [isLoaded, onSelect, toggleUI]);
-  
-
-//   if (loadError) return <p>Error loading map</p>;
-//   if (!isLoaded) return <p>Loading map…</p>;
-
-//   // this <div> is where the new widget will insert its own <input>
-//   return (
-//     <div
-//       ref={containerRef}
-//       style={{
-//         width:       200,           // ← give it some width
-//         padding:     8,
-//         background:  'white',
-//         boxShadow:   '0 2px 6px rgba(0,0,0,0.3)',
-//         borderRadius:'8px',
-//         overflow:    'hidden',
-//       }}
-//     />
-//   );
