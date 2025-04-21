@@ -12,12 +12,12 @@ export default function MarkerOverlay({ capsule }) {
     };
 
     if (passToday(capsule.unlockDate)) {
-        bgColor = '#694af0';
+        bgColor = '#00ff3c';
     } else {
         if (!capsule.isSealed) {
-            bgColor = '#ba3ef0'
+            bgColor = '#e08aff'
         } else {
-            bgColor = '#ff001e'
+            bgColor = '#b700ff'
         }
     }
     

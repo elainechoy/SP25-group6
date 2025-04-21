@@ -16,7 +16,7 @@ spec:
         app: sp25-group6-mongo
     spec:
       containers:
-        - image: sp25-group6-backend_5001:v1
+        - image: sp25-group6-backend_5001:mongo
           imagePullPolicy: Never
           name: sp25-group6-mongo
           ports:
@@ -24,6 +24,10 @@ spec:
           env:
             - name: MONGO_URI
               value: "mongodb+srv://celaine:OVNbm7KFJaMjWec3@cluster0.zqiao.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+            - name: GOOGLE_CALLBACK
+              value: "http://localhost:8080/auth/google/callback"
+            - name: CLIENT_ORIGIN
+              value: "http://localhost:8080"
 ---
 apiVersion: v1
 kind: Service
@@ -53,7 +57,7 @@ spec:
         app: sp25-group6
     spec:
       containers:
-        - image: sp25-group6-backend_3001:v1
+        - image: sp25-group6-backend_3001:server
           imagePullPolicy: Never
           name: sp25-group6
           ports:
@@ -61,6 +65,10 @@ spec:
           env:
             - name: MONGO_URI
               value: "mongodb+srv://celaine:OVNbm7KFJaMjWec3@cluster0.zqiao.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+            - name: GOOGLE_CALLBACK
+              value: "http://localhost:8080/auth/google/callback"
+            - name: CLIENT_ORIGIN
+              value: "http://localhost:8080"
 ---
 apiVersion: v1
 kind: Service
@@ -90,11 +98,16 @@ spec:
         app: sp25-group6-frontend
     spec:
       containers:
-        - image: sp25-group6-frontend:v1
+        - image: sp25-group6-frontend:frontend
           imagePullPolicy: Never
           name: sp25-group6
           ports:
             - containerPort: 3000
+          env:
+            - name: REACT_APP_AUTH_URL
+              value: "http://localhost:8080/auth"
+            - name: REACT_APP_API_URL
+              value: "http://localhost:8080"
 ---
 apiVersion: v1
 kind: Service
@@ -111,6 +124,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sp25-group6
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 spec:
   rules:
     - http:
