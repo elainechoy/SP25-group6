@@ -3,7 +3,7 @@ const multer = require('multer');
 const { GridFSBucket, ObjectId } = require('mongodb');
 const pdfParse = require('pdf-parse');
 // If you still want to protect these routes, uncomment and use your JWT middleware
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -31,11 +31,12 @@ router.post(
   authenticateJWT, // <- Uncomment if you want to require auth
   upload.single('file'),
   async (req, res) => {
+    console.log("BODY:", req.body);
     const db = req.app.locals.db;
     const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
 
     try {
-      const { title, capsuleId } = req.body;
+      const { title, capsuleId, envelopeColor, flapColor } = req.body;
       const userName = req.user.name;
       const userId = req.user.id;
 
@@ -48,10 +49,12 @@ router.post(
 
       // Create a new upload stream in GridFS
       const uploadStream = bucket.openUploadStream(req.file.originalname, {
-        metadata: { 
+        metadata: {
           title,
           userId,
           userName,
+          envelopeColor,
+          flapColor,
           capsuleId: capsuleObjectId
         }
       });
@@ -94,81 +97,81 @@ router.get('/get-all-pdfs', async (req, res) => {
 });
 
 router.get('/download-pdf/:id', async (req, res) => {
-    try {
-      const db = req.app.locals.db;
-      const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
-  
-      const fileId = new ObjectId(req.params.id);
-  
-      // Optional: Set headers for file download
-      res.set('Content-Type', 'application/pdf');
-      // If you want the browser to force download:
-      // res.set('Content-Disposition', 'attachment; filename="letter.pdf"');
-  
-      // Pipe the file to the response
-      const downloadStream = bucket.openDownloadStream(fileId);
-  
-      downloadStream.on('error', (err) => {
-        console.error('Download Stream Error:', err);
-        return res.status(404).json({ message: 'File not found.' });
-      });
-  
-      downloadStream.pipe(res);
-  
-    } catch (error) {
-      console.error('Error retrieving PDF:', error);
-      return res.status(500).json({ message: 'Error retrieving PDF.', error });
+  try {
+    const db = req.app.locals.db;
+    const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
+
+    const fileId = new ObjectId(req.params.id);
+
+    // Optional: Set headers for file download
+    res.set('Content-Type', 'application/pdf');
+    // If you want the browser to force download:
+    // res.set('Content-Disposition', 'attachment; filename="letter.pdf"');
+
+    // Pipe the file to the response
+    const downloadStream = bucket.openDownloadStream(fileId);
+
+    downloadStream.on('error', (err) => {
+      console.error('Download Stream Error:', err);
+      return res.status(404).json({ message: 'File not found.' });
+    });
+
+    downloadStream.pipe(res);
+
+  } catch (error) {
+    console.error('Error retrieving PDF:', error);
+    return res.status(500).json({ message: 'Error retrieving PDF.', error });
+  }
+});
+
+
+router.get("/get-user-pdfs", authenticateJWT, async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    const bucket = new GridFSBucket(db, { bucketName: "pdfs" });
+
+    const userId = req.user.id; // Extract user ID from token
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
     }
-  });
 
+    // Find all PDFs uploaded by this user
+    const cursor = bucket.find({ "metadata.userId": userId });
+    const pdfs = await cursor.toArray();
 
-  router.get("/get-user-pdfs", authenticateJWT, async (req, res) => {
-    try {
-      const db = req.app.locals.db;
-      const bucket = new GridFSBucket(db, { bucketName: "pdfs" });
-  
-      const userId = req.user.id; // Extract user ID from token
-      if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
-      }
-  
-      // Find all PDFs uploaded by this user
-      const cursor = bucket.find({ "metadata.userId": userId });
-      const pdfs = await cursor.toArray();
-  
-      res.json(pdfs); // Return all PDFs metadata for this user
-    } catch (error) {
-      console.error("Error fetching PDFs:", error);
-      res.status(500).json({ message: "Error fetching PDFs", error });
+    res.json(pdfs); // Return all PDFs metadata for this user
+  } catch (error) {
+    console.error("Error fetching PDFs:", error);
+    res.status(500).json({ message: "Error fetching PDFs", error });
+  }
+});
+
+router.get('/get-pdfs-by-capsule/:capsuleId', async (req, res) => {
+  try {
+    const db = req.app.locals.db; // Get the database instance
+    const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
+
+    const capsuleId = req.params.capsuleId;
+
+    // Validate if capsuleId is a valid ObjectId
+    if (!ObjectId.isValid(capsuleId)) {
+      return res.status(400).json({ message: "Invalid capsule ID" });
     }
-  });
 
-  router.get('/get-pdfs-by-capsule/:capsuleId', async (req, res) => {
-    try {
-        const db = req.app.locals.db; // Get the database instance
-        const bucket = new GridFSBucket(db, { bucketName: 'pdfs' });
+    // Query PDFs where metadata.capsuleId matches the given capsuleId
+    const files = await db.collection('pdfs.files')
+      .find({ "metadata.capsuleId": new ObjectId(capsuleId) })
+      .toArray();
 
-        const capsuleId = req.params.capsuleId;
-
-        // Validate if capsuleId is a valid ObjectId
-        if (!ObjectId.isValid(capsuleId)) {
-            return res.status(400).json({ message: "Invalid capsule ID" });
-        }
-
-        // Query PDFs where metadata.capsuleId matches the given capsuleId
-        const files = await db.collection('pdfs.files')
-            .find({ "metadata.capsuleId": new ObjectId(capsuleId) })
-            .toArray();
-
-        if (!files.length) {
-            return res.status(404).json({ message: "No PDFs found for this capsule" });
-        }
-
-        res.status(200).json(files);
-    } catch (error) {
-        console.error("Error fetching PDFs by capsule ID:", error);
-        res.status(500).json({ message: "Internal server error" });
+    if (!files.length) {
+      return res.status(404).json({ message: "No PDFs found for this capsule" });
     }
+
+    res.status(200).json(files);
+  } catch (error) {
+    console.error("Error fetching PDFs by capsule ID:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.get('/pdf/:id', async (req, res) => {

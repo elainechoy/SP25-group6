@@ -12,6 +12,7 @@ import EditCapsule from './capsule/EditCapsule.js'
 import Letter from "./Letter.js";
 import LetterList from './LetterList.js';
 import Profile from './Profile.js';
+import MapViewer from './MapsComponents/MapViewer.js'
 import PhotoUploadForm from './PhotoUpload.js';
 
 const App = () => {
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
 
         <Route path="/upload-photo" element={<PhotoUploadForm />} />
+        <Route path="/map" element={<MapViewer />} />
       </Routes>
     </Router>
   );

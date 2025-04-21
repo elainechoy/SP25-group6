@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, List, ListItem, Link } from '@mui/material';
+import { API_URL } from './config.js'
 
 export default function LetterList() {
   const [letters, setLetters] = useState([]);
 
   useEffect(() => {
     // Fetch all PDF metadata from the server
-    fetch('http://localhost:5001/api/get-all-pdfs')
+    fetch(`${API_URL}/api/get-all-pdfs`)
       .then((res) => res.json())
       .then((data) => {
         setLetters(data);
@@ -24,7 +25,7 @@ export default function LetterList() {
           <ListItem key={file._id}>
             {/* Use either metadata.title or fallback to filename */}
             <Link
-              href={`http://localhost:5001/api/download-pdf/${file._id}`}
+              href={`${API_URL}/api/download-pdf/${file._id}`}
               // For forced download, you can also use `download` attribute in <a>:
               // download="letter.pdf"
               target="_blank" // open in new tab

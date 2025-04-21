@@ -8,7 +8,10 @@ import UserContext from '../UserContext.js';
 import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
+import LocationPicker from '../MapsComponents/LocationPicker'
 import { lighten } from 'polished';
+import AddIcon from '@mui/icons-material/Add';
+import { API_URL } from '../config.js'
 // import e from 'cors';
 
 export default function EditCapsule() {
@@ -20,6 +23,9 @@ export default function EditCapsule() {
     const [activePdf, setActivePdf] = useState(null);
     const [videoLink, setVideoLink] = useState(null);
     const [showInput, setShowInput] = useState(false);
+    const [mapLoc, setMapLoc] = useState(null);
+    const [showMapUI, setShowMapUI] = useState(false);
+
 
 
     // get capsule info
@@ -28,7 +34,7 @@ export default function EditCapsule() {
         if (capsuleId) {
             const getCapsule = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5001/api/get_capsule/${capsuleId}`, {
+                    const response = await fetch(`${API_URL}/api/get_capsule/${capsuleId}`, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -42,6 +48,13 @@ export default function EditCapsule() {
                     setCapsule(data);
                     setVideoLink(data.videoLink);
 
+                    // unpack the GeoJSON coords into {lat,lng}
+                    const coords = data.location?.coordinates;
+                    const locationName = data.location?.name;
+                    if (Array.isArray(coords) && coords.length === 2) {
+                        const [lat, lng] = coords;
+                        setMapLoc({ name: locationName, lat, lng });
+                    }
                 } catch (error) {
                     console.error("Error fetching capsules:", error);
                 }
@@ -57,7 +70,7 @@ export default function EditCapsule() {
         if (!capsule || !capsule.members) return; // 👈 prevent error
         const memberInfoPromises = capsule.members.map(async (email) => {
           try {
-            const response = await fetch(`http://localhost:5001/api/retrieve_user_by_email`, {
+            const response = await fetch(`${API_URL}/api/retrieve_user_by_email`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email })
@@ -68,7 +81,7 @@ export default function EditCapsule() {
             }
   
             const user = await response.json();
-            return { email, username: user.username, photo: `http://localhost:5001/api/profile-image/${user.profileImageId}` };
+            return { email, username: user.username, photo: `${API_URL}/api/profile-image/${user.profileImageId}` };
           } catch (error) {
             console.error('Error fetching member info:', error);
             return { email, username: email };  // Fallback to email if user is not found
@@ -90,7 +103,7 @@ export default function EditCapsule() {
                 const token = localStorage.getItem("authToken");
 
                 try {
-                    const response = await fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
+                    const response = await fetch(`${API_URL}/api/get-pdfs-by-capsule/${capsuleId}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -120,7 +133,7 @@ export default function EditCapsule() {
         if (capsuleId) {
             const fetchPhotos = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5001/api/get-photos-by-capsule/${capsuleId}`);
+                    const response = await fetch(`${API_URL}/api/get-photos-by-capsule/${capsuleId}`);
                     if (response.ok) {
                         const data = await response.json();
                         setImages(data);
@@ -144,7 +157,7 @@ export default function EditCapsule() {
     const updateVideoLink = async () => {
         try {
             const token = localStorage.getItem("authToken");
-            const response = await fetch(`http://localhost:5001/api/update-video-link`, {
+            const response = await fetch(`${API_URL}/api/update-video-link`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -184,7 +197,7 @@ export default function EditCapsule() {
         const capsuleData = { capsuleId };
 
         try {
-            const response = await fetch("http://localhost:5001/api/seal_capsule", {
+            const response = await fetch(`${API_URL}/api/seal_capsule`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -220,7 +233,7 @@ export default function EditCapsule() {
     useEffect(() => {
         const fetchColor = async () => {
         try {
-            const res = await fetch(`http://localhost:5001/api/get-color/${capsuleId}`, {
+            const res = await fetch(`${API_URL}/api/get-color/${capsuleId}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -248,7 +261,7 @@ export default function EditCapsule() {
 
         // update color in the capsule
         try {
-            await fetch(`http://localhost:5001/api/set-color/${capsuleId}`, {
+            await fetch(`${API_URL}/api/set-color/${capsuleId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ color: c }),
@@ -256,6 +269,38 @@ export default function EditCapsule() {
         } catch (error) {
             console.error('Error setting capsule color:', error);
         }
+    };
+
+    const handleLocationSelect = async loc => {
+        console.log("handle location select reached");
+        console.log(loc.lat + ' ' + loc.lng)
+        setShowMapUI(false);
+
+        //set location parameter to the capsule in the backend
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await fetch(`${API_URL}/api/update-location`, {
+                method: "PATCH",
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ capsuleId: capsuleId, name: loc.name, latitude: loc.lat, longitude: loc.lng }),
+            });
+        
+            const data = await response.json();
+        
+            if (response.ok) {
+                console.log("Location updated!");
+                setMapLoc(loc);
+                setShowInput(false); // hide input
+            } else {
+                alert(data.message || "Failed to update location");
+            }
+            } catch (error) {
+                console.error("Failed to update location", error);
+                alert("Error updating location");
+            }
     };
 
 
@@ -445,6 +490,48 @@ export default function EditCapsule() {
                                 />
                             )}
                             </Box>
+
+                            {/* Location stuff */}
+                            <Box
+                                sx={{
+                                    // border: "1px solid black",
+                                    width: '100%',
+                                    mt: 5,
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
+                                    Add location
+                                </Typography>
+
+                                {!showMapUI && !mapLoc && (
+                                    <AddIcon 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                    }}
+                                    onClick={() => setShowMapUI(true)}
+                                    />
+                                )}
+
+                                {showMapUI && (
+                                    <LocationPicker onSelect={handleLocationSelect} toggleUI={() => setShowMapUI(false)} />
+                                )}
+
+                                {!showMapUI && mapLoc && (
+                                    <Button 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                        color: 'white'
+                                    }}
+                                    onClick={() => setShowMapUI(true)}>
+                                        {mapLoc.name}
+                                    </Button>
+                                )}
+                            </Box>
                         </Box>
 
 
@@ -475,6 +562,8 @@ export default function EditCapsule() {
                                     pdfUser={pdf.metadata.userName}
                                     pdfId={pdf._id}
                                     pdfTitle={pdf.metadata.title}
+                                    envelopeColor={pdf.metadata.envelopeColor || '#FFDCDC'}
+                                    flapColor={  pdf.metadata.flapColor || '#E393AE'}
                                     onDelete={() => handleDeletePdf(pdf._id)}
                                     onOpenFullPdf={(url) => setActivePdf(url)}
                                 />

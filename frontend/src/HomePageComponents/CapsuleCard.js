@@ -6,6 +6,7 @@ import ButtonBase from '@mui/material/ButtonBase';
 import LockIcon from '@mui/icons-material/Lock';
 import { Box, Divider } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { API_URL } from '../config.js'
 
 export default function CapsuleCard() {
     const [capsules, setCapsules] = React.useState([]);
@@ -19,7 +20,7 @@ export default function CapsuleCard() {
                 return;
             }
             try {
-                const response = await fetch('http://localhost:5001/api/get_all_capsules', {
+                const response = await fetch(`${API_URL}/api/get_all_capsules`, {
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json',

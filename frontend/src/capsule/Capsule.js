@@ -6,11 +6,11 @@ import { useLocation } from 'react-router-dom';
 import UserContext from '../UserContext';
 import PhotoCardFinish from './PhotoCardFinish';
 import PDFOverlay from '../PDFOverlay';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import paperRip from './assets/paper-rip.mp3';
 import './CarouselOverrides.css';
+import { API_URL } from '../config.js'
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 
 const Capsule = () => {
   const location = useLocation();
@@ -29,7 +29,7 @@ const Capsule = () => {
   // Fetch capsule info
   useEffect(() => {
     if (!capsuleId) return;
-    fetch(`http://localhost:5001/api/get_capsule/${capsuleId}`, {
+    fetch(`${API_URL}/api/get_capsule/${capsuleId}`, {
       headers: { 'Content-Type': 'application/json' },
     })
       .then(res => {
@@ -44,7 +44,7 @@ const Capsule = () => {
   useEffect(() => {
     if (!capsuleId) return;
     const token = localStorage.getItem('authToken');
-    fetch(`http://localhost:5001/api/get-pdfs-by-capsule/${capsuleId}`, {
+    fetch(`${API_URL}/api/get-pdfs-by-capsule/${capsuleId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {
@@ -58,7 +58,7 @@ const Capsule = () => {
   // Fetch images
   useEffect(() => {
     if (!capsuleId) return;
-    fetch(`http://localhost:5001/api/get-photos-by-capsule/${capsuleId}`)
+    fetch(`${API_URL}/api/get-photos-by-capsule/${capsuleId}`)
       .then(res => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
@@ -67,14 +67,26 @@ const Capsule = () => {
       .catch(console.error);
   }, [capsuleId]);
 
-  const sliderSettings = {
-    dots: true,
-    infinite: images.length > 1,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    centerMode: true,
-    centerPadding: '0px',
+  const carouselBreakpoints = {
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 1,          // only one image per “page”
+      partialVisibilityGutter: 0
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 640 },
+      items: 1,
+    },
+    mobile: {
+      breakpoint: { max: 640, min: 0 },
+      items: 1,
+    },
+  };
+
+  const contentWrapper = {
+    width: '100%',
+    maxWidth: 800,    // pick whatever max makes sense
+    mx: 'auto',       // center horizontally
   };
 
   return (
@@ -124,7 +136,7 @@ const Capsule = () => {
           </Box>
 
           {/* Letters */}
-          <Box component="section" sx={{ p: 3, borderRadius: 3, width: '40%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box component="section" sx={{ p: 3, borderRadius: 3, width: '35%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {pdfs.length === 0 ? (
               <Typography variant="body2" sx={{ textAlign: 'center', mt: 4, fontStyle: 'italic', color: 'gray' }}>
                 You wrote no letters in your capsule :(
@@ -143,7 +155,18 @@ const Capsule = () => {
           </Box>
 
           {/* Images */}
-          <Box component="section" sx={{ p: 3, borderRadius: 3, width: '40%', justifyContent: 'center' }}>
+          <Box
+            component="section"
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              flex: 1,
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             {images.length > 0 ? (
               <>
                 <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -156,54 +179,99 @@ const Capsule = () => {
                     onChange={(_, val) => val && setViewMode(val)}
                     size="small"
                   >
-                    <ToggleButton value="carousel">Carousel</ToggleButton>
-                    <ToggleButton value="scroll">Scroll</ToggleButton>
-                    <ToggleButton value="grid">Grid</ToggleButton>
+                    <ToggleButton
+                      value="carousel"
+                      sx={{ fontSize: '20px', px: 2, py: 1 }}
+                    >
+                      ⬅️🎠➡️
+                    </ToggleButton>
+                    <ToggleButton
+                      value="scroll"
+                      sx={{ fontSize: '20px', px: 2, py: 1 }}
+                    >
+                      ⬆️🛗⬇️
+                    </ToggleButton>
+                    <ToggleButton
+                      value="grid"
+                      sx={{ fontSize: '20px', px: 2, py: 1 }}
+                    >
+                      ⏹️⏹️⏹️
+                    </ToggleButton>
                   </ToggleButtonGroup>
                 </Box>
 
                 {viewMode === 'carousel' && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Box sx={{ width: '80%' }}>
-                      <Slider {...sliderSettings}>
-                        {images.map(img => {
-                          return (
-                            <Box
-                              key={img._id}
-                              sx={{ width: '60%', maxWidth: 500 }}
-                            >
-                              <PhotoCardFinish photoTitle={img.title} filename={img.filename} />
-                            </Box>
-                          );
-                        }
+                  <Box sx={{
+                    ...contentWrapper,
+                    height: '60vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    '& .react-multi-carousel-list, & .react-multi-carousel-track': {
+                      height: '100% !important',
+                      alignItems: 'center',
+                    },
+                  }
+                  }>
 
-                        )}
-                      </Slider>
-
-                    </Box>
+                    <Carousel
+                      responsive={carouselBreakpoints}
+                      arrows           // show left / right chevrons
+                      showDots         // bottom dots
+                      infinite={images.length > 1}
+                      keyBoardControl
+                      containerClass="carousel-container"     // for optional custom CSS
+                      //itemClass="carousel-item-padding-40-px" // default gutter
+                      dotListClass="carousel-dots"
+                    //renderDotsOutside
+                    >
+                      {images.map(img => (
+                        <Box key={img._id} sx={{ width: '100%', px: 1, display: 'flex', justifyContent: 'center' }}>
+                          <PhotoCardFinish key = {img._id} photoTitle={img.title} filename={img.filename} mode = "scroll" />
+                        </Box>
+                      ))}
+                    </Carousel>
                   </Box>
                 )}
 
                 {viewMode === 'scroll' && (
-                  <Box sx={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      ...contentWrapper,
+                      maxHeight: 400,
+                      overflowY: 'auto',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 2,
+                    }}
+                  >
                     {images.map(img => (
-                      <PhotoCardFinish photoTitle={img.title} filename={img.filename} />
+                      <PhotoCardFinish
+                      key = {img._id}
+                        photoTitle={img.title}
+                        filename={img.filename}
+                        mode="scroll"
+                      />
                     ))}
                   </Box>
                 )}
 
                 {viewMode === 'grid' && (
-                  <Box sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: 2,
-                    maxHeight: '80vh',
-                    overflowY: 'auto',
-                    alignItems: 'center',
-
-                  }}>
+                  <Box
+                    sx={{
+                      ...contentWrapper,
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(3, 1fr)',
+                      gap: 2,
+                      alignItems: 'center',
+                    }}
+                  >
                     {images.map(img => (
-                      <PhotoCardFinish photoTitle={img.title} filename={img.filename} />
+                      <PhotoCardFinish
+                        key = {img._id}
+                        photoTitle={img.title}
+                        filename={img.filename}
+                        mode = "grid"
+                      />
                     ))}
                   </Box>
                 )}

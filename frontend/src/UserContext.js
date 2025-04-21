@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import PropTypes from 'prop-types';
+import { AUTH_URL } from './config.js'
 
 const UserContext = createContext();
 
@@ -16,7 +17,7 @@ export const UserProvider = ({ children }) => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await fetch("http://localhost:3001/profile", {
+      const response = await fetch(`${AUTH_URL}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
