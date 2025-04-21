@@ -252,7 +252,10 @@ router.patch('/update-location', async (req, res) => {
   } catch (error) {
     console.error("Error updating location:", error);
     return res.status(500).json({ message: "Internal server error" });
-    
+  }
+})
+
+
 // set capsule background color
 router.post('/set-color/:capsuleId', async (req, res) => {
   const db = req.app.locals.db;
