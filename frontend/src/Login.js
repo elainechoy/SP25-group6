@@ -41,7 +41,7 @@ import { AUTH_URL } from './config.js'
 const Login = () => {
   const handleLogin = () => {
     console.log(`${AUTH_URL}`)
-    window.location.href = `${AUTH_URL}/auth/google`;
+    window.location.href = `${AUTH_URL}/google`;
   };
 
   return (
