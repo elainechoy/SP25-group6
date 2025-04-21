@@ -83,11 +83,11 @@ function Profile() {
                         height: '100vh'
                     }}
                     >
-                    <Typography variant="h4" gutterBottom>
+                    <Typography variant="h4" sx={{ color: "#702b9d" }} gutterBottom>
                         Welcome, {user.name}!
                     </Typography>
-                    <Typography variant="subtitle1" gutterBottom>
-                        Email: {user.email}
+                    <Typography variant="subtitle1" sx={{ color: "#702b9d" }} gutterBottom>
+                        {user.email}
                     </Typography>
 
                     <Stack direction="column" spacing={2} alignItems="center" mt={3}>
@@ -97,9 +97,18 @@ function Profile() {
                         sx={{ width: 120, height: 120 }}
                         />
                         <Button
-                        variant="contained"
-                        component="label"
-                        sx={{ textTransform: 'none' }}
+                          component="label"
+                          sx={{
+                            backgroundColor: "#702b9d",
+                            color: "white",
+                            fontSize: "1rem",
+                            fontWeight: "normal",
+                            textTransform: "none", // prevents automatic capitalization
+                            px: 2,                 // reduced horizontal padding
+                            py: 1,                 // reduced vertical padding
+                            borderRadius: "20px",
+                            paddingTop: "20"
+                          }}
                         >
                         Upload Profile Picture
                         <input
