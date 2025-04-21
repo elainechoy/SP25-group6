@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import { API_URL } from '../config.js'
 
 function PhotoCardFinish({ photoTitle, filename, mode = 'carousel' }) {
   const isCarousel = mode === 'carousel';
@@ -20,8 +21,8 @@ function PhotoCardFinish({ photoTitle, filename, mode = 'carousel' }) {
     >
       <Box sx={{ mb: 1 }}>
         <img
-          src={`http://localhost:5001/api/photo/${filename}`}
-          alt={photoTitle}
+          src={`${API_URL}/api/photo/${filename}`}
+          alt={photoTitle || "Photo"}
           style={{
             maxHeight: isCarousel ? '75%' : 'auto',
             maxWidth: '100%',

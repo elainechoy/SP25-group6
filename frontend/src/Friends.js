@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Card, Avatar, Typography, Box } from '@mui/material';
 import UserContext from './UserContext.js';
+import { API_URL } from './config.js'
 
 const Friends = () => {
   const [friendsData, setFriendsData] = useState([]);
@@ -12,7 +13,7 @@ const Friends = () => {
         console.log('Current user:', user);
 
         const token = localStorage.getItem("authToken");
-        const capsuleRes = await fetch('http://localhost:5001/api/get_all_capsules', {
+        const capsuleRes = await fetch(`${API_URL}/api/get_all_capsules`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ const Friends = () => {
 
         const friendsInfo = await Promise.all(
             Object.keys(allFriends).map(async (email) => {
-              const friendRes = await fetch(`http://localhost:5001/api/retrieve_user_by_email`, {
+              const friendRes = await fetch(`${API_URL}/api/retrieve_user_by_email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
@@ -56,7 +57,7 @@ const Friends = () => {
           
               return {
                 username: friendInfo.username,
-                photo: `http://localhost:5001/api/profile-image/${friendInfo.profileImageId}`,
+                photo: `${API_URL}/api/profile-image/${friendInfo.profileImageId}`,
                 sharedCapsules: allFriends[email].sharedCapsules,
               };
             })

@@ -3,6 +3,7 @@ import { Box, Typography, IconButton, Fade } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
 import PDFPreviewOverlay from "../PDFPreviewOverlay";
+import { API_URL } from '../config.js'
 
 function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -13,7 +14,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
   useEffect(() => {
     const fetchPreview = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/pdf/${pdfId}/preview`);
+        const response = await fetch(`${API_URL}/api/pdf/${pdfId}/preview`);
         const data = await response.json();
         setPreviewText(data.previewText || "No preview available.");
       } catch (err) {
@@ -23,7 +24,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
     };
 
     fetchPreview();
-    setPdfUrl(`http://localhost:5001/api/pdf/${pdfId}`);
+    setPdfUrl(`${API_URL}/api/pdf/${pdfId}`);
   }, [pdfId]);
 
   const handleShowFullPDF = () => {
@@ -37,7 +38,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, onDelete, onOpenFullPdf }) {
     if (!confirm) return;
   
     try {
-      const res = await fetch(`http://localhost:5001/api/delete-pdf/${pdfId}`, {
+      const res = await fetch(`${API_URL}/api/delete-pdf/${pdfId}`, {
         method: 'DELETE',
       });
   

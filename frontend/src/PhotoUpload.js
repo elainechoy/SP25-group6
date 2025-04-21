@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Cropper from "react-cropper";
 //import 'cropperjs/dist/cropper.css';
+import { API_URL } from './config.js'
 
 const PhotoUploadForm = () => {
   const location = useLocation();
@@ -79,7 +80,7 @@ const PhotoUploadForm = () => {
       formData.append('photo', fileToUpload);
       formData.append('capsuleId', capsuleId);
 
-      const response = await fetch('http://localhost:5001/api/upload-photo', {
+      const response = await fetch(`${API_URL}/api/upload-photo`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData

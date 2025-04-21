@@ -8,6 +8,7 @@ import {
   Button,
   Stack
 } from '@mui/material';
+import { API_URL } from './config.js'
 
 function Profile() {
     const { user, setUser } = useContext(UserContext);
@@ -35,7 +36,7 @@ function Profile() {
         formData.append('profileImage', file); 
     
         try {
-          const response = await fetch('http://localhost:5001/api/upload-profile-image', {
+          const response = await fetch(`${API_URL}/api/upload-profile-image`, {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${token}`,
@@ -60,7 +61,7 @@ function Profile() {
       useEffect(() => {
         const fetchImage = async () => {
           if (user?.profileImageId) {
-            setProfileImage(`http://localhost:5001/api/profile-image/${user.profileImageId}`);
+            setProfileImage(`${API_URL}/api/profile-image/${user.profileImageId}`);
           }
         };
     
