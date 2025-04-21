@@ -8,6 +8,7 @@ import UserContext from '../UserContext.js';
 import PhotoCard from './PhotoCard.js';
 import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
+import LocationPicker from '../MapsComponents/LocationPicker'
 import { lighten } from 'polished';
 // import e from 'cors';
 
@@ -20,6 +21,9 @@ export default function EditCapsule() {
     const [activePdf, setActivePdf] = useState(null);
     const [videoLink, setVideoLink] = useState(null);
     const [showInput, setShowInput] = useState(false);
+    const [mapLoc, setMapLoc] = useState(null);
+    const [showMapUI, setShowMapUI] = useState(false);
+
 
 
     // get capsule info
@@ -42,6 +46,13 @@ export default function EditCapsule() {
                     setCapsule(data);
                     setVideoLink(data.videoLink);
 
+                    // unpack the GeoJSON coords into {lat,lng}
+                    const coords = data.location?.coordinates;
+                    const locationName = data.location?.name;
+                    if (Array.isArray(coords) && coords.length === 2) {
+                        const [lat, lng] = coords;
+                        setMapLoc({ name: locationName, lat, lng });
+                    }
                 } catch (error) {
                     console.error("Error fetching capsules:", error);
                 }
@@ -258,6 +269,37 @@ export default function EditCapsule() {
         }
     };
 
+    const handleLocationSelect = async loc => {
+        console.log("handle location select reached");
+        setShowMapUI(false);
+
+        //set location parameter to the capsule in the backend
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await fetch(`http://localhost:5001/api/update-location`, {
+                method: "PATCH",
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ capsuleId: capsuleId, name: loc.name, latitude: loc.lat, longitude: loc.lng }),
+            });
+        
+            const data = await response.json();
+        
+            if (response.ok) {
+                console.log("Location updated!");
+                setMapLoc(loc);
+                setShowInput(false); // hide input
+            } else {
+                alert(data.message || "Failed to update location");
+            }
+            } catch (error) {
+                console.error("Failed to update location", error);
+                alert("Error updating location");
+            }
+    };
+
 
     return (
         <>
@@ -444,6 +486,48 @@ export default function EditCapsule() {
                                 }}
                                 />
                             )}
+                            </Box>
+
+                            {/* Location stuff */}
+                            <Box
+                                sx={{
+                                    // border: "1px solid black",
+                                    width: '100%',
+                                    mt: 5,
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
+                                    Add location
+                                </Typography>
+
+                                {!showMapUI && !mapLoc && (
+                                    <AddIcon 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                    }}
+                                    onClick={() => setShowMapUI(true)}
+                                    />
+                                )}
+
+                                {showMapUI && (
+                                    <LocationPicker onSelect={handleLocationSelect} toggleUI={() => setShowMapUI(false)} />
+                                )}
+
+                                {!showMapUI && mapLoc && (
+                                    <Button 
+                                    sx={{
+                                        p: 1,
+                                        border: "1px solid white",
+                                        borderRadius: "10px",
+                                        color: 'white'
+                                    }}
+                                    onClick={() => setShowMapUI(true)}>
+                                        {mapLoc.name}
+                                    </Button>
+                                )}
                             </Box>
                         </Box>
 
