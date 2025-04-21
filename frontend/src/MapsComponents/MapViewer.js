@@ -12,7 +12,7 @@ import MarkerOverlay from './MarkerOverlay'
 import { useNavigate } from "react-router-dom";
 
 const containerStyle = { width: '100%', height: '100vh' };
-const defaultCenter = { lat: 0, lng: 0 };
+const defaultCenter = { lat: 38, lng: -90 };
 
 export default function MapViewer() {
   const { user } = useContext(UserContext);
@@ -69,14 +69,6 @@ export default function MapViewer() {
   if (loadError) return <div>Error loading maps</div>;
   if (!isLoaded) return <div>Loading map…</div>;
 
-  // 2. Optionally compute a center if you have capsules
-  const center = capsules.length
-    ? {
-        lat: capsules[0].location.coordinates[0],
-        lng: capsules[0].location.coordinates[1],
-      }
-    : defaultCenter;
-
   if (!user) {
       return <p>Loading user data...</p>;
   }
@@ -105,7 +97,7 @@ export default function MapViewer() {
 
         <GoogleMap
           mapContainerStyle={containerStyle}
-          center={center}
+          center={defaultCenter}
           zoom={capsules.length ? 5 : 2}
         >
           {capsules
