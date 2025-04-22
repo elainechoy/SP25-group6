@@ -271,48 +271,87 @@ export default function EditCapsule() {
         }
     };
     // set location
-    const handleLocationSelect = async (loc) => {
-        console.log("handle location select reached");
-        console.log(loc.lat + ' ' + loc.lng);
-        setShowMapUI(false);
+    // const handleLocationSelect = async (loc) => {
+    //     console.log("handle location select reached");
+    //     console.log(loc.lat + ' ' + loc.lng);
+    //     setShowMapUI(false);
 
-        // set location parameter to the capsule in the backend
+    //     // set location parameter to the capsule in the backend
+    //     try {
+    //         const token = localStorage.getItem("authToken");
+    //         const response = await fetch(`${API_URL}/api/update-location`, {
+    //             method: "PATCH",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //             body: JSON.stringify({
+    //                 capsuleId: capsuleId,
+    //                 name: loc.name,
+    //                 latitude: loc.lat,
+    //                 longitude: loc.lng,
+    //             }),
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (response.ok) {
+    //             console.log("Location updated!");
+    //             // unpack the GeoJSON coords into {lat,lng}
+    //             const coords = data.coordinates;
+    //             const locationName = data.name;
+    //             if (Array.isArray(coords) && coords.length === 2) {
+    //                 const [lat, lng] = coords;
+    //                 setMapLoc({ name: locationName, lat, lng });
+    //             }
+    //             setShowInput(false); // hide input
+    //         } else {
+    //             alert(data.message || "Failed to update location");
+    //         }
+    //     } catch (error) {
+    //         console.error("Failed to update location", error);
+    //         alert("Error updating location");
+    //     }
+    // };
+    const handleLocationSelect = async loc => {
+        // 1) Persist to your backend
         try {
-            const token = localStorage.getItem("authToken");
-            const response = await fetch(`${API_URL}/api/update-location`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    capsuleId: capsuleId,
-                    name: loc.name,
-                    latitude: loc.lat,
-                    longitude: loc.lng,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log("Location updated!");
-                // unpack the GeoJSON coords into {lat,lng}
-                const coords = data.coordinates;
-                const locationName = data.name;
-                if (Array.isArray(coords) && coords.length === 2) {
-                    const [lat, lng] = coords;
-                    setMapLoc({ name: locationName, lat, lng });
-                }
-                setShowInput(false); // hide input
-            } else {
-                alert(data.message || "Failed to update location");
-            }
-        } catch (error) {
-            console.error("Failed to update location", error);
-            alert("Error updating location");
+          const token = localStorage.getItem("authToken");
+          await fetch(`${API_URL}/api/update-location`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              capsuleId,
+              name: loc.name,
+              latitude: loc.lat,
+              longitude: loc.lng,
+            }),
+          });
+        } catch (err) {
+          console.error("Error updating location", err);
+          alert("Could not save location");
+          return;
         }
-    };
+      
+        // 2) Immediately update *both* the little mapLoc state
+        setMapLoc(loc);
+      
+        // 3) Optionally also update your entire capsule object,
+        //    if elsewhere you’re reading capsule.location:
+        setCapsule(c => ({
+          ...c,
+          location: {
+            name: loc.name,
+            coordinates: [loc.lat, loc.lng],
+          }
+        }));
+      
+        // 4) Hide the picker
+        setShowMapUI(false);
+      };
     
 
 
