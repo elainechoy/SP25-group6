@@ -14,10 +14,10 @@ import 'react-multi-carousel/lib/styles.css';
 import { lighten } from 'polished';
 import ReactPlayer from "react-player/youtube";
 import {
-    GoogleMap,
-    MarkerF,
-    useLoadScript
-  } from '@react-google-maps/api';
+  GoogleMap,
+  MarkerF,
+  useLoadScript
+} from '@react-google-maps/api';
 
 const Capsule = () => {
   const location = useLocation();
@@ -40,39 +40,39 @@ const Capsule = () => {
 
   // get capsule info
   useEffect(() => {
-      if (capsuleId) {
-        const getCapsule = async () => {
-          try {
-            const response = await fetch(`${API_URL}/api/get_capsule/${capsuleId}`, {
-              method: "GET",
-              headers: {
-                  "Content-Type": "application/json",
-              }
-            });
-
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
+    if (capsuleId) {
+      const getCapsule = async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/get_capsule/${capsuleId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
             }
-            const data = await response.json();
-            setCapsule(data);
-            setVideoLink(data.videoLink);
+          });
 
-            if(data.location) {
-                // unpack the GeoJSON coords into {lat,lng}
-                const coords = data.location?.coordinates;
-                const locationName = data.location?.name;
-                if (Array.isArray(coords) && coords.length === 2) {
-                    const [lat, lng] = coords;
-                    setCapsuleLocation({ name: locationName, lat, lng });
-                }
-            }
-
-          } catch (error) {
-              console.error("Error fetching capsules:", error);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
-        };
-        getCapsule();
-      }
+          const data = await response.json();
+          setCapsule(data);
+          setVideoLink(data.videoLink);
+
+          if (data.location) {
+            // unpack the GeoJSON coords into {lat,lng}
+            const coords = data.location?.coordinates;
+            const locationName = data.location?.name;
+            if (Array.isArray(coords) && coords.length === 2) {
+              const [lat, lng] = coords;
+              setCapsuleLocation({ name: locationName, lat, lng });
+            }
+          }
+
+        } catch (error) {
+          console.error("Error fetching capsules:", error);
+        }
+      };
+      getCapsule();
+    }
   }, [capsuleId]);
 
   // // Fetch capsule info
@@ -176,83 +176,89 @@ const Capsule = () => {
   const [dark, setDark] = useState(lighten(0.1, '#702b9d'));
 
   const generateGradientColors = (color) => {
-      return {
+    return {
       light: lighten(0.25, color),  // Much lighter shade of bgColor
       dark: lighten(0.1, color),    // Lighter shade of bgColor
-      };
+    };
   };
 
   useEffect(() => {
-      const fetchColor = async () => {
+    const fetchColor = async () => {
       try {
-          const res = await fetch(`${API_URL}/api/get-color/${capsuleId}`, {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json' },
-          });
-          const data = await res.json();
-          if (res.ok && data.color) {
-              setBgColor(data.color);
-              const { light, dark } = generateGradientColors(data.color);
-              setLight(light);
-              setDark(dark);
-          }
+        const res = await fetch(`${API_URL}/api/get-color/${capsuleId}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await res.json();
+        if (res.ok && data.color) {
+          setBgColor(data.color);
+          const { light, dark } = generateGradientColors(data.color);
+          setLight(light);
+          setDark(dark);
+        }
       } catch (error) {
-          console.error('Failed to fetch capsule color:', error);
+        console.error('Failed to fetch capsule color:', error);
       }
-      };
+    };
 
-      fetchColor();
+    fetchColor();
   }, [capsuleId]);
 
   // fetch capsule location
-//   useEffect(() => {
-//     const fetchLocation = async () => {
-//       try {
-//         const res = await fetch(`${API_URL}/api/get-location`, {
-//           method: 'GET',
-//           headers: {
-//             'Content-Type': 'application/json'
-//           },
-//           body: JSON.stringify({ capsuleId })
-//         });
+  //   useEffect(() => {
+  //     const fetchLocation = async () => {
+  //       try {
+  //         const res = await fetch(`${API_URL}/api/get-location`, {
+  //           method: 'GET',
+  //           headers: {
+  //             'Content-Type': 'application/json'
+  //           },
+  //           body: JSON.stringify({ capsuleId })
+  //         });
 
-//         const data = await res.json();
+  //         const data = await res.json();
 
-//         if (!res.ok) {
-//           return;
-//         }
+  //         if (!res.ok) {
+  //           return;
+  //         }
 
-//         // unpack the GeoJSON coords into {lat,lng}
-//         const coords = data.coordinates;
-//         const locationName = data.name;
-//         if (Array.isArray(coords) && coords.length === 2) {
-//             const [lat, lng] = coords;
-//             setCapsuleLocation({ name: locationName, lat, lng });
-//         }
-//       } catch (err) {
-//         console.error('Fetch error:', err);
-//       }
-//     };
+  //         // unpack the GeoJSON coords into {lat,lng}
+  //         const coords = data.coordinates;
+  //         const locationName = data.name;
+  //         if (Array.isArray(coords) && coords.length === 2) {
+  //             const [lat, lng] = coords;
+  //             setCapsuleLocation({ name: locationName, lat, lng });
+  //         }
+  //       } catch (err) {
+  //         console.error('Fetch error:', err);
+  //       }
+  //     };
 
-//       fetchLocation();
-//     }, [capsuleId]);
+  //       fetchLocation();
+  //     }, [capsuleId]);
 
-if (loadError) return <Typography>Error loading map</Typography>;
-if (!isLoaded) return null;
+  if (loadError) return <Typography>Error loading map</Typography>;
+  if (!isLoaded) return null;
 
-    
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', background: `linear-gradient(140deg, ${bgColor} 0%, ${dark} 30%, ${light} 70%, ${dark} 100%, ${bgColor} 100%)`, color: 'white', minHeight: '100vh' }}>
-      
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      background: `linear-gradient(140deg, ${bgColor} 0%, ${dark} 30%, ${light} 70%, ${dark} 100%, ${bgColor} 100%)`,
+      color: 'white',
+      minHeight: '100vh'
+    }}>
+
       <AppHeader user={user} />
 
       <Box sx={{ gap: 3, m: 4 }}>
 
         {/* Capsule Name */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {capsule.title || "Capsule Name"} 
-            </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+            {capsule.title || "Capsule Name"}
+          </Typography>
         </Box>
 
         {/* Main Content Area */}
@@ -260,12 +266,12 @@ if (!isLoaded) return null;
 
           {/* Capsule Details */}
           <Box
-          component="section"
-          sx={{
+            component="section"
+            sx={{
               p: 3,
               borderRadius: 3,
               width: '20%'
-          }}>
+            }}>
             {/* Description */}
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
               Description
@@ -276,59 +282,59 @@ if (!isLoaded) return null;
 
             {/* Shared with */}
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                Shared With:
+              Shared With:
             </Typography>
             {capsule.members && capsule.members.length > 0 ? (
-            <Box display="flex" flexDirection="column" gap={2}>
+              <Box display="flex" flexDirection="column" gap={2}>
                 {membersInfo.map((member, index) => (
-                <Card
+                  <Card
                     key={index}
                     elevation={2}
                     sx={{
-                    borderRadius: 3,
-                    padding: 2,
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    color: bgColor,
+                      borderRadius: 3,
+                      padding: 2,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      color: bgColor,
                     }}
-                >
+                  >
                     <Box display="flex" alignItems="center" gap={1.5}>
-                    <Avatar
+                      <Avatar
                         alt={member.username}
                         src={member.photo}
                         sx={{
-                        width: 60,
-                        height: 60,
-                        fontSize: 24,
-                        bgcolor: 'white',
-                        color: '#702b9d',
+                          width: 60,
+                          height: 60,
+                          fontSize: 24,
+                          bgcolor: 'white',
+                          color: '#702b9d',
                         }}
-                    >
+                      >
                         {member.username ? member.username[0] : "?"}
-                    </Avatar>
-                    <Box>
+                      </Avatar>
+                      <Box>
                         <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: 15 }}>
-                        {member.username}
+                          {member.username}
                         </Typography>
                         <Typography variant="caption" sx={{ fontSize: 12 }}>
-                        {member.email}
+                          {member.email}
                         </Typography>
+                      </Box>
                     </Box>
-                    </Box>
-                </Card>
+                  </Card>
                 ))}
-            </Box>
+              </Box>
             ) : (
-            <Typography variant="body1" sx={{ color: 'gray' }}>
+              <Typography variant="body1" sx={{ color: 'gray' }}>
                 No members listed.
-            </Typography>
+              </Typography>
             )}
 
             {/* Youtube video or song section */}
             <Box
-            sx={{
+              sx={{
                 width: '100%',
                 mt: 3,
-            }}
+              }}
             >
               {videoLink && (
                 <>
@@ -346,38 +352,38 @@ if (!isLoaded) return null;
             {/* Location stuff */}
             <Box
               sx={{
-                  width: '100%',
-                  mt: 5,
-                  textAlign: 'center',
+                width: '100%',
+                mt: 5,
+                textAlign: 'center',
               }}
             >
               {capsuleLocation && (
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5 }}>
-                        Location: {capsuleLocation.name}
-                    </Typography>
-                    <GoogleMap
-                    mapContainerStyle={{width: '200px', height: '150px', marginTop: '8px'}}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5 }}>
+                    Location: {capsuleLocation.name}
+                  </Typography>
+                  <GoogleMap
+                    mapContainerStyle={{ width: '200px', height: '150px', marginTop: '8px' }}
                     center={{
-                        lat: capsuleLocation.lat,
-                        lng: capsuleLocation.lng
+                      lat: capsuleLocation.lat,
+                      lng: capsuleLocation.lng
                     }}
                     zoom={12}
                     options={{ disableDefaultUI: true, gestureHandling: 'none' }}
-                    >
-                        <MarkerF position={{
-                            lat: capsuleLocation.lat,
-                            lng: capsuleLocation.lng
-                        }} />
-                    </GoogleMap>
+                  >
+                    <MarkerF position={{
+                      lat: capsuleLocation.lat,
+                      lng: capsuleLocation.lng
+                    }} />
+                  </GoogleMap>
                 </div>
-                )}
-              
-                {/* <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
+              )}
+
+              {/* <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
                     Add location
                 </Typography> */}
 
-                {/* {!showMapUI && !mapLoc && (
+              {/* {!showMapUI && !mapLoc && (
                     <AddIcon 
                     sx={{
                         p: 1,
@@ -388,11 +394,11 @@ if (!isLoaded) return null;
                     />
                 )} */}
 
-                {/* {showMapUI && (
+              {/* {showMapUI && (
                     <LocationPicker onSelect={handleLocationSelect} toggleUI={() => setShowMapUI(false)} />
                 )} */}
 
-                {/* {!showMapUI && mapLoc && (
+              {/* {!showMapUI && mapLoc && (
                   <Button 
                   sx={{
                       p: 1,
@@ -412,8 +418,8 @@ if (!isLoaded) return null;
             p: 3,
             borderRadius: 3,
             width: '35%',
-            maxHeight: '60vh',  
-            overflowY: 'auto',     
+            maxHeight: '60vh',
+            overflowY: 'auto',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 2
@@ -499,14 +505,14 @@ if (!isLoaded) return null;
 
                     <Carousel
                       responsive={carouselBreakpoints}
-                      arrows           
+                      arrows
                       //showDots         
                       infinite={images.length > 1}
                       keyBoardControl
                       showDots={false}
-                      containerClass="carousel-container"     
+                      containerClass="carousel-container"
                       dotListClass="carousel-dots"
-                      itemClass="carousel-item" 
+                      itemClass="carousel-item"
                     >
                       {images.map(img => (
                         <Box key={img._id} sx={{ width: '100%', px: 1, display: 'flex', justifyContent: 'center' }}>
