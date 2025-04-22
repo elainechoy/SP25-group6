@@ -469,9 +469,10 @@ const Capsule = () => {
                     <Carousel
                       responsive={carouselBreakpoints}
                       arrows           
-                      showDots         
+                      //showDots         
                       infinite={images.length > 1}
                       keyBoardControl
+                      showDots={false}
                       containerClass="carousel-container"     
                       dotListClass="carousel-dots"
                       itemClass="carousel-item" 
