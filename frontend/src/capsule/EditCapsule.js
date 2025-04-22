@@ -60,7 +60,7 @@ export default function EditCapsule() {
             };
             getCapsule();
         }
-    }, [capsuleId, mapLoc]);
+    }, [capsuleId, setMapLoc]);
 
     // turn members (emails) to usernames to show in the capsule
     const [membersInfo, setMembersInfo] = useState([]);
@@ -270,51 +270,50 @@ export default function EditCapsule() {
             console.error('Error setting capsule color:', error);
         }
     };
-            // set location
-            const handleLocationSelect = async (loc) => {
-                console.log("handle location select reached");
-                console.log(loc.lat + ' ' + loc.lng);
-                setShowMapUI(false);
-        
-                // set location parameter to the capsule in the backend
-                try {
-                    const token = localStorage.getItem("authToken");
-                    const response = await fetch(`${API_URL}/api/update-location`, {
-                        method: "PATCH",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({
-                            capsuleId: capsuleId,
-                            name: loc.name,
-                            latitude: loc.lat,
-                            longitude: loc.lng,
-                        }),
-                    });
-        
-                    const data = await response.json();
-        
-                    if (response.ok) {
-                        console.log("Location updated!");
-                        // unpack the GeoJSON coords into {lat,lng}
-                        const coords = data.coordinates;
-                        const locationName = data.name;
-                        if (Array.isArray(coords) && coords.length === 2) {
-                            const [lat, lng] = coords;
-                            setMapLoc({ name: locationName, lat, lng });
-                        }
-                        setShowInput(false); // hide input
-                    } else {
-                        alert(data.message || "Failed to update location");
-                    }
-                } catch (error) {
-                    console.error("Failed to update location", error);
-                    alert("Error updating location");
+    // set location
+    const handleLocationSelect = async (loc) => {
+        console.log("handle location select reached");
+        console.log(loc.lat + ' ' + loc.lng);
+        setShowMapUI(false);
+
+        // set location parameter to the capsule in the backend
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await fetch(`${API_URL}/api/update-location`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    capsuleId: capsuleId,
+                    name: loc.name,
+                    latitude: loc.lat,
+                    longitude: loc.lng,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Location updated!");
+                // unpack the GeoJSON coords into {lat,lng}
+                const coords = data.coordinates;
+                const locationName = data.name;
+                if (Array.isArray(coords) && coords.length === 2) {
+                    const [lat, lng] = coords;
+                    setMapLoc({ name: locationName, lat, lng });
                 }
-            };
+                setShowInput(false); // hide input
+            } else {
+                alert(data.message || "Failed to update location");
+            }
+        } catch (error) {
+            console.error("Failed to update location", error);
+            alert("Error updating location");
+        }
+    };
     
-      
 
 
     return (

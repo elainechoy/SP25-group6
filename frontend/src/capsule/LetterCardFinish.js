@@ -14,7 +14,7 @@ function LetterCardFinish({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, 
     useEffect(() => {
         const fetchPreview = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/pdf/{pdfId}/preview`);
+                const response = await fetch(`${API_URL}/api/pdf/${pdfId}/preview`);
                 const data = await response.json();
                 setPreviewText(data.previewText || "No preview available.");
             } catch (err) {
