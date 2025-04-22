@@ -7,7 +7,7 @@ import UserContext from '../UserContext';
 import PhotoCardFinish from './PhotoCardFinish';
 import PDFOverlay from '../PDFOverlay';
 import paperRip from './assets/paper-rip.mp3';
-import './CarouselOverrides.css';
+//import './CarouselOverrides.css';
 import { API_URL } from '../config.js'
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
@@ -138,7 +138,16 @@ const Capsule = () => {
           </Box>
 
           {/* Letters */}
-          <Box component="section" sx={{ p: 3, borderRadius: 3, width: '35%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box component="section" sx={{
+            p: 3,
+            borderRadius: 3,
+            width: '35%',
+            maxHeight: '60vh',  
+            overflowY: 'auto',     
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2
+          }}>
             {pdfs.length === 0 ? (
               <Typography variant="body2" sx={{ textAlign: 'center', mt: 4, fontStyle: 'italic', color: 'gray' }}>
                 You wrote no letters in your capsule :(
@@ -220,14 +229,13 @@ const Capsule = () => {
 
                     <Carousel
                       responsive={carouselBreakpoints}
-                      arrows           // show left / right chevrons
-                      showDots         // bottom dots
+                      arrows           
+                      showDots         
                       infinite={images.length > 1}
                       keyBoardControl
-                      containerClass="carousel-container"     // for optional custom CSS
-                      //itemClass="carousel-item-padding-40-px" // default gutter
+                      containerClass="carousel-container"     
                       dotListClass="carousel-dots"
-                    //renderDotsOutside
+                      itemClass="carousel-item" 
                     >
                       {images.map(img => (
                         <Box key={img._id} sx={{ width: '100%', px: 1, display: 'flex', justifyContent: 'center' }}>

@@ -40,6 +40,7 @@ function LetterCardFinish({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, 
                 overflow: "hidden",
                 mt: 2,
                 mb: 3,
+                mx: 'auto', 
                 cursor: "pointer",
                 "&:hover": !showPreview && {
                     transform: "scale(1.02)",

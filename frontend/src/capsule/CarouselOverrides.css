@@ -1,8 +1,6 @@
-/* CarouselOverrides.css */
-.slick-slide {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 20% !important;
-  }
-  
+.carousel-item {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 60vh !important;        /* match whatever your carousel height is */
+  box-sizing: border-box;
+}
