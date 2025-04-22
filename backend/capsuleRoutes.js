@@ -258,7 +258,7 @@ router.patch('/update-location', async (req, res) => {
 })
 
 // get location
-router.post('/get-location', async (req, res) => {
+router.get('/get-location', async (req, res) => {
   const db = req.app.locals.db;
   const capsulesCollection = db.collection("capsules");
   const { capsuleId } = req.body;
