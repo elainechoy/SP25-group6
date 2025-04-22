@@ -65,6 +65,10 @@ export default function LetterEditor() {
     };
 
     const generatePDFAndSubmit = async () => {
+        if (!title.trim()) {
+            alert("Please submit a title");
+            return;
+          }
         const token = localStorage.getItem("authToken");
         if (!token) {
             alert("User not authenticated");
