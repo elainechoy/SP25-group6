@@ -10,7 +10,6 @@ import PDFOverlay from '../PDFOverlay.js';
 import ReactPlayer from "react-player/youtube";
 import LocationPicker from '../MapsComponents/LocationPicker'
 import { lighten } from 'polished';
-import AddIcon from '@mui/icons-material/Add';
 import { API_URL } from '../config.js'
 // import e from 'cors';
 
@@ -356,7 +355,7 @@ export default function EditCapsule() {
 
                             {/* Description */}
                             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                Description
+                                Description:
                             </Typography>
                             <Typography variant="body1" sx={{ mb: 2 }}>
                                 {capsule.description || "No description available."}
@@ -489,47 +488,98 @@ export default function EditCapsule() {
                             )}
                             </Box>
 
-                            {/* Location stuff */}
+                            {/* Location */}
                             <Box
-                                sx={{
-                                    // border: "1px solid black",
-                                    width: '100%',
-                                    mt: 5,
-                                    textAlign: 'center',
-                                }}
+                            sx={{
+                                width: '100%',
+                                mt: 2,
+                            }}
                             >
-                                <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
-                                    Add location
+                            {/* Prompt + Add Button */}
+                            {!mapLoc && !showMapUI && (
+                                <>
+                                <Typography
+                                    variant="body1"
+                                    sx={{ color: 'white', mb: 3, textAlign: 'center' }}
+                                >
+                                    Tag this capsule with a place!
                                 </Typography>
-
-                                {!showMapUI && !mapLoc && (
-                                    <AddIcon 
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Button
+                                    variant="outlined"
+                                    onClick={() => setShowMapUI(true)}
                                     sx={{
-                                        p: 1,
-                                        border: "1px solid white",
-                                        borderRadius: "10px",
+                                        color: 'white',
+                                        borderColor: 'white',
+                                        borderRadius: '20px',
+                                        px: 3,
+                                        py: 1,
+                                        fontSize: 18,
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        mb: 2,
+                                        '&:hover': {
+                                        borderColor: 'white',
+                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        },
+                                    }}
+                                    >
+                                    Add a location
+                                    </Button>
+                                </Box>
+                                </>
+                            )}
+
+                            {/* Always show Location label when UI is visible OR location is selected */}
+                            {(showMapUI || mapLoc) && (
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                Location:
+                                </Typography>
+                            )}
+
+                            {/* Location Picker UI */}
+                            {showMapUI && (
+                                <LocationPicker
+                                onSelect={handleLocationSelect}
+                                toggleUI={() => setShowMapUI(false)}
+                                />
+                            )}
+
+                            {/* Display selected location */}
+                            {!showMapUI && mapLoc && (
+                                <>
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                    📍 {mapLoc.name}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Button
+                                    variant="outlined"
+                                    sx={{
+                                        color: 'white',
+                                        borderColor: 'white',
+                                        borderRadius: '20px',
+                                        px: 3,
+                                        py: 1,
+                                        fontSize: 18,
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        mb: 2,
+                                        '&:hover': {
+                                        borderColor: 'white',
+                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        },
                                     }}
                                     onClick={() => setShowMapUI(true)}
-                                    />
-                                )}
-
-                                {showMapUI && (
-                                    <LocationPicker onSelect={handleLocationSelect} toggleUI={() => setShowMapUI(false)} />
-                                )}
-
-                                {!showMapUI && mapLoc && (
-                                    <Button 
-                                    sx={{
-                                        p: 1,
-                                        border: "1px solid white",
-                                        borderRadius: "10px",
-                                        color: 'white'
-                                    }}
-                                    onClick={() => setShowMapUI(true)}>
-                                        {mapLoc.name}
+                                    >
+                                    Change location
                                     </Button>
-                                )}
+                                </Box>
+                                </>
+                            )}
                             </Box>
+
                         </Box>
 
 
