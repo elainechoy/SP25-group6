@@ -1,6 +1,12 @@
 .carousel-item {
+  height: 60vh !important;            /* same height as your carousel */
   display: flex !important;
   flex-direction: column !important;
-  height: 60vh !important;        /* match whatever your carousel height is */
   box-sizing: border-box;
+}
+
+.carousel-item img {
+  max-height: calc(60vh * 0.8) !important;  /* reserve 20% for the caption */
+  width: 100%;
+  object-fit: contain;
 }

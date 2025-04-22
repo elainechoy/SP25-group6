@@ -7,7 +7,7 @@ import UserContext from '../UserContext';
 import PhotoCardFinish from './PhotoCardFinish';
 import PDFOverlay from '../PDFOverlay';
 import paperRip from './assets/paper-rip.mp3';
-//import './CarouselOverrides.css';
+import './CarouselOverrides.css';
 import { API_URL } from '../config.js'
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
