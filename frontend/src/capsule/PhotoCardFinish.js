@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import PropTypes from "prop-types";
-import { API_URL } from '../config.js'
+import { API_URL } from '../config.js';
 
 function PhotoCardFinish({ photoTitle, filename, mode = 'carousel' }) {
   const isCarousel = mode === 'carousel';
@@ -9,38 +9,50 @@ function PhotoCardFinish({ photoTitle, filename, mode = 'carousel' }) {
   return (
     <Box
       sx={{
-        height: isCarousel ? '100%' : 'auto',
+        flex: 1,
+        height: isCarousel ? '100%' : 'auto',    // fill carousel viewport
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: isCarousel ? 'center' : 'flex-start',
         textAlign: 'center',
-        px: 2,
-        pb: 2,
+        p: 2,
+        boxSizing: 'border-box',
       }}
     >
-      <Box sx={{ mb: 1 }}>
-        <img
+      {/* 1) this wrapper grows/shrinks so title always shows */}
+      <Box
+        sx={{
+          flex: isCarousel ? 1 : 'none',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          mb: 1,
+          
+        }}
+      >
+        <Box
+          component="img"
           src={`${API_URL}/api/photo/${filename}`}
           alt={photoTitle || "Photo"}
-          style={{
-            maxHeight: isCarousel ? '75%' : 'auto',
+          sx={{
             maxWidth: '100%',
-            height: isCarousel ? 'auto' : 'auto',
-            width: 'auto',
-            borderRadius: 5,
-            boxShadow: '0px 0px 50px 20px rgba(255,255,255,0.2)',
+            maxHeight: '100%',
             objectFit: 'contain',
+            borderRadius: 2,
+            boxShadow: '0px 0px 50px 20px rgba(255,255,255,0.2)',
           }}
         />
       </Box>
+
+      {/* 2) this title sits at the bottom */}
       <Typography
+        variant="h6"
         sx={{
           color: 'white',
-          fontSize: '1.2rem',
-          whiteSpace: isCarousel ? 'normal' : 'nowrap',
-          overflow: isCarousel ? 'visible' : 'hidden',
-          textOverflow: isCarousel ? 'unset' : 'ellipsis',
+          flex: '0 0 auto',   // never shrink
+          wordBreak: 'break-word',
         }}
       >
         {photoTitle}
@@ -49,12 +61,10 @@ function PhotoCardFinish({ photoTitle, filename, mode = 'carousel' }) {
   );
 }
 
-
 PhotoCardFinish.propTypes = {
-//  photoId: PropTypes.string.isRequired,  // If you still need the ID for other logic
   photoTitle: PropTypes.string,
   filename: PropTypes.string.isRequired,
-  mode: PropTypes.string
+  mode: PropTypes.string,
 };
 
 export default PhotoCardFinish;
