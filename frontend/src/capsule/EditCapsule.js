@@ -26,8 +26,6 @@ export default function EditCapsule() {
     const [mapLoc, setMapLoc] = useState(null);
     const [showMapUI, setShowMapUI] = useState(false);
 
-
-
     // get capsule info
     const [capsule, setCapsule] = useState("");
     useEffect(() => {
@@ -271,12 +269,13 @@ export default function EditCapsule() {
         }
     };
 
+    // set location
     const handleLocationSelect = async loc => {
         console.log("handle location select reached");
         console.log(loc.lat + ' ' + loc.lng)
         setShowMapUI(false);
 
-        //set location parameter to the capsule in the backend
+        // set location parameter to the capsule in the backend
         try {
             const token = localStorage.getItem("authToken");
             const response = await fetch(`${API_URL}/api/update-location`, {
@@ -311,7 +310,6 @@ export default function EditCapsule() {
                 <AppHeader user={user} />
 
                 <Box sx={{ gap: 3, m: 4 }}>
-
 
                     {/* Capsule Name and Seal Capsule Button */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

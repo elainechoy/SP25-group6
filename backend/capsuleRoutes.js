@@ -222,8 +222,10 @@ router.patch('/update-video-link', async (req, res) => {
   }
 });
 
+// set location
 router.patch('/update-location', async (req, res) => {
   const db = req.app.locals.db;
+  const capsulesCollection = db.collection("capsules");
   const { capsuleId, name, latitude, longitude } = req.body;
 
   if (typeof latitude !== 'number' || typeof longitude !== 'number') {
@@ -233,7 +235,7 @@ router.patch('/update-location', async (req, res) => {
   }
 
   try {
-    const result = await db.collection('capsules').updateOne(
+    const result = await capsulesCollection.updateOne(
       { _id: new ObjectId(capsuleId.toString()) },
       { $set: {
         location: {
@@ -254,6 +256,34 @@ router.patch('/update-location', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 })
+
+// get location
+router.post('/get-location', async (req, res) => {
+  const db = req.app.locals.db;
+  const capsulesCollection = db.collection("capsules");
+  const { capsuleId } = req.body;
+
+  if (!capsuleId) {
+    return res.status(400).json({ error: "capsuleId is required" });
+  }
+
+  try {
+    const capsule = await capsulesCollection.findOne(
+      { _id: new ObjectId(capsuleId.toString()) },
+      { projection: { location: 1 } }
+    );
+
+    if (!capsule) {
+      return res.status(404).json({ message: "Capsule not found" });
+    }
+
+    return res.status(200).json({ location: capsule.location });
+  } catch (error) {
+    console.error("Error retrieving location:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 // set capsule background color
 router.post('/set-color/:capsuleId', async (req, res) => {
