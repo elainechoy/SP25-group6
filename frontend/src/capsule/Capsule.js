@@ -13,6 +13,11 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { lighten } from 'polished';
 import ReactPlayer from "react-player/youtube";
+import {
+    GoogleMap,
+    MarkerF,
+    useLoadScript
+  } from '@react-google-maps/api';
 
 const Capsule = () => {
   const location = useLocation();
@@ -27,8 +32,11 @@ const Capsule = () => {
   const [viewMode, setViewMode] = useState('carousel'); // 'carousel' | 'scroll' | 'grid'
   const [videoLink, setVideoLink] = useState(null);
   const [capsuleLocation, setCapsuleLocation] = useState(null);
-  const [error, setError] = useState('');
   const clickSound = useMemo(() => new Audio(paperRip), []);
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY,
+  });
 
   // get capsule info
   useEffect(() => {
@@ -49,13 +57,16 @@ const Capsule = () => {
             setCapsule(data);
             setVideoLink(data.videoLink);
 
-            // // unpack the GeoJSON coords into {lat,lng}
-            // const coords = data.location?.coordinates;
-            // const locationName = data.location?.name;
-            // if (Array.isArray(coords) && coords.length === 2) {
-            //   const [lat, lng] = coords;
-            //   setMapLoc({ name: locationName, lat, lng });
-            // }
+            if(data.location) {
+                // unpack the GeoJSON coords into {lat,lng}
+                const coords = data.location?.coordinates;
+                const locationName = data.location?.name;
+                if (Array.isArray(coords) && coords.length === 2) {
+                    const [lat, lng] = coords;
+                    setCapsuleLocation({ name: locationName, lat, lng });
+                }
+            }
+
           } catch (error) {
               console.error("Error fetching capsules:", error);
           }
@@ -194,36 +205,40 @@ const Capsule = () => {
   }, [capsuleId]);
 
   // fetch capsule location
-  useEffect(() => {
-    const fetchLocation = async () => {
-      setError('')
-      setCapsuleLocation(null);
+//   useEffect(() => {
+//     const fetchLocation = async () => {
+//       try {
+//         const res = await fetch(`${API_URL}/api/get-location`, {
+//           method: 'GET',
+//           headers: {
+//             'Content-Type': 'application/json'
+//           },
+//           body: JSON.stringify({ capsuleId })
+//         });
 
-      try {
-        const res = await fetch(`http://localhost:5000/get-location`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ capsuleId })
-        });
+//         const data = await res.json();
 
-        const data = await res.json();
+//         if (!res.ok) {
+//           return;
+//         }
 
-        if (!res.ok) {
-          setError(data.message || 'Failed to fetch location');
-          return;
-        }
+//         // unpack the GeoJSON coords into {lat,lng}
+//         const coords = data.coordinates;
+//         const locationName = data.name;
+//         if (Array.isArray(coords) && coords.length === 2) {
+//             const [lat, lng] = coords;
+//             setCapsuleLocation({ name: locationName, lat, lng });
+//         }
+//       } catch (err) {
+//         console.error('Fetch error:', err);
+//       }
+//     };
 
-        setCapsuleLocation(data.location);
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError('An unexpected error occurred');
-      }
-    };
+//       fetchLocation();
+//     }, [capsuleId]);
 
-      fetchLocation();
-    }, [capsuleId, error]);
+if (loadError) return <Typography>Error loading map</Typography>;
+if (!isLoaded) return null;
 
     
   return (
@@ -337,10 +352,26 @@ const Capsule = () => {
               }}
             >
               {capsuleLocation && (
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5 }}>
-                  Location: {capsuleLocation}
-                </Typography>
-              )}
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5 }}>
+                        Location: {capsuleLocation.name}
+                    </Typography>
+                    <GoogleMap
+                    mapContainerStyle={{width: '200px', height: '150px', marginTop: '8px'}}
+                    center={{
+                        lat: capsuleLocation.lat,
+                        lng: capsuleLocation.lng
+                    }}
+                    zoom={12}
+                    options={{ disableDefaultUI: true, gestureHandling: 'none' }}
+                    >
+                        <MarkerF position={{
+                            lat: capsuleLocation.lat,
+                            lng: capsuleLocation.lng
+                        }} />
+                    </GoogleMap>
+                </div>
+                )}
               
                 {/* <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
                     Add location
