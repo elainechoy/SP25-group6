@@ -7,7 +7,7 @@ import UserContext from '../UserContext';
 import PhotoCardFinish from './PhotoCardFinish';
 import PDFOverlay from '../PDFOverlay';
 import paperRip from './assets/paper-rip.mp3';
-//import './CarouselOverrides.css';
+import './CarouselOverrides.css';
 import { API_URL } from '../config.js'
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
@@ -500,9 +500,10 @@ if (!isLoaded) return null;
                     <Carousel
                       responsive={carouselBreakpoints}
                       arrows           
-                      showDots         
+                      //showDots         
                       infinite={images.length > 1}
                       keyBoardControl
+                      showDots={false}
                       containerClass="carousel-container"     
                       dotListClass="carousel-dots"
                       itemClass="carousel-item" 

@@ -5,16 +5,17 @@ import { API_URL } from '../config.js';
 
 function PhotoCardFinish({ photoTitle, filename, mode = 'carousel' }) {
   const isCarousel = mode === 'carousel';
-
+  const carouselHeight = '50vh'; 
   return (
     <Box
       sx={{
         flex: 1,
-        height: isCarousel ? '100%' : 'auto',    // fill carousel viewport
+        height: isCarousel ? "100%" : 'auto',    // fill carousel viewport
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
+        maxHeight: isCarousel ? `calc(${carouselHeight} * 0.8)` : 'auto',
         p: 2,
         boxSizing: 'border-box',
       }}
