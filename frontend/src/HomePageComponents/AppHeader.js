@@ -13,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { API_URL } from '../config.js'
+import HelpMenu from './HelpMenu.js'
 
 const pages = ['Home', 'Map', 'Friends'];
 const settings = ['Profile', 'Logout'];
@@ -21,6 +22,7 @@ function AppHeader( {user} ) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [profileImage, setProfileImage] = React.useState();
+
   const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
@@ -117,6 +119,7 @@ function AppHeader( {user} ) {
             >
             </Menu>
           </Box>
+
           <Typography
             variant="h5"
             noWrap
@@ -137,6 +140,7 @@ function AppHeader( {user} ) {
           </Typography>
 
           <Box sx={{ flexGrow: 0 }}>
+            <HelpMenu />
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt={user.name} src={profileImage} />
