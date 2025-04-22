@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
+import { API_URL } from "../config";
 
 function LetterCard({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, onDelete, onOpenFullPdf }) {
   const [showPreview, setShowPreview] = useState(false);
@@ -12,7 +13,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, onDele
   useEffect(() => {
     const fetchPreview = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/pdf/${pdfId}/preview`);
+        const response = await fetch(`${API_URL}/api/pdf/${pdfId}/preview`);
         const data = await response.json();
         setPreviewText(data.previewText || "No preview available.");
       } catch (err) {
@@ -22,7 +23,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, onDele
     };
 
     fetchPreview();
-    setPdfUrl(`http://localhost:5001/api/pdf/${pdfId}`);
+    setPdfUrl(`${API_URL}/api/pdf/${pdfId}`);
   }, [pdfId]);
 
   const handleDelete = async () => {
@@ -30,7 +31,7 @@ function LetterCard({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, onDele
     if (!confirm) return;
   
     try {
-      const res = await fetch(`http://localhost:5001/api/delete-pdf/${pdfId}`, {
+      const res = await fetch(`${API_URL}/api/delete-pdf/${pdfId}`, {
         method: 'DELETE',
       });
   
