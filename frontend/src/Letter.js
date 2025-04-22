@@ -70,6 +70,10 @@ export default function LetterEditor() {
             alert("Please submit a title");
             return;
           }
+          if(!text.trim()) {
+            alert("Please add text");
+            return;
+          }
         const token = localStorage.getItem("authToken");
         if (!token) {
             alert("User not authenticated");
