@@ -349,21 +349,37 @@ const Capsule = () => {
               )}
             </Box>
 
+            
+          </Box>
+
+          {/* Letters */}
+          <Box component="section" sx={{
+            p: 3,
+            borderRadius: 3,
+            width: '35%',
+            // maxHeight: '60vh',
+            // overflowY: 'auto',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2
+          }}>
+
             {/* Location stuff */}
             <Box
               sx={{
                 width: '100%',
                 mt: 5,
-                textAlign: 'center',
+                mb: 4, 
+                // textAlign: 'center',
               }}
             >
               {capsuleLocation && (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5 }}>
-                    Location: {capsuleLocation.name}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pb: 0.5, marginLeft: 7 }}>
+                    Location: 📍 {capsuleLocation.name}
                   </Typography>
                   <GoogleMap
-                    mapContainerStyle={{ width: '200px', height: '150px', marginTop: '8px' }}
+                    mapContainerStyle={{ width: '200px', height: '150px', marginTop: '8px', margin: '8px auto 0' }}
                     center={{
                       lat: capsuleLocation.lat,
                       lng: capsuleLocation.lng
@@ -378,70 +394,29 @@ const Capsule = () => {
                   </GoogleMap>
                 </div>
               )}
-
-              {/* <Typography variant="body2" sx={{ color: 'white', mb: 3 }}>
-                    Add location
-                </Typography> */}
-
-              {/* {!showMapUI && !mapLoc && (
-                    <AddIcon 
-                    sx={{
-                        p: 1,
-                        border: "1px solid white",
-                        borderRadius: "10px",
-                    }}
-                    onClick={() => setShowMapUI(true)}
-                    />
-                )} */}
-
-              {/* {showMapUI && (
-                    <LocationPicker onSelect={handleLocationSelect} toggleUI={() => setShowMapUI(false)} />
-                )} */}
-
-              {/* {!showMapUI && mapLoc && (
-                  <Button 
-                  sx={{
-                      p: 1,
-                      border: "1px solid white",
-                      borderRadius: "10px",
-                      color: 'white'
-                  }}
-                  onClick={() => setShowMapUI(true)}>
-                      {location}
-                  </Button>
-                )} */}
             </Box>
-          </Box>
 
-          {/* Letters */}
-          <Box component="section" sx={{
-            p: 3,
-            borderRadius: 3,
-            width: '35%',
-            maxHeight: '60vh',
-            overflowY: 'auto',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2
-          }}>
-            {pdfs.length === 0 ? (
-              <Typography variant="body2" sx={{ textAlign: 'center', mt: 4, color: 'white' }}>
-                You wrote no letters in your capsule :(
-              </Typography>
-            ) : (
-              pdfs.map(pdf => (
-                <LetterCardFinish
-                  key={pdf._id}
-                  pdfUser={pdf.metadata.userName}
-                  pdfId={pdf._id}
-                  pdfTitle={pdf.metadata.title}
-                  envelopeColor={pdf.metadata.envelopeColor || '#FFDCDC'}
-                  flapColor={pdf.metadata.flapColor || '#E393AE'}
-                  clickSound={clickSound}
-                  onOpenFullPdf={(url) => setActivePdf(url)}
-                />
-              ))
-            )}
+            <Box sx={{ overflowY: 'auto', maxHeight: '60vh',}}>
+              {pdfs.length === 0 ? (
+                <Typography variant="body2" sx={{ textAlign: 'center', mt: 4, color: 'white' }}>
+                  You wrote no letters in your capsule :(
+                </Typography>
+              ) : (
+                pdfs.map(pdf => (
+                  <LetterCardFinish
+                    key={pdf._id}
+                    pdfUser={pdf.metadata.userName}
+                    pdfId={pdf._id}
+                    pdfTitle={pdf.metadata.title}
+                    envelopeColor={pdf.metadata.envelopeColor || '#FFDCDC'}
+                    flapColor={pdf.metadata.flapColor || '#E393AE'}
+                    clickSound={clickSound}
+                    onOpenFullPdf={(url) => setActivePdf(url)}
+                  />
+                ))
+              )}
+            </Box>
+
           </Box>
 
           {/* Images */}
