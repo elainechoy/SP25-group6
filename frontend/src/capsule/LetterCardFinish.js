@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import PropTypes from "prop-types";
+import { API_URL } from "../config";
 
 function LetterCardFinish({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, onOpenFullPdf }) {
     const [showPreview, setShowPreview] = useState(false);
@@ -13,7 +14,7 @@ function LetterCardFinish({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, 
     useEffect(() => {
         const fetchPreview = async () => {
             try {
-                const response = await fetch(`http://localhost:5001/api/pdf/${pdfId}/preview`);
+                const response = await fetch(`${API_URL}/api/pdf/{pdfId}/preview`);
                 const data = await response.json();
                 setPreviewText(data.previewText || "No preview available.");
             } catch (err) {
@@ -23,7 +24,7 @@ function LetterCardFinish({ pdfUser, pdfId, pdfTitle, envelopeColor, flapColor, 
         };
 
         fetchPreview();
-        setPdfUrl(`http://localhost:5001/api/pdf/${pdfId}`);
+        setPdfUrl(`${API_URL}/api/pdf/${pdfId}`);
     }, [pdfId]);
 
     return (
