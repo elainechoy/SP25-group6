@@ -12,6 +12,7 @@ import paperTexture from './assets/worn-paper.jpg';
 import texture from './assets/texture.jpg';
 import butterfly from './assets/butterfly.png';
 import wrinkle from './assets/wrinkle-paper.jpg';
+import { API_URL } from './config.js'
 
 
 
@@ -121,7 +122,7 @@ export default function LetterEditor() {
         formData.append('capsuleId', capsuleId);
         formData.append('file', pdfBlob, `${title || 'letter'}.pdf`);
 
-        const res = await fetch('http://localhost:5001/api/upload-pdf', {
+        const res = await fetch(`${API_URL}/api/upload-pdf`, {
             method: "POST",
             headers: { Authorization: `Bearer ${token}` },
             body: formData,
